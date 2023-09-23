@@ -18,6 +18,6 @@ public class Pet_Type {
     private int id;
     @Column(name = "name", columnDefinition = "nvarchar(255)")
     private String name;
-    @OneToMany(mappedBy = "pet_type", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "pet_type", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Pet> pets;
 }

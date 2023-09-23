@@ -28,15 +28,29 @@ public class User {
     private String avatar;
     @Column(name = "role", columnDefinition = "nvarchar(100)")
     private String role;
+    @Column(name = "enable", nullable = false)
     private boolean enable;
-    private String verification_code;
+    @Column(name = "verification_code")
+    private String verificationCode;
     @Enumerated(EnumType.STRING)
     @Column(name = "auth_provider")
     private AuthenticationProvider authProvider;
     @Column(name = "reset_password_token")
     private String resetPasswordToken;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Pet> pets;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private List<Post> posts;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private List<Comment> comments;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private List<Reaction> reactions;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private List<Exchange> exchanges;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private List<Apply> applies;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private List<Chat> chats;
 
 
 }

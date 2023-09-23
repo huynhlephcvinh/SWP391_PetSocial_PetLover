@@ -3,6 +3,8 @@ package com.petlover.petsocial.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,17 +21,24 @@ public class Pet {
     @Column(name = "image", columnDefinition = "nvarchar(1111)")
     private String image;
     private boolean status;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private User user;
+
     @ManyToOne
     @JoinColumn(name = "pet_type_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Pet_Type pet_type;
 
+    @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private List<Post> posts;
+
+    @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private List<Exchange> exchanges;
 
 
 
