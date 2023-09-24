@@ -9,9 +9,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -23,6 +25,8 @@ public class SecurityConfig {
 
    @Autowired
    private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandle;
+    @Autowired
+    CustomJwtFilter customJwtFilter;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -46,20 +50,17 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception
    {
        http.csrf().disable()
-                .authorizeHttpRequests()
-               .requestMatchers("/admin/**").hasRole("ADMIN").
+                .authorizeHttpRequests().
                requestMatchers("/","/register","/signin","/createUser","/oauth/**","/verify","/forgot_password","/reset_password").permitAll()
-               .requestMatchers("/user/**").authenticated()
-                .and()
-                .formLogin().loginPage("/signin")
-                .usernameParameter("username").passwordParameter("password")
-               .successHandler(sucessHandler).permitAll()
-               .and()
+               .requestMatchers("/user/**","/admin/**").authenticated().
+and().sessionManagement()
+           .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                .oauth2Login()
                .loginPage("/signin")
                .userInfoEndpoint()
               .userService(oAuth2UserService)
               .and().successHandler(oAuth2LoginSuccessHandle).permitAll();
+       http.addFilterBefore(customJwtFilter, UsernamePasswordAuthenticationFilter.class);
 
 //        http.csrf().disable()
 //                .authorizeHttpRequests().requestMatchers("/user/**").hasRole("USER")

@@ -3,8 +3,14 @@ package com.petlover.petsocial.controller;
 
 import com.petlover.petsocial.exception.UserNotFoundException;
 import com.petlover.petsocial.model.entity.User;
+import com.petlover.petsocial.payload.request.SingupDTO;
+import com.petlover.petsocial.payload.response.ResponseData;
 import com.petlover.petsocial.repository.UserRepository;
 import com.petlover.petsocial.service.UserService;
+import com.petlover.petsocial.utils.JwtUtilHelper;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Encoders;
+import io.jsonwebtoken.security.Keys;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +19,8 @@ import jakarta.servlet.http.HttpSession;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,10 +29,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.crypto.SecretKey;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 
-@Controller
+@RestController
 public class HomeController {
     @Autowired
     private UserService userService;
@@ -32,6 +41,8 @@ public class HomeController {
     private UserRepository userRepo;
     @Autowired
     private JavaMailSender mailSender;
+    @Autowired
+    JwtUtilHelper jwtUtilHelper;
    @ModelAttribute
    public void commonUser(Principal p, Model m,@AuthenticationPrincipal OAuth2User usero2) {
        if (p != null) {
@@ -63,17 +74,18 @@ public class HomeController {
     }
 
     @PostMapping("/createUser")
-    public String createuser(@ModelAttribute User user, HttpSession session, HttpServletRequest request) {
+    public ResponseEntity<?> createuser(@RequestBody SingupDTO userDTO, HttpSession session, HttpServletRequest request) {
         String url = request.getRequestURL().toString();
         http://localhost:8080/createUser
         url = url.replace(request.getServletPath(), "");
-        boolean f = userService.checkEmail(user.getEmail());
-
+        boolean f = userService.checkEmail(userDTO.getEmail());
+        ResponseData responseData = new ResponseData();
         if (f) {
             session.setAttribute("msg", "Email Id alreday exists");
         } else {
 
-            User userDtls = userService.createUser(user,url);
+            SingupDTO userDtls = userService.createUser(userDTO,url);
+            responseData.setData(userDtls);
             if (userDtls != null) {
                 session.setAttribute("msg", "Register Sucessfully");
             } else {
@@ -81,7 +93,24 @@ public class HomeController {
             }
         }
 
-        return "redirect:/register";
+        return new ResponseEntity<>(responseData, HttpStatus.OK);
+    }
+    @PostMapping("/signin")
+    public ResponseEntity<?> signin(@RequestParam String username,@RequestParam String password){
+        ResponseData responseData = new ResponseData();
+        //SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+     // String encrypted = Encoders.BASE64.encode(secretKey.getEncoded());
+        //System.out.println(encrypted);
+
+        if(userService.checkLogin(username,password)){
+            String token = jwtUtilHelper.generateToken(username);
+            responseData.setData(token);
+        }else{
+            responseData.setData("");
+            responseData.setIsSuccess(false);
+        }
+
+        return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
     @GetMapping("/verify")
     public String verifyAccount(@Param("code") String code, Model m) {
@@ -102,8 +131,7 @@ public class HomeController {
         return "forgot_password_form";
     }
     @PostMapping("/forgot_password")
-    public String processForgotPassword(HttpServletRequest request, Model model) {
-        String email = request.getParameter("email");
+    public String processForgotPassword(@RequestParam String email,HttpServletRequest request, Model model) {
         String token = RandomString.make(30);
         System.out.println("Email: " + email);
         System.out.println("Token: " + token);

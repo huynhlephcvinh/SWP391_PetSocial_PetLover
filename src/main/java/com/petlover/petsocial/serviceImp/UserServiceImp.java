@@ -3,6 +3,7 @@ package com.petlover.petsocial.serviceImp;
 import com.petlover.petsocial.exception.UserNotFoundException;
 import com.petlover.petsocial.model.entity.AuthenticationProvider;
 import com.petlover.petsocial.model.entity.User;
+import com.petlover.petsocial.payload.request.SingupDTO;
 import com.petlover.petsocial.repository.UserRepository;
 import com.petlover.petsocial.service.UserService;
 import jakarta.mail.internet.MimeMessage;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -24,10 +26,16 @@ public class UserServiceImp implements UserService {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
     private JavaMailSender mailSender;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Override
-    public User createUser(User user,String url) {
-        String password = bCryptPasswordEncoder.encode(user.getPassword());
+    public SingupDTO createUser(SingupDTO signupDTO, String url) {
+        User user = new User();
+        user.setEmail(signupDTO.getEmail());
+        user.setName(signupDTO.getName());
+        user.setPhone(signupDTO.getPhone());
+        String password = bCryptPasswordEncoder.encode(signupDTO.getPassword());
         user.setPassword(password);
         user.setRole("ROLE_USER");
         user.setEnable(false);
@@ -37,7 +45,13 @@ public class UserServiceImp implements UserService {
         if (newuser != null) {
             sendEmail(newuser, url);
         }
-        return newuser;
+        SingupDTO newSignupDTO = new SingupDTO(newuser.getEmail(),newuser.getName(),newuser.getPassword(),newuser.getPhone());
+        return newSignupDTO;
+    }
+    @Override
+    public boolean checkLogin(String username, String password) {
+        User user = userRepo.findByEmail(username);
+        return passwordEncoder.matches(password,user.getPassword());
     }
 
 
