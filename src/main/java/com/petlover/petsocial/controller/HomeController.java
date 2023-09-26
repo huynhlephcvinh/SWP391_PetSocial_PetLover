@@ -43,6 +43,9 @@ public class HomeController {
     private JavaMailSender mailSender;
     @Autowired
     JwtUtilHelper jwtUtilHelper;
+    @Autowired
+    HttpSession session;
+
    @ModelAttribute
    public void commonUser(Principal p, Model m,@AuthenticationPrincipal OAuth2User usero2) {
        if (p != null) {
@@ -105,6 +108,9 @@ public class HomeController {
         if(userService.checkLogin(username,password)){
             String token = jwtUtilHelper.generateToken(username);
             responseData.setData(token);
+            User user = userService.getUserByEmail(username);
+            session.setAttribute("user",user);
+
         }else{
             responseData.setData("");
             responseData.setIsSuccess(false);

@@ -28,6 +28,8 @@ public class UserServiceImp implements UserService {
     private JavaMailSender mailSender;
     @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    HttpSession session;
 
     @Override
     public SingupDTO createUser(SingupDTO signupDTO, String url) {
@@ -51,6 +53,9 @@ public class UserServiceImp implements UserService {
     @Override
     public boolean checkLogin(String username, String password) {
         User user = userRepo.findByEmail(username);
+        if(!user.isEnable()){
+            return false;
+        }
         return passwordEncoder.matches(password,user.getPassword());
     }
 

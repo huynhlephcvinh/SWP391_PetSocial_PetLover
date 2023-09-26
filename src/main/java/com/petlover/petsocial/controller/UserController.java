@@ -2,10 +2,13 @@ package com.petlover.petsocial.controller;
 
 
 import com.petlover.petsocial.model.entity.User;
+import com.petlover.petsocial.payload.response.ResponseData;
 import com.petlover.petsocial.repository.UserRepository;
 import com.petlover.petsocial.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
@@ -27,22 +30,27 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @ModelAttribute
-    public void commonUser(Principal p, Model m,@AuthenticationPrincipal OAuth2User usero2) {
-        if (p != null) {
-            String email = p.getName();
-            User user = userRepo.findByEmail(email);
-            m.addAttribute("user", user);
-        }
-        if(usero2 != null) {
-            String email = usero2.getAttribute("email");
-            User user = userRepo.findByEmail(email);
-            m.addAttribute("user", user);
-        }
-    }
+
+
+
+
 
     @GetMapping("/profile")
-    public String profile(Model model) {
-        return "profile";
+    public ResponseEntity<?> profile( @AuthenticationPrincipal OAuth2User usero2) {
+        ResponseData responseData = new ResponseData();
+
+        if (usero2 != null) {
+            String email = usero2.getAttribute("email");
+           User user = userService.getUserByEmail(email);
+            session.setAttribute("user",user);
+            responseData.setData(user);
+
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
+        } else {
+            User user1 = (User) session.getAttribute("user");
+            responseData.setData(user1);
+
+        }
+        return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
 }

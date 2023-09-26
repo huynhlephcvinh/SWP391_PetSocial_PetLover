@@ -51,8 +51,8 @@ public class SecurityConfig {
    {
        http.csrf().disable()
                 .authorizeHttpRequests().
-               requestMatchers("/","/register","/signin","/createUser","/oauth/**","/verify","/forgot_password","/reset_password").permitAll()
-               .requestMatchers("/user/**","/admin/**").authenticated().
+               requestMatchers("/","/register","/signin","/createUser","/oauth/**","/verify","/forgot_password","/reset_password","/pet/file/**").permitAll()
+               .anyRequest().authenticated().
 and().sessionManagement()
            .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                .oauth2Login()
