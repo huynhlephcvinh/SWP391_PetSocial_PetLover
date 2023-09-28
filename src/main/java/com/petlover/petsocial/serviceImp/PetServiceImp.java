@@ -5,6 +5,7 @@ import com.petlover.petsocial.model.entity.Pet;
 import com.petlover.petsocial.model.entity.Pet_Type;
 import com.petlover.petsocial.model.entity.User;
 import com.petlover.petsocial.payload.request.PetDTO;
+import com.petlover.petsocial.payload.request.PetToPostDTO;
 import com.petlover.petsocial.payload.request.PetUpdateDTO;
 import com.petlover.petsocial.repository.PetRepository;
 import com.petlover.petsocial.repository.PetTypeRepository;
@@ -46,6 +47,7 @@ public class PetServiceImp implements PetService {
             newPet.setUser(user);
             newPet.setPet_type(pet_type);
             newPet.setStatus(true);
+
             petRepository.save(newPet);
         } catch (Exception e) {
             System.out.println("Err insert restaurant: " + e.getMessage());
@@ -65,6 +67,20 @@ public class PetServiceImp implements PetService {
               petDTO.setDescription(pet.getDescription());
               petDTO.setImage(pet.getImage());
               listpetDTO.add(petDTO);
+        }
+        return listpetDTO;
+    }
+    public List<PetToPostDTO> getAllPetPost()
+    {
+        User user = (User) session.getAttribute("user");
+        List<Pet> petList= petRepository.getAllByIdUser(user.getId());
+        List<PetToPostDTO> listpetDTO = new ArrayList<>();
+        for(Pet pet : petList) {
+            PetToPostDTO petDTO = new PetToPostDTO();
+            petDTO.setId(pet.getId());
+            petDTO.setName(pet.getName());
+            petDTO.setImage(pet.getImage());
+            listpetDTO.add(petDTO);
         }
         return listpetDTO;
     }
@@ -91,7 +107,7 @@ public class PetServiceImp implements PetService {
         if(getPet==null){
             return null;
         }
-        if(petUpdateDTO.getFile() == null){
+        if(Objects.requireNonNull(petUpdateDTO.getFile().getOriginalFilename()).isEmpty()){
             getPet.setName(petUpdateDTO.getName());
             getPet.setDescription(petUpdateDTO.getDescription());
             petRepository.save(getPet);

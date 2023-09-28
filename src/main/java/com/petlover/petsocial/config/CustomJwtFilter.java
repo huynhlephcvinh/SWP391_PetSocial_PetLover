@@ -27,6 +27,7 @@ public class CustomJwtFilter extends OncePerRequestFilter {
         String token = getTokenFromHeader(request);
         if(token != null){
             if(jwtUtilHelper.verifyToken(token)){
+
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken("","",new ArrayList<>());
                 SecurityContext securityContext = SecurityContextHolder.getContext();
                 securityContext.setAuthentication(usernamePasswordAuthenticationToken);
@@ -43,4 +44,5 @@ public class CustomJwtFilter extends OncePerRequestFilter {
         }
         return token;
     }
+
 }

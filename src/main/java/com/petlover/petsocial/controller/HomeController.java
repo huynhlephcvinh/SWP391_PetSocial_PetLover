@@ -3,6 +3,7 @@ package com.petlover.petsocial.controller;
 
 import com.petlover.petsocial.exception.UserNotFoundException;
 import com.petlover.petsocial.model.entity.User;
+import com.petlover.petsocial.payload.request.SigninDTO;
 import com.petlover.petsocial.payload.request.SingupDTO;
 import com.petlover.petsocial.payload.response.ResponseData;
 import com.petlover.petsocial.repository.UserRepository;
@@ -99,16 +100,17 @@ public class HomeController {
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
     @PostMapping("/signin")
-    public ResponseEntity<?> signin(@RequestParam String username,@RequestParam String password){
+    public ResponseEntity<?> signin(@RequestBody SigninDTO signinDTO){
         ResponseData responseData = new ResponseData();
         //SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
      // String encrypted = Encoders.BASE64.encode(secretKey.getEncoded());
         //System.out.println(encrypted);
 
-        if(userService.checkLogin(username,password)){
-            String token = jwtUtilHelper.generateToken(username);
+        System.out.println(signinDTO);
+        if(userService.checkLogin(signinDTO)){
+            String token = jwtUtilHelper.generateToken(signinDTO.getUsername());
             responseData.setData(token);
-            User user = userService.getUserByEmail(username);
+            User user = userService.getUserByEmail(signinDTO.getUsername());
             session.setAttribute("user",user);
 
         }else{

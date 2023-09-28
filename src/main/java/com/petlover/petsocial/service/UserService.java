@@ -4,12 +4,13 @@ package com.petlover.petsocial.service;
 import com.petlover.petsocial.exception.UserNotFoundException;
 import com.petlover.petsocial.model.entity.AuthenticationProvider;
 import com.petlover.petsocial.model.entity.User;
+import com.petlover.petsocial.payload.request.SigninDTO;
 import com.petlover.petsocial.payload.request.SingupDTO;
 
 
 public interface UserService {
     public SingupDTO createUser(SingupDTO signupDTO, String url);
-    public boolean checkLogin(String username, String password);
+    public boolean checkLogin(SigninDTO signinDTO);
     public User getUserByEmail(String email);
 
     public boolean checkEmail(String email);

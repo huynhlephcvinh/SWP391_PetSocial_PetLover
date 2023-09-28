@@ -2,6 +2,7 @@ package com.petlover.petsocial.service;
 
 import com.petlover.petsocial.model.entity.User;
 import com.petlover.petsocial.payload.request.PetDTO;
+import com.petlover.petsocial.payload.request.PetToPostDTO;
 import com.petlover.petsocial.payload.request.PetUpdateDTO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,4 +14,5 @@ public interface PetService {
     public PetDTO deletePet(int id);
     public PetDTO getOnePet(int id);
     public PetDTO updatePet(PetUpdateDTO petUpdateDTO);
+    public List<PetToPostDTO> getAllPetPost();
 }

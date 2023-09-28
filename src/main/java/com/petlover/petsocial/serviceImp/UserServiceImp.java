@@ -3,6 +3,7 @@ package com.petlover.petsocial.serviceImp;
 import com.petlover.petsocial.exception.UserNotFoundException;
 import com.petlover.petsocial.model.entity.AuthenticationProvider;
 import com.petlover.petsocial.model.entity.User;
+import com.petlover.petsocial.payload.request.SigninDTO;
 import com.petlover.petsocial.payload.request.SingupDTO;
 import com.petlover.petsocial.repository.UserRepository;
 import com.petlover.petsocial.service.UserService;
@@ -51,12 +52,12 @@ public class UserServiceImp implements UserService {
         return newSignupDTO;
     }
     @Override
-    public boolean checkLogin(String username, String password) {
-        User user = userRepo.findByEmail(username);
+    public boolean checkLogin(SigninDTO signinDTO) {
+        User user = userRepo.findByEmail(signinDTO.getUsername());
         if(!user.isEnable()){
             return false;
         }
-        return passwordEncoder.matches(password,user.getPassword());
+        return passwordEncoder.matches(signinDTO.getPassword(),user.getPassword());
     }
 
 

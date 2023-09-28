@@ -20,10 +20,11 @@ import java.io.IOException;
 public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     @Autowired
     private UserService userService;
-
-    private UserDetailsService userDetailsService;
     @Autowired
     HttpSession session;
+
+    private UserDetailsService userDetailsService;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         CustomOAuth2User oAuth2User =(CustomOAuth2User) authentication.getPrincipal();
@@ -34,6 +35,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         User user = userService.getUserByEmail(email);
         if(user == null){
             User user1 = userService.createUserAfterOAuthLoginSuccess(email,name, AuthenticationProvider.GOOGLE);
+            session.setAttribute("user",user1);
             if(user1.getRole().contains("ROLE_USER")) {
                 response.sendRedirect("/user/profile");
             }else {
@@ -41,7 +43,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             }
         }else {
             User user1 = userService.updateUserAfterOAuthLoginSuccess(user,name);
-
+            session.setAttribute("user",user1);
             if(user1.getRole().contains("ROLE_USER")) {
                 response.sendRedirect("/user/profile");
             }else {

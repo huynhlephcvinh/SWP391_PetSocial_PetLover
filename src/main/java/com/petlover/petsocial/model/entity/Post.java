@@ -20,7 +20,7 @@ public class Post {
     @Column(name = "image", columnDefinition = "nvarchar(1111)")
     private String image;
     private boolean enable;
-    private Date create_date;
+    private String create_date;
     private int total_like;
 
     @ManyToOne
@@ -40,7 +40,8 @@ public class Post {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Reaction> reactions;
-
+    @Column(name = "status")
+    private boolean status;
 
 
 }

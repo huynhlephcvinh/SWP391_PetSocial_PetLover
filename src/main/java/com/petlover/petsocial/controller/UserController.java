@@ -9,7 +9,9 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,25 +34,22 @@ public class UserController {
 
 
 
-
+    //@AuthenticationPrincipal OAuth2User usero2
 
 
     @GetMapping("/profile")
-    public ResponseEntity<?> profile( @AuthenticationPrincipal OAuth2User usero2) {
+    public ResponseEntity<?> profile(Authentication authentication) {
         ResponseData responseData = new ResponseData();
 
-        if (usero2 != null) {
-            String email = usero2.getAttribute("email");
-           User user = userService.getUserByEmail(email);
-            session.setAttribute("user",user);
-            responseData.setData(user);
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            System.out.println("User has authorities: " + userDetails.getAuthorities());
+            //String email = authentication.getName();
+            //User user = userRepo.findByEmail(email);
+            responseData.setData(true);
 
-            return new ResponseEntity<>(responseData, HttpStatus.OK);
-        } else {
-            User user1 = (User) session.getAttribute("user");
-            responseData.setData(user1);
 
-        }
+
+
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
 }
