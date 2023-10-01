@@ -35,10 +35,10 @@
 
         input {
           border: none;
-          outline: none;
           width: 500px;
           background-color: transparent;
           color: themed("textColor");
+          outline: none;
 
           @include mobile{
             display: none;
@@ -77,8 +77,8 @@
           object-fit: cover;
         }
 
-        span {
-        }
+        // span {
+        // }
       }
     }
   }

@@ -6,7 +6,7 @@
   justify-content: center;
 
   .card {
-    width: 65%;
+    width: 50%;
     display: flex;
     background-color: white;
     border-radius: 10px;
@@ -16,10 +16,10 @@
     .left {
       flex: 1;
       background: linear-gradient(rgba(39, 11, 96, 0.5), rgba(39, 11, 96, 0.5)),
-        url("https://th.bing.com/th/id/R.078996c2ff17d1df2575e8ae6942cf20?rik=9LHEUSE%2fYcuw9A&riu=http%3a%2f%2ftvmdl.tamu.edu%2fwp-content%2fuploads%2f2017%2f07%2fCats-and-Dogs.jpg&ehk=uGoQpHChujj9L77%2bm6Azc0kNcSu0PrWLkIy5iMFvvmc%3d&risl=&pid=ImgRaw&r=0")
+        url("https://images.pexels.com/photos/3228727/pexels-photo-3228727.jpeg?auto=compress&cs=tinysrgb&w=1600")
           center;
       background-size: cover;
-      padding:60px;
+      padding: 50px;
       display: flex;
       flex-direction: column;
       gap: 30px;
@@ -30,8 +30,8 @@
         line-height: 100px;
       }
       
-      p {
-      }
+      // p {
+      // }
 
       span {
         font-size: 14px;

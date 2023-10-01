@@ -1,21 +1,44 @@
-import { useContext } from "react";
-import { Link } from "react-router-dom";
+import { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/authContext";
+// import { setAuthHeader } from "../../components/helper/axios_helper";
+// import { request } from "../../components/helper/axios_helper"; // Import the request function
+// Import the request function
+import axios from "axios";
+
 import "./login.scss";
-import GoogleIcon from "@mui/icons-material/Google";
-import React from "react";
-import { Button } from "@mui/material";
 
-const Login = () => {
-  const { login } = useContext(AuthContext);
+function Login() {
+  // const { login } = useContext(AuthContext);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const handleLogin = () => {
-    login();
-  };
+  async function login(event) {
+    event.preventDefault();
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/v1/auth/login",
+        {
+          email: email,
+          password: password,
+        }
+      );
 
-  const handleGoogleLogin = () => {
-    // Xử lý đăng nhập bằng Google ở đây
-  };
+      if (response.status === 200) {
+        // Authentication successful
+        console.log("Login successful!");
+        navigate("/home");
+        // Handle token storage, user state update, and redirection here
+      } else {
+        // Authentication failed
+        console.error("Login failed:", response.data.message);
+      }
+    } catch (error) {
+      // Network error or other issues
+      console.error("Login failed:", error.message);
+    }
+  }
 
   return (
     <div className="login">
@@ -34,24 +57,25 @@ const Login = () => {
         </div>
         <div className="right">
           <h1>Login</h1>
-          <form>
-            <input type="text" placeholder="Username" />
-            <input type="password" placeholder="Password" />
-            <button onClick={handleLogin}>Login</button>
+          <form onSubmit={login}>
+            <input
+              type="text"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button type="button">Login</button>
           </form>
-
-          <Button
-            variant="contained"
-            color="primary" // Thay đổi màu sắc tùy ý
-            onClick={handleGoogleLogin}
-            startIcon={<GoogleIcon />} // Sử dụng Google icon component
-          >
-            Login with Google
-          </Button>
         </div>
       </div>
     </div>
   );
-};
+}
 
 export default Login;
