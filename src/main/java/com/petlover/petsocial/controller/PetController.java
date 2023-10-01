@@ -1,14 +1,15 @@
 package com.petlover.petsocial.controller;
 
+import com.petlover.petsocial.exception.PetException;
+import com.petlover.petsocial.exception.UserException;
 import com.petlover.petsocial.model.entity.Pet_Type;
 import com.petlover.petsocial.model.entity.User;
-import com.petlover.petsocial.payload.request.PetDTO;
-import com.petlover.petsocial.payload.request.PetTypeDTO;
-import com.petlover.petsocial.payload.request.PetUpdateDTO;
+import com.petlover.petsocial.payload.request.*;
 import com.petlover.petsocial.payload.response.ResponseData;
 import com.petlover.petsocial.service.CloudinaryService;
 import com.petlover.petsocial.service.PetService;
 import com.petlover.petsocial.service.PetTypeService;
+import com.petlover.petsocial.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,8 @@ public class PetController {
     HttpServletRequest request;
     @Autowired
     HttpSession session;
+    @Autowired
+    private UserService userService;
     @GetMapping("/createpet")
     public ResponseEntity<?> createTypePet(){
         ResponseData responseData = new ResponseData();
@@ -46,46 +49,52 @@ public class PetController {
     }
 
     @PostMapping("/createpet")
-    public ResponseEntity<?> createPet(@RequestParam MultipartFile file, @RequestParam String name,@RequestParam String description,@RequestParam String idPetType){
+    public ResponseEntity<?> createPet(@RequestHeader("Authorization") String jwt, @ModelAttribute CreatePetDTO createPetDTO) throws UserException, PetException {
         ResponseData responseData = new ResponseData();
-        User user = (User) session.getAttribute("user");
-        petService.insertPet(file,name,description,user,Integer.parseInt(idPetType));
-       return new ResponseEntity<>(responseData,HttpStatus.OK);
+        UserDTO userDTO = userService.findUserProfileByJwt(jwt);
+        PetDTO petDTO= petService.insertPet(createPetDTO,userDTO);
+        responseData.setData(petDTO);
+       return new ResponseEntity<>(responseData,HttpStatus.CREATED);
   }
     @GetMapping("/getAllPet")
-    public ResponseEntity<?> getAllPet(){
+    public ResponseEntity<?> getAllPet(@RequestHeader("Authorization") String jwt) throws UserException {
         ResponseData responseData = new ResponseData();
-        List<PetDTO> list = petService.getAllPet();
+        UserDTO userDTO = userService.findUserProfileByJwt(jwt);
+        List<PetDTO> list = petService.getAllPet(userDTO);
         request.setAttribute("listPet",list);
         responseData.setData(list);
         return new ResponseEntity<>(responseData,HttpStatus.OK);
     }
     @GetMapping("/delete/{id}")
-    public ResponseEntity<?> deletePet(@PathVariable(value = "id") int id){
+    public ResponseEntity<?> deletePet(@RequestHeader("Authorization") String jwt,@PathVariable(value = "id") int id) throws PetException, UserException {
         ResponseData responseData = new ResponseData();
-          PetDTO petDTO = petService.deletePet(id);
+        UserDTO userDTO = userService.findUserProfileByJwt(jwt);
+          PetDTO petDTO = petService.deletePet(id,userDTO);
+          if(petDTO==null){
+              throw new PetException("Not found pet");
+          }
         responseData.setData(petDTO);
         return new ResponseEntity<>(responseData,HttpStatus.OK);
     }
     @GetMapping("/getOnePet/{id}")
-    public ResponseEntity<?> getOnePet(@PathVariable(value = "id") int id){
+    public ResponseEntity<?> getOnePet(@RequestHeader("Authorization") String jwt,@PathVariable(value = "id") int id) throws UserException, PetException {
         ResponseData responseData = new ResponseData();
-        PetDTO petDTO = petService.getOnePet(id);
+        UserDTO userDTO = userService.findUserProfileByJwt(jwt);
+        PetDTO petDTO = petService.getOnePet(id,userDTO);
         if(petDTO ==null){
-            responseData.setData("not found");
-            return new ResponseEntity<>(responseData,HttpStatus.BAD_REQUEST);
+           throw new PetException("Not Found");
         }
         responseData.setData(petDTO);
         return new ResponseEntity<>(responseData,HttpStatus.OK);
     }
-    @PostMapping("/updatePet")
+    @PutMapping("/updatePet/{id}")
     //@PostMapping ("/updatePet")
-    public  ResponseEntity<?> updatePet( @RequestBody PetUpdateDTO petUpdateDTO){
+    public  ResponseEntity<?> updatePet(@PathVariable(value = "id") int id, @ModelAttribute PetUpdateDTO petUpdateDTO,@RequestHeader("Authorization") String jwt) throws UserException, PetException {
         ResponseData responseData = new ResponseData();
-        PetDTO petDTO1 = petService.updatePet(petUpdateDTO);
-        if(petDTO1 ==null){
-            responseData.setData("not found");
-            return new ResponseEntity<>(responseData,HttpStatus.BAD_REQUEST);
+        UserDTO userDTO = userService.findUserProfileByJwt(jwt);
+        PetDTO petDTO1 = petService.updatePet(id,petUpdateDTO,userDTO);
+        if(petDTO1==null){
+            throw new PetException("Not Found");
         }
         responseData.setData(petDTO1);
         return new ResponseEntity<>(responseData,HttpStatus.OK);

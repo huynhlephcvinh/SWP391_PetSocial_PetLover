@@ -1,11 +1,14 @@
 package com.petlover.petsocial.service;
 
 
+import com.petlover.petsocial.exception.UserException;
 import com.petlover.petsocial.exception.UserNotFoundException;
 import com.petlover.petsocial.model.entity.AuthenticationProvider;
 import com.petlover.petsocial.model.entity.User;
 import com.petlover.petsocial.payload.request.SigninDTO;
 import com.petlover.petsocial.payload.request.SingupDTO;
+import com.petlover.petsocial.payload.request.UserDTO;
+import com.petlover.petsocial.payload.request.UserUpdateDTO;
 
 
 public interface UserService {
@@ -23,5 +26,8 @@ public interface UserService {
     public void updatePassword(User user, String newPassword);
     public User createUserAfterOAuthLoginSuccess(String email,String name, AuthenticationProvider provider);
     public User updateUserAfterOAuthLoginSuccess(User user ,String name);
+
+    public UserDTO findUserProfileByJwt(String jwt) throws UserException;
+    public UserDTO editprofile(int id, UserUpdateDTO userDTO) throws UserException;
 
 }

@@ -1,18 +1,17 @@
 package com.petlover.petsocial.service;
 
+import com.petlover.petsocial.exception.PetException;
 import com.petlover.petsocial.model.entity.User;
-import com.petlover.petsocial.payload.request.PetDTO;
-import com.petlover.petsocial.payload.request.PetToPostDTO;
-import com.petlover.petsocial.payload.request.PetUpdateDTO;
+import com.petlover.petsocial.payload.request.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface PetService {
-    public void insertPet(MultipartFile file, String name, String description, User user, int petTypeId);
-    public List<PetDTO> getAllPet();
-    public PetDTO deletePet(int id);
-    public PetDTO getOnePet(int id);
-    public PetDTO updatePet(PetUpdateDTO petUpdateDTO);
+    public PetDTO insertPet(CreatePetDTO createPetDTO, UserDTO userDTO) throws PetException;
+    public List<PetDTO> getAllPet(UserDTO userDTO);
+    public PetDTO deletePet(int id,UserDTO userDTO) throws PetException;
+    public PetDTO getOnePet(int id, UserDTO userDTO);
+    public PetDTO updatePet(int id,PetUpdateDTO petUpdateDTO, UserDTO userDTO);
     public List<PetToPostDTO> getAllPetPost();
 }

@@ -1,14 +1,15 @@
 package com.petlover.petsocial.serviceImp;
 
 
+import com.petlover.petsocial.exception.PetException;
+import com.petlover.petsocial.exception.UserException;
 import com.petlover.petsocial.model.entity.Pet;
 import com.petlover.petsocial.model.entity.Pet_Type;
 import com.petlover.petsocial.model.entity.User;
-import com.petlover.petsocial.payload.request.PetDTO;
-import com.petlover.petsocial.payload.request.PetToPostDTO;
-import com.petlover.petsocial.payload.request.PetUpdateDTO;
+import com.petlover.petsocial.payload.request.*;
 import com.petlover.petsocial.repository.PetRepository;
 import com.petlover.petsocial.repository.PetTypeRepository;
+import com.petlover.petsocial.repository.UserRepository;
 import com.petlover.petsocial.service.CloudinaryService;
 import com.petlover.petsocial.service.PetService;
 import com.petlover.petsocial.service.PetTypeService;
@@ -34,31 +35,43 @@ public class PetServiceImp implements PetService {
     PetRepository petRepository;
     @Autowired
     HttpSession session;
+    @Autowired
+    private UserRepository userRepo;
     @Override
-    public void insertPet(MultipartFile file, String name, String description, User user, int petTypeId) {
-        try {
-            String image = cloudinaryService.uploadFile(file);
-            Pet_Type pet_type = petTypeService.getPetType(petTypeId);
+    public PetDTO insertPet(CreatePetDTO createPetDTO, UserDTO userDTO) throws PetException {
+
+            Pet_Type pet_type = petTypeService.getPetType(createPetDTO.getIdPetType());
             System.out.println(pet_type);
-            Pet newPet = new Pet();
+
+        if(createPetDTO.getFile()==null){
+            throw new PetException("pet not found with image");
+        }
+        if(createPetDTO.getName()==null){
+            throw new PetException("pet not found with name");
+        }
+        if(createPetDTO.getDescription()==null){
+            throw new PetException("pet not found with description");
+        }
+        Pet newPet = new Pet();
+        try {
+            String image = cloudinaryService.uploadFile(createPetDTO.getFile());
             newPet.setImage(image);
-            newPet.setName(name);
-            newPet.setDescription(description);
+        }catch(Exception e){};
+
+            newPet.setName(createPetDTO.getName());
+            newPet.setDescription(createPetDTO.getDescription());
+            User user = userRepo.getById(userDTO.getId());
             newPet.setUser(user);
             newPet.setPet_type(pet_type);
             newPet.setStatus(true);
-
             petRepository.save(newPet);
-        } catch (Exception e) {
-            System.out.println("Err insert restaurant: " + e.getMessage());
-        }
+            return new PetDTO(newPet.getId(), newPet.getImage(),newPet.getName(),newPet.getDescription());
 
     }
     @Override
-    public List<PetDTO> getAllPet()
+    public List<PetDTO> getAllPet(UserDTO userDTO)
     {
-        User user = (User) session.getAttribute("user");
-          List<Pet> petList= petRepository.getAllByIdUser(user.getId());
+          List<Pet> petList= petRepository.getAllByIdUser(userDTO.getId());
           List<PetDTO> listpetDTO = new ArrayList<>();
           for(Pet pet : petList) {
               PetDTO petDTO = new PetDTO();
@@ -85,40 +98,66 @@ public class PetServiceImp implements PetService {
         return listpetDTO;
     }
     @Override
-    public PetDTO deletePet(int id)
-    {
+    public PetDTO deletePet(int id,UserDTO userDTO) throws PetException {
+
         Pet getPet = petRepository.getById(id);
-        getPet.setStatus(false);
+        if(getPet==null) {
+            return null;
+        }
+        if(getPet.getUser().getId() == userDTO.getId()) {
+            getPet.setStatus(false);
+        }
+        else {
+            throw new PetException("You not delete pet another");
+        }
         petRepository.save(getPet);
         return new PetDTO(getPet.getId(),getPet.getImage(), getPet.getName(),getPet.getDescription());
     }
     @Override
-    public PetDTO getOnePet(int id)
+    public PetDTO getOnePet(int id, UserDTO userDTO)
     {
+
         Pet getPet = petRepository.getById(id);
-        return new PetDTO(getPet.getId(),getPet.getImage(), getPet.getName(),getPet.getDescription());
+        if(getPet.getUser().getId() == userDTO.getId()) {
+            return new PetDTO(getPet.getId(), getPet.getImage(), getPet.getName(), getPet.getDescription());
+        }
+        return null;
 
     }
     @Override
-    public PetDTO updatePet(PetUpdateDTO petUpdateDTO)
+    public PetDTO updatePet(int id,PetUpdateDTO petUpdateDTO, UserDTO userDTO)
     {
 
-        Pet getPet = petRepository.getById(petUpdateDTO.getId());
+        Pet getPet = petRepository.getById(id);
         if(getPet==null){
             return null;
         }
-        if(Objects.requireNonNull(petUpdateDTO.getFile().getOriginalFilename()).isEmpty()){
-            getPet.setName(petUpdateDTO.getName());
-            getPet.setDescription(petUpdateDTO.getDescription());
-            petRepository.save(getPet);
-            return new PetDTO(getPet.getId(),getPet.getImage(), getPet.getName(),getPet.getDescription());
-        }else{
-            String image = cloudinaryService.uploadFile(petUpdateDTO.getFile());
-            getPet.setImage(image);
-            getPet.setName(petUpdateDTO.getName());
-            getPet.setDescription(petUpdateDTO.getDescription());
-            petRepository.save(getPet);
+        if(getPet.getUser().getId() != userDTO.getId()) {
+            return null;
         }
+
+        if(petUpdateDTO.getFile()==null){
+            if(petUpdateDTO.getName()!=null) {
+                getPet.setName(petUpdateDTO.getName());
+            }
+            if(petUpdateDTO.getDescription()!=null) {
+                getPet.setDescription(petUpdateDTO.getDescription());
+            }
+        }else{
+            try {
+                String image = cloudinaryService.uploadFile(petUpdateDTO.getFile());
+                getPet.setImage(image);
+            }catch (Exception e){
+
+            }
+            if(petUpdateDTO.getName()!=null) {
+                getPet.setName(petUpdateDTO.getName());
+            }
+            if(petUpdateDTO.getDescription()!=null) {
+                getPet.setDescription(petUpdateDTO.getDescription());
+            }
+        }
+        petRepository.save(getPet);
         return new PetDTO(getPet.getId(),getPet.getImage(), getPet.getName(),getPet.getDescription());
 
     }

@@ -1,10 +1,10 @@
 package com.petlover.petsocial.serviceImp;
 
 import com.petlover.petsocial.model.entity.*;
-import com.petlover.petsocial.payload.request.PetToPostDTO;
-import com.petlover.petsocial.payload.request.PostDTO;
+import com.petlover.petsocial.payload.request.*;
 import com.petlover.petsocial.repository.PetRepository;
 import com.petlover.petsocial.repository.PostRepository;
+import com.petlover.petsocial.repository.UserRepository;
 import com.petlover.petsocial.service.CloudinaryService;
 import com.petlover.petsocial.service.PostService;
 import jakarta.servlet.http.HttpSession;
@@ -30,17 +30,25 @@ public class PostServiceImp implements PostService {
     HttpSession session;
     @Autowired
     PostRepository postRepository;
+    @Autowired
+    private UserRepository userRepo;
 
-    public void insertPet(MultipartFile file, String content, User user, int petId) {
+    public PostDTO insertPost(CreatPostDTO creatPostDTO, UserDTO userDTO) {
+        Post newPost = new Post();
 
-        try {
-            if(!Objects.requireNonNull(file.getOriginalFilename()).isEmpty()) {
-                String image = cloudinaryService.uploadFile(file);
-                Pet pet = petRepository.getById(petId);
+            if(creatPostDTO.getFile()!=null) {
+                Pet pet = petRepository.getById(creatPostDTO.getIdPet());
                 System.out.println(pet);
-                Post newPost = new Post();
-                newPost.setImage(image);
-                newPost.setContent(content);
+
+                try {
+                    String image = cloudinaryService.uploadFile(creatPostDTO.getFile());
+                    newPost.setImage(image);
+                }catch (Exception e){}
+                if(creatPostDTO.getContent()==null) {
+                    return null;
+                }
+                newPost.setContent(creatPostDTO.getContent());
+                User user = userRepo.getById(userDTO.getId());
                 newPost.setUser(user);
                 newPost.setPet(pet);
                 newPost.setStatus(true);
@@ -54,11 +62,14 @@ public class PostServiceImp implements PostService {
                 postRepository.save(newPost);
 
             }else {
-                Pet pet = petRepository.getById(petId);
+                Pet pet = petRepository.getById(creatPostDTO.getIdPet());
                 System.out.println(pet);
-                Post newPost = new Post();
                 newPost.setImage(null);
-                newPost.setContent(content);
+                if(creatPostDTO.getContent()==null){
+                    return null;
+                }
+                newPost.setContent(creatPostDTO.getContent());
+                User user = userRepo.getById(userDTO.getId());
                 newPost.setUser(user);
                 newPost.setPet(pet);
                 newPost.setStatus(true);
@@ -72,9 +83,19 @@ public class PostServiceImp implements PostService {
                 postRepository.save(newPost);
 
             }
-        } catch (Exception e) {
-            System.out.println("Err insert restaurant: " + e.getMessage());
-        }
+
+        PetToPostDTO petToPostDTO = new PetToPostDTO();
+        petToPostDTO.setId(newPost.getPet().getId());
+        petToPostDTO.setName(newPost.getPet().getName());
+        petToPostDTO.setImage(newPost.getPet().getImage());
+
+
+        UserPostDTO userPostDTO = new UserPostDTO();
+        userPostDTO.setId(newPost.getUser().getId());
+        userPostDTO.setName(newPost.getUser().getName());
+        userPostDTO.setAvatar(newPost.getUser().getAvatar());
+
+            return new PostDTO(newPost.getId(),newPost.getImage(),newPost.getContent(),newPost.getCreate_date(),newPost.getTotal_like(),newPost.getComments(),petToPostDTO,userPostDTO);
 
     }
 
@@ -90,8 +111,105 @@ public class PostServiceImp implements PostService {
             postDTO.setCreate_date(post.getCreate_date());
             postDTO.setTotal_like(post.getTotal_like());
             postDTO.setComments(post.getComments());
+
+            PetToPostDTO petToPostDTO = new PetToPostDTO();
+            petToPostDTO.setId(post.getPet().getId());
+            petToPostDTO.setName(post.getPet().getName());
+            petToPostDTO.setImage(post.getPet().getImage());
+            postDTO.setPetToPostDTO(petToPostDTO);
+
+            UserPostDTO userPostDTO = new UserPostDTO();
+            userPostDTO.setId(post.getUser().getId());
+            userPostDTO.setName(post.getUser().getName());
+            userPostDTO.setAvatar(post.getUser().getAvatar());
+            postDTO.setUserPostDTO(userPostDTO);
+
             listpostDTO.add(postDTO);
         }
         return listpostDTO;
     }
+    public List<PostDTO> getAllYourPost(int idUser)
+    {
+        List<Post> postList = postRepository.getAllYourPost(idUser);
+        List<PostDTO> listpostDTO = new ArrayList<>();
+        for(Post post : postList) {
+            PostDTO postDTO = new PostDTO();
+            postDTO.setId(post.getId());
+            postDTO.setContent(post.getContent());
+            postDTO.setImage(post.getImage());
+            postDTO.setCreate_date(post.getCreate_date());
+            postDTO.setTotal_like(post.getTotal_like());
+            postDTO.setComments(post.getComments());
+
+            PetToPostDTO petToPostDTO = new PetToPostDTO();
+            petToPostDTO.setId(post.getPet().getId());
+            petToPostDTO.setName(post.getPet().getName());
+            petToPostDTO.setImage(post.getPet().getImage());
+            postDTO.setPetToPostDTO(petToPostDTO);
+
+            UserPostDTO userPostDTO = new UserPostDTO();
+            userPostDTO.setId(post.getUser().getId());
+            userPostDTO.setName(post.getUser().getName());
+            userPostDTO.setAvatar(post.getUser().getAvatar());
+            postDTO.setUserPostDTO(userPostDTO);
+            listpostDTO.add(postDTO);
+        }
+        return listpostDTO;
+    }
+    public PostDTO deletePost(int id, UserDTO userDTO)
+    {
+
+        Post getPost = postRepository.getById(id);
+        if(getPost.getUser().getId() == userDTO.getId()) {
+            getPost.setStatus(false);
+        }
+        else {
+            return null;
+        }
+        postRepository.save(getPost);
+        PetToPostDTO petToPostDTO = new PetToPostDTO();
+        petToPostDTO.setId(getPost.getPet().getId());
+        petToPostDTO.setName(getPost.getPet().getName());
+        petToPostDTO.setImage(getPost.getPet().getImage());
+
+
+        UserPostDTO userPostDTO = new UserPostDTO();
+        userPostDTO.setId(getPost.getUser().getId());
+        userPostDTO.setName(getPost.getUser().getName());
+        userPostDTO.setAvatar(getPost.getUser().getAvatar());
+
+        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),getPost.getComments(),petToPostDTO,userPostDTO);
+    }
+
+    public PostDTO updatePost(int id, PostUpdateDTO postUpdateDTO,UserDTO userDTO)
+    {
+        Post getPost = postRepository.getById(id);
+        if(getPost == null) {
+            return null;
+        }
+        if(getPost.getUser().getId() == userDTO.getId()) {
+            getPost.setContent(postUpdateDTO.getContent());
+        }else{
+            return null;
+        }
+        postRepository.save(getPost);
+
+        PetToPostDTO petToPostDTO = new PetToPostDTO();
+        petToPostDTO.setId(getPost.getPet().getId());
+        petToPostDTO.setName(getPost.getPet().getName());
+        petToPostDTO.setImage(getPost.getPet().getImage());
+
+
+        UserPostDTO userPostDTO = new UserPostDTO();
+        userPostDTO.setId(getPost.getUser().getId());
+        userPostDTO.setName(getPost.getUser().getName());
+        userPostDTO.setAvatar(getPost.getUser().getAvatar());
+
+        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),getPost.getComments(),petToPostDTO,userPostDTO);
+
+    }
+
+
+
+
 }

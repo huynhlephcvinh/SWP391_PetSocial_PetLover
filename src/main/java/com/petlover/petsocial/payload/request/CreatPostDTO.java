@@ -4,13 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class PetUpdateDTO {
+public class CreatPostDTO {
     private MultipartFile file;
-    private String name;
-    private String description;
-
+    private String content;
+    private int idPet;
 }

@@ -8,9 +8,9 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class PetUpdateDTO {
+public class CreatePetDTO {
     private MultipartFile file;
     private String name;
     private String description;
-
+    private int idPetType;
 }

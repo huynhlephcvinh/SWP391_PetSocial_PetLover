@@ -1,11 +1,16 @@
 package com.petlover.petsocial.serviceImp;
 
+import com.petlover.petsocial.config.JwtProvider;
+import com.petlover.petsocial.exception.UserException;
 import com.petlover.petsocial.exception.UserNotFoundException;
 import com.petlover.petsocial.model.entity.AuthenticationProvider;
 import com.petlover.petsocial.model.entity.User;
 import com.petlover.petsocial.payload.request.SigninDTO;
 import com.petlover.petsocial.payload.request.SingupDTO;
+import com.petlover.petsocial.payload.request.UserDTO;
+import com.petlover.petsocial.payload.request.UserUpdateDTO;
 import com.petlover.petsocial.repository.UserRepository;
+import com.petlover.petsocial.service.CloudinaryService;
 import com.petlover.petsocial.service.UserService;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpSession;
@@ -18,19 +23,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.util.Objects;
 import java.util.UUID;
 @Service
 public class UserServiceImp implements UserService {
     @Autowired
     private UserRepository userRepo;
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
     @Autowired
     private JavaMailSender mailSender;
     @Autowired
     PasswordEncoder passwordEncoder;
     @Autowired
     HttpSession session;
+    @Autowired
+    private JwtProvider jwtProvider;
+    @Autowired
+    CloudinaryService cloudinaryService;
 
     @Override
     public SingupDTO createUser(SingupDTO signupDTO, String url) {
@@ -38,8 +47,8 @@ public class UserServiceImp implements UserService {
         user.setEmail(signupDTO.getEmail());
         user.setName(signupDTO.getName());
         user.setPhone(signupDTO.getPhone());
-        String password = bCryptPasswordEncoder.encode(signupDTO.getPassword());
-        user.setPassword(password);
+        //String password = bCryptPasswordEncoder.encode(signupDTO.getPassword());
+        user.setPassword(passwordEncoder.encode(signupDTO.getPassword()));
         user.setRole("ROLE_USER");
         user.setEnable(false);
         user.setVerificationCode(UUID.randomUUID().toString());
@@ -56,8 +65,10 @@ public class UserServiceImp implements UserService {
         User user = userRepo.findByEmail(signinDTO.getUsername());
         if(!user.isEnable()){
             return false;
+        }else {
+            return true;
         }
-        return passwordEncoder.matches(signinDTO.getPassword(),user.getPassword());
+
     }
 
 
@@ -172,5 +183,46 @@ public class UserServiceImp implements UserService {
 
         return userRepo.save(user);
     }
+
+    public UserDTO findUserProfileByJwt(String jwt) throws UserException {
+        String email = jwtProvider.getEmailFromToken(jwt);
+        User user = userRepo.findByEmail(email);
+        if(user==null) {
+           throw new UserException("user not found with email" + email);
+        }
+        return  new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(),user.getPets(),user.getPosts());
+    }
+
+    public UserDTO editprofile(int id, UserUpdateDTO userDTO) throws UserException {
+        User user = userRepo.getById(id);
+
+
+        if(userDTO.getFile()==null)
+        {
+            if(userDTO.getName()!=null) {
+                user.setName(userDTO.getName());
+            }
+            if(userDTO.getPhone()!=null) {
+                user.setPhone(userDTO.getPhone());
+            }
+        }else {
+            try {
+                String image = cloudinaryService.uploadFile(userDTO.getFile());
+                user.setAvatar(image);
+            }catch (Exception e){
+
+            }
+            if(userDTO.getName()!=null) {
+                user.setName(userDTO.getName());
+            }
+            if(userDTO.getPhone()!=null) {
+                user.setPhone(userDTO.getPhone());
+            }
+        }
+        userRepo.save(user);
+        return  new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(),user.getPets(),user.getPosts());
+    }
+
+
 
 }

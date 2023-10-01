@@ -1,22 +1,23 @@
 package com.petlover.petsocial.controller;
 
 
+import com.petlover.petsocial.config.JwtProvider;
+import com.petlover.petsocial.exception.UserException;
 import com.petlover.petsocial.exception.UserNotFoundException;
 import com.petlover.petsocial.model.entity.User;
 import com.petlover.petsocial.payload.request.SigninDTO;
 import com.petlover.petsocial.payload.request.SingupDTO;
+import com.petlover.petsocial.payload.response.AuthResponse;
 import com.petlover.petsocial.payload.response.ResponseData;
 import com.petlover.petsocial.repository.UserRepository;
 import com.petlover.petsocial.service.UserService;
-import com.petlover.petsocial.utils.JwtUtilHelper;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Encoders;
-import io.jsonwebtoken.security.Keys;
+import com.petlover.petsocial.serviceImp.CustomerUserDetailsServiceImp;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
+import jdk.jshell.spi.ExecutionControl;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -24,7 +25,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -43,9 +51,13 @@ public class HomeController {
     @Autowired
     private JavaMailSender mailSender;
     @Autowired
-    JwtUtilHelper jwtUtilHelper;
-    @Autowired
     HttpSession session;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private JwtProvider jwtProvider;
+    @Autowired
+    private CustomerUserDetailsServiceImp customerUserDetailsServiceImp;
 
    @ModelAttribute
    public void commonUser(Principal p, Model m,@AuthenticationPrincipal OAuth2User usero2) {
@@ -78,47 +90,65 @@ public class HomeController {
     }
 
     @PostMapping("/createUser")
-    public ResponseEntity<?> createuser(@RequestBody SingupDTO userDTO, HttpSession session, HttpServletRequest request) {
+    public ResponseEntity<?> createuser(@RequestBody SingupDTO userDTO, HttpSession session, HttpServletRequest request) throws UserException {
         String url = request.getRequestURL().toString();
         http://localhost:8080/createUser
         url = url.replace(request.getServletPath(), "");
+        System.out.println(userDTO);
         boolean f = userService.checkEmail(userDTO.getEmail());
         ResponseData responseData = new ResponseData();
         if (f) {
-            session.setAttribute("msg", "Email Id alreday exists");
+            throw new UserException("Email is already used with another account");
         } else {
 
             SingupDTO userDtls = userService.createUser(userDTO,url);
-            responseData.setData(userDtls);
-            if (userDtls != null) {
-                session.setAttribute("msg", "Register Sucessfully");
-            } else {
-                session.setAttribute("msg", "Something wrong on server");
-            }
+            Authentication authentication = new UsernamePasswordAuthenticationToken(userDTO.getEmail(),userDTO.getPassword());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String token = jwtProvider.generateToken(authentication);
+            AuthResponse res = new AuthResponse(token ,true);
+
+            responseData.setData(res);
+
         }
 
-        return new ResponseEntity<>(responseData, HttpStatus.OK);
+        return new ResponseEntity<>(responseData, HttpStatus.CREATED);
     }
     @PostMapping("/signin")
-    public ResponseEntity<?> signin(@RequestBody SigninDTO signinDTO){
+    public ResponseEntity<?> signin(@RequestBody SigninDTO signinDTO) throws UserException{
         ResponseData responseData = new ResponseData();
-        //SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-     // String encrypted = Encoders.BASE64.encode(secretKey.getEncoded());
-        //System.out.println(encrypted);
-
         System.out.println(signinDTO);
-        if(userService.checkLogin(signinDTO)){
-            String token = jwtUtilHelper.generateToken(signinDTO.getUsername());
-            responseData.setData(token);
-            User user = userService.getUserByEmail(signinDTO.getUsername());
-            session.setAttribute("user",user);
+//        if(userService.checkLogin(signinDTO)){
+//            String token = jwtUtilHelper.generateToken(signinDTO.getUsername());
+//            responseData.setData(token);
+//            User user = userService.getUserByEmail(signinDTO.getUsername());
+//            session.setAttribute("user",user);
+//
+//        }else{
+//            responseData.setData("");
+//            responseData.setIsSuccess(false);
+//        }
+        if(userService.checkLogin(signinDTO)) {
+            Authentication authentication = authenticate(signinDTO.getUsername(), signinDTO.getPassword());
+            String token = jwtProvider.generateToken(authentication);
+            AuthResponse res = new AuthResponse(token, true);
+
+            responseData.setData(res);
 
         }else{
-            responseData.setData("");
-            responseData.setIsSuccess(false);
+            throw new UserException("Email not enable");
         }
+        return new ResponseEntity<>(responseData, HttpStatus.ACCEPTED);
+    }
+    private Authentication authenticate( String username, String password) {
+        UserDetails userDetails = customerUserDetailsServiceImp.loadUserByUsername(username);
+        if(userDetails==null) {
+            throw new BadCredentialsException("Invalid username..");
 
-        return new ResponseEntity<>(responseData, HttpStatus.OK);
+        }
+        if(!passwordEncoder.matches(password,userDetails.getPassword())){
+            throw new BadCredentialsException("Invalid username or password..");
+        }
+        return new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
     }
     @GetMapping("/verify")
     public String verifyAccount(@Param("code") String code, Model m) {

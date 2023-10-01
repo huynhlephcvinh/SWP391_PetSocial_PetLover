@@ -8,9 +8,9 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class PetUpdateDTO {
-    private MultipartFile file;
+public class UserUpdateDTO {
     private String name;
-    private String description;
+    private String phone;
+    private MultipartFile file;
 
 }

@@ -3,6 +3,7 @@ package com.petlover.petsocial.config;
 
 import com.petlover.petsocial.config.oauth.CustomOAuth2UserService;
 import com.petlover.petsocial.config.oauth.OAuth2LoginSuccessHandler;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,55 +13,48 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    @Autowired
-    public CustomAuthSucessHandler sucessHandler;
+
     @Autowired
    private CustomOAuth2UserService oAuth2UserService;
 
    @Autowired
    private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandle;
-    @Autowired
-    CustomJwtFilter customJwtFilter;
 
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
-    @Bean
-    public UserDetailsService getDetailsService() {
-        return new CustomUserDetailsService();
-    }
 
-    @Bean
-    public DaoAuthenticationProvider getAuthenticationProvider() {
-        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setUserDetailsService(getDetailsService());
-        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        return daoAuthenticationProvider;
-    }
+
+
+
+
 
    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception
    {
-       http.csrf().disable()
-                .authorizeHttpRequests().
-               requestMatchers("/","/register","/signin","/createUser","/oauth/**","/verify","/forgot_password","/reset_password","/pet/file/**").permitAll()
-               .anyRequest().authenticated().
-and().sessionManagement()
-           .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+       http.sessionManagement()
+               .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                .authorizeHttpRequests(Authorize -> Authorize.requestMatchers("/","/register","/signin","/createUser","/oauth/**","/verify","/forgot_password","/reset_password","/pet/file/**").permitAll().anyRequest().authenticated()).
+                   addFilterBefore(new JwtTokenValidator(), BasicAuthenticationFilter.class).csrf().disable().cors().configurationSource(corsConfigrationSource()).and().httpBasic().and().formLogin().
+and()
                .oauth2Login()
                .loginPage("/signin")
                .userInfoEndpoint()
               .userService(oAuth2UserService)
               .and().successHandler(oAuth2LoginSuccessHandle).permitAll();
-       http.addFilterBefore(customJwtFilter, UsernamePasswordAuthenticationFilter.class);
+
 
 //        http.csrf().disable()
 //                .authorizeHttpRequests().requestMatchers("/user/**").hasRole("USER")
@@ -75,6 +69,26 @@ and().sessionManagement()
 
 
         return http.build();
+   }
+
+   private CorsConfigurationSource corsConfigrationSource() {
+        return new CorsConfigurationSource() {
+            @Override
+            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                CorsConfiguration cfg =  new CorsConfiguration();
+                cfg.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+                cfg.setAllowedMethods(Collections.singletonList("*"));
+                cfg.setAllowCredentials(true);
+                cfg.setAllowedHeaders(Collections.singletonList("*"));
+                cfg.setExposedHeaders(Arrays.asList("Authorization"));
+                cfg.setMaxAge(3600L);
+                return cfg;
+            }
+        };
+   }
+   @Bean
+   public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
    }
 
 

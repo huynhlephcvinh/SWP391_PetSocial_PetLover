@@ -17,5 +17,7 @@ public class PostDTO {
     private String create_date;
     private int total_like;
     private List<Comment> comments;
+    private PetToPostDTO petToPostDTO;
+    private UserPostDTO userPostDTO;
 
 }
