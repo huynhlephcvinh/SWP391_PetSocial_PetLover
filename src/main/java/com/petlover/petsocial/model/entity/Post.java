@@ -1,5 +1,6 @@
 package com.petlover.petsocial.model.entity;
 
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+
 @Table(name="Post")
 public class Post {
     @Id
@@ -38,7 +40,7 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Comment> comments;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Reaction> reactions;
     @Column(name = "status")
     private boolean status;

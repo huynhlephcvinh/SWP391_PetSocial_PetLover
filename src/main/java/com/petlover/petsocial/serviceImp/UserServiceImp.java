@@ -4,11 +4,10 @@ import com.petlover.petsocial.config.JwtProvider;
 import com.petlover.petsocial.exception.UserException;
 import com.petlover.petsocial.exception.UserNotFoundException;
 import com.petlover.petsocial.model.entity.AuthenticationProvider;
+import com.petlover.petsocial.model.entity.Pet;
+import com.petlover.petsocial.model.entity.Post;
 import com.petlover.petsocial.model.entity.User;
-import com.petlover.petsocial.payload.request.SigninDTO;
-import com.petlover.petsocial.payload.request.SingupDTO;
-import com.petlover.petsocial.payload.request.UserDTO;
-import com.petlover.petsocial.payload.request.UserUpdateDTO;
+import com.petlover.petsocial.payload.request.*;
 import com.petlover.petsocial.repository.UserRepository;
 import com.petlover.petsocial.service.CloudinaryService;
 import com.petlover.petsocial.service.UserService;
@@ -23,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 @Service
@@ -190,7 +191,30 @@ public class UserServiceImp implements UserService {
         if(user==null) {
            throw new UserException("user not found with email" + email);
         }
-        return  new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(),user.getPets(),user.getPosts());
+        List<PostDTO> postDTOList = new ArrayList<>();
+        for(Post post: user.getPosts()){
+            PetToPostDTO petToPostDTO = new PetToPostDTO();
+            petToPostDTO.setId(post.getPet().getId());
+            petToPostDTO.setName(post.getPet().getName());
+            petToPostDTO.setImage(post.getPet().getImage());
+
+
+            UserPostDTO userPostDTO = new UserPostDTO();
+            userPostDTO.setId(post.getUser().getId());
+            userPostDTO.setName(post.getUser().getName());
+            userPostDTO.setAvatar(post.getUser().getAvatar());
+
+            PostDTO postDTO = new PostDTO(post.getId(),post.getImage(),post.getContent(),post.getCreate_date(),post.getTotal_like(),post.getComments(),petToPostDTO,userPostDTO);
+            postDTOList.add(postDTO);
+        }
+
+        List<PetDTO> petDTOList =new ArrayList<>();
+        for(Pet pet: user.getPets()){
+                  PetDTO petDTO = new PetDTO(pet.getId(),pet.getImage(),pet.getName(),pet.getDescription());
+            petDTOList.add(petDTO);
+        }
+
+        return new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(),petDTOList,postDTOList);
     }
 
     public UserDTO editprofile(int id, UserUpdateDTO userDTO) throws UserException {
@@ -220,8 +244,66 @@ public class UserServiceImp implements UserService {
             }
         }
         userRepo.save(user);
-        return  new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(),user.getPets(),user.getPosts());
+        List<PostDTO> postDTOList = new ArrayList<>();
+        for(Post post: user.getPosts()){
+            PetToPostDTO petToPostDTO = new PetToPostDTO();
+            petToPostDTO.setId(post.getPet().getId());
+            petToPostDTO.setName(post.getPet().getName());
+            petToPostDTO.setImage(post.getPet().getImage());
+
+
+            UserPostDTO userPostDTO = new UserPostDTO();
+            userPostDTO.setId(post.getUser().getId());
+            userPostDTO.setName(post.getUser().getName());
+            userPostDTO.setAvatar(post.getUser().getAvatar());
+
+            PostDTO postDTO = new PostDTO(post.getId(),post.getImage(),post.getContent(),post.getCreate_date(),post.getTotal_like(),post.getComments(),petToPostDTO,userPostDTO);
+            postDTOList.add(postDTO);
+        }
+
+        List<PetDTO> petDTOList =new ArrayList<>();
+        for(Pet pet: user.getPets()){
+            PetDTO petDTO = new PetDTO(pet.getId(),pet.getImage(),pet.getName(),pet.getDescription());
+            petDTOList.add(petDTO);
+        }
+
+        return new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(),petDTOList,postDTOList);
+
     }
+
+    public UserDTO findUserProfileById(int idUser) throws UserException {
+
+        User user = userRepo.getById(idUser);
+        if(user==null) {
+            throw new UserException("user not found" );
+        }
+        List<PostDTO> postDTOList = new ArrayList<>();
+        for(Post post: user.getPosts()){
+            PetToPostDTO petToPostDTO = new PetToPostDTO();
+            petToPostDTO.setId(post.getPet().getId());
+            petToPostDTO.setName(post.getPet().getName());
+            petToPostDTO.setImage(post.getPet().getImage());
+
+
+            UserPostDTO userPostDTO = new UserPostDTO();
+            userPostDTO.setId(post.getUser().getId());
+            userPostDTO.setName(post.getUser().getName());
+            userPostDTO.setAvatar(post.getUser().getAvatar());
+
+            PostDTO postDTO = new PostDTO(post.getId(),post.getImage(),post.getContent(),post.getCreate_date(),post.getTotal_like(),post.getComments(),petToPostDTO,userPostDTO);
+            postDTOList.add(postDTO);
+        }
+
+        List<PetDTO> petDTOList =new ArrayList<>();
+        for(Pet pet: user.getPets()){
+            PetDTO petDTO = new PetDTO(pet.getId(),pet.getImage(),pet.getName(),pet.getDescription());
+            petDTOList.add(petDTO);
+        }
+
+        return new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(),petDTOList,postDTOList);
+    }
+
+
 
 
 

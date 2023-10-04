@@ -42,12 +42,21 @@ public class UserController {
     }
 
     @PutMapping("/update")
+    @ResponseBody
     public ResponseEntity<?> updateUser(@RequestHeader("Authorization") String jwt, @ModelAttribute UserUpdateDTO userDTO) throws UserException {
         ResponseData responseData = new ResponseData();
         UserDTO userDTO1 = userService.findUserProfileByJwt(jwt);
 
         UserDTO userDTO2 = userService.editprofile(userDTO1.getId(),userDTO);
         responseData.setData(userDTO2);
+        return new ResponseEntity<>(responseData, HttpStatus.OK);
+    }
+
+    @PostMapping("/profile/{id}")
+    public ResponseEntity<?> getUserProfileById(@PathVariable(value = "id") int id) throws UserException {
+        ResponseData responseData = new ResponseData();
+        UserDTO userDTO = userService.findUserProfileById(id);
+        responseData.setData(userDTO);
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
 

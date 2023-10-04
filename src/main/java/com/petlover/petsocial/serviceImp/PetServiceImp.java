@@ -56,7 +56,7 @@ public class PetServiceImp implements PetService {
         try {
             String image = cloudinaryService.uploadFile(createPetDTO.getFile());
             newPet.setImage(image);
-        }catch(Exception e){};
+        }catch(Exception e){}
 
             newPet.setName(createPetDTO.getName());
             newPet.setDescription(createPetDTO.getDescription());

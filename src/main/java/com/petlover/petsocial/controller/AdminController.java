@@ -20,25 +20,4 @@ import java.security.Principal;
 public class AdminController {
     @Autowired
     private UserRepository userRepo;
-
-    @ModelAttribute
-    public void commonUser(Principal p, Model m,@AuthenticationPrincipal OAuth2User usero2) {
-        if (p != null) {
-            String email = p.getName();
-            User user = userRepo.findByEmail(email);
-            m.addAttribute("user", user);
-        }
-        if(usero2 != null) {
-            String email = usero2.getAttribute("email");
-            User user = userRepo.findByEmail(email);
-            m.addAttribute("user", user);
-        }
-
-    }
-
-    @GetMapping("/profile")
-    public String profile() {
-
-        return "admin_profile";
-    }
 }

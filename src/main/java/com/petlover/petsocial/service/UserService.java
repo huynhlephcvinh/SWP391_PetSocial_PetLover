@@ -29,5 +29,6 @@ public interface UserService {
 
     public UserDTO findUserProfileByJwt(String jwt) throws UserException;
     public UserDTO editprofile(int id, UserUpdateDTO userDTO) throws UserException;
+    public UserDTO findUserProfileById(int idUser) throws UserException;
 
 }

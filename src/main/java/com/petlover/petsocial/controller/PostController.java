@@ -42,6 +42,7 @@ public class PostController {
 
     }
     @PostMapping("/createpost")
+    @ResponseBody
     public ResponseEntity<?> createPost(@RequestHeader("Authorization") String jwt,@ModelAttribute CreatPostDTO creatPostDTO) throws UserException, PostException {
         ResponseData responseData = new ResponseData();
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);

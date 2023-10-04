@@ -1,5 +1,6 @@
 package com.petlover.petsocial.model.entity;
 
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,6 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+
 @Table(name="Pet")
 public class Pet {
     @Id

@@ -1,5 +1,6 @@
 package com.petlover.petsocial.serviceImp;
 
+import com.petlover.petsocial.exception.PostException;
 import com.petlover.petsocial.model.entity.*;
 import com.petlover.petsocial.payload.request.*;
 import com.petlover.petsocial.repository.PetRepository;
@@ -59,7 +60,7 @@ public class PostServiceImp implements PostService {
                 newPost.setCreate_date(formattedDate);
                 newPost.setEnable(true);
                 newPost.setTotal_like(0);
-                postRepository.save(newPost);
+    postRepository.save(newPost);
 
             }else {
                 Pet pet = petRepository.getById(creatPostDTO.getIdPet());
@@ -80,9 +81,10 @@ public class PostServiceImp implements PostService {
                 newPost.setCreate_date(formattedDate);
                 newPost.setEnable(false);
                 newPost.setTotal_like(0);
-                postRepository.save(newPost);
+postRepository.save(newPost);
 
             }
+
 
         PetToPostDTO petToPostDTO = new PetToPostDTO();
         petToPostDTO.setId(newPost.getPet().getId());
@@ -155,6 +157,24 @@ public class PostServiceImp implements PostService {
             listpostDTO.add(postDTO);
         }
         return listpostDTO;
+    }
+
+    public PostDTO findById(int idPost) throws PostException{
+        Post getPost = postRepository.getById(idPost);
+        if(getPost == null){
+            throw new PostException("Not found");
+        }
+        PetToPostDTO petToPostDTO = new PetToPostDTO();
+        petToPostDTO.setId(getPost.getPet().getId());
+        petToPostDTO.setName(getPost.getPet().getName());
+        petToPostDTO.setImage(getPost.getPet().getImage());
+
+
+        UserPostDTO userPostDTO = new UserPostDTO();
+        userPostDTO.setId(getPost.getUser().getId());
+        userPostDTO.setName(getPost.getUser().getName());
+        userPostDTO.setAvatar(getPost.getUser().getAvatar());
+        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),getPost.getComments(),petToPostDTO,userPostDTO);
     }
     public PostDTO deletePost(int id, UserDTO userDTO)
     {

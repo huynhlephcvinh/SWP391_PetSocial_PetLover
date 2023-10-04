@@ -43,6 +43,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 
 @RestController
+
 public class HomeController {
     @Autowired
     private UserService userService;

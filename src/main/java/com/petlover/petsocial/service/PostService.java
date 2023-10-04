@@ -1,5 +1,6 @@
 package com.petlover.petsocial.service;
 
+import com.petlover.petsocial.exception.PostException;
 import com.petlover.petsocial.model.entity.User;
 import com.petlover.petsocial.payload.request.CreatPostDTO;
 import com.petlover.petsocial.payload.request.PostDTO;
@@ -15,4 +16,5 @@ public interface PostService {
     public List<PostDTO> getAllYourPost(int idUser);
     public PostDTO deletePost(int id, UserDTO userDTO);
     public PostDTO updatePost(int id, PostUpdateDTO postUpdateDTO,UserDTO userDTO);
+    public PostDTO findById(int idPost) throws PostException;
 }
