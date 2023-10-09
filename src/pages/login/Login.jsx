@@ -1,42 +1,47 @@
-import { useContext, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { AuthContext } from "../../context/authContext";
-// import { setAuthHeader } from "../../components/helper/axios_helper";
-// import { request } from "../../components/helper/axios_helper"; // Import the request function
-// Import the request function
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
 import "./login.scss";
-
 function Login() {
-  // const { login } = useContext(AuthContext);
-  const [email, setEmail] = useState("");
+  const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-
+  const [error, setError] = useState("");
   async function login(event) {
     event.preventDefault();
     try {
-      const response = await axios.post(
-        "http://localhost:8080/api/v1/auth/login",
-        {
-          email: email,
-          password: password,
-        }
+      const response = await axios.post("http://localhost:8080/signin", {
+        username: username,
+        password: password,
+      }
       );
 
-      if (response.status === 200) {
-        // Authentication successful
-        console.log("Login successful!");
-        navigate("/home");
-        // Handle token storage, user state update, and redirection here
+      console.log(response.data);
+
+      if (response.data === "Activated") {
+        setError("Your account has not been activated!");
+      } else if (response.data === "Incorrect") {
+        setError("Incorrect username or password");
       } else {
-        // Authentication failed
-        console.error("Login failed:", response.data.message);
+        localStorage.setItem('token', response.data); 
+        const token = localStorage.getItem('token');
+        const response1 = await axios.get('http://localhost:8080/user/profile', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        // console.log("res1: "+response1.data.data.postDTOList);
+        localStorage.setItem('currentUser', JSON.stringify(response1.data.data));
+        localStorage.setItem('postsListDTO',JSON.stringify(response1.data.data.postDTOList));
+        const user2 = JSON.parse(localStorage.getItem('currentUser'));
+        // console.log("list ="+JSON.parse(localStorage.getItem('postsListDTO')));      
+        // console.log("current ="+user2.postDTOList);      
+        // console.log("current ="+user2.name);      
+        navigate('/ ');
       }
     } catch (error) {
-      // Network error or other issues
-      console.error("Login failed:", error.message);
+      console.error(error);
     }
   }
 
@@ -44,11 +49,11 @@ function Login() {
     <div className="login">
       <div className="card">
         <div className="left">
-          <h1>Hello World.</h1>
+          <h2 style={{ fontSize: 50 }}>Welcome</h2>
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero cum,
-            alias totam numquam ipsa exercitationem dignissimos, error nam,
-            consequatur.
+            Dog Cat is a social networking platform that helps connect
+            animal lovers, specifically dogs and cats, together.
+            People can connect and exchange their pets.
           </p>
           <span>Don't you have an account?</span>
           <Link to="/register">
@@ -58,11 +63,13 @@ function Login() {
         <div className="right">
           <h1>Login</h1>
           <form onSubmit={login}>
+            {error && <h5 style={{ color: 'red', fontStyle: 'italic', fontSize: 12 }}>{error}</h5>}
+            {/* {error && <h5 style={{color:'red'}}>{error}</h5>} */}
             <input
               type="text"
               placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={username}
+              onChange={(e) => setUserName(e.target.value)}
             />
             <input
               type="password"
@@ -70,7 +77,7 @@ function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <button type="button">Login</button>
+            <button type="submit">Login</button>
           </form>
         </div>
       </div>
@@ -79,3 +86,9 @@ function Login() {
 }
 
 export default Login;
+
+
+
+
+
+

@@ -14,6 +14,11 @@
     color:themed("textColor");
     z-index: 999;
 
+    .custom-link{
+      color: inherit;
+      text-decoration: none;
+    }
+    
     .left {
       display: flex;
       align-items: center;
@@ -30,7 +35,7 @@
         align-items: center;
         gap: 10px;
         border: 1px solid themed("border");
-        border-radius: 20px;
+        border-radius: 5px;
         padding: 5px;
 
         input {
@@ -38,7 +43,6 @@
           width: 500px;
           background-color: transparent;
           color: themed("textColor");
-          outline: none;
 
           @include mobile{
             display: none;
@@ -77,8 +81,8 @@
           object-fit: cover;
         }
 
-        // span {
-        // }
+        span {
+        }
       }
     }
   }

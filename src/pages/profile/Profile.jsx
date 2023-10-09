@@ -1,3 +1,5 @@
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import "./profile.scss";
 import FacebookTwoToneIcon from "@mui/icons-material/FacebookTwoTone";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
@@ -8,9 +10,43 @@ import PlaceIcon from "@mui/icons-material/Place";
 import LanguageIcon from "@mui/icons-material/Language";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import Posts from "../../components/posts/Posts";
+import Posts from "../../components/posts/Posts"
+import { CenterFocusStrong } from '@mui/icons-material';
 
 const Profile = () => {
+  const currentUser = localStorage.getItem('currentUser');
+  const [userData, setUserData] = useState(null);
+  const [jwt, setJwt] = useState();
+  const cruser = JSON.parse(localStorage.getItem('currentUser'));
+
+
+  const [posts, setPosts] = useState([]);
+  const token = localStorage.getItem('token');
+  useEffect(() => {
+    async function fetchPosts() {
+      try {
+        const response = await axios.get("http://localhost:8080/post/getAllYourPost",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setPosts(response.data.data);
+        console.log(posts);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      }
+    }
+
+    fetchPosts();
+  }, [token]);
+
+
+
+
+
+
   return (
     <div className="profile">
       <div className="images">
@@ -20,15 +56,17 @@ const Profile = () => {
           className="cover"
         />
         <img
-          src="https://images.pexels.com/photos/14028501/pexels-photo-14028501.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load"
+          // src={userData && userData.avatar ? userData.avatar : 'https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png'}
+          src={cruser.avatar}
           alt=""
           className="profilePic"
         />
+
       </div>
       <div className="profileContainer">
         <div className="uInfo">
           <div className="left">
-            <a href="http://facebook.com">
+            {/* <a href="http://facebook.com">
               <FacebookTwoToneIcon fontSize="large" />
             </a>
             <a href="http://facebook.com">
@@ -42,10 +80,11 @@ const Profile = () => {
             </a>
             <a href="http://facebook.com">
               <PinterestIcon fontSize="large" />
-            </a>
+            </a> */}
           </div>
           <div className="center">
-            <span>Jane Doe</span>
+            <span>{cruser.name}</span>
+            
             <div className="info">
               <div className="item">
                 <PlaceIcon />
@@ -53,7 +92,7 @@ const Profile = () => {
               </div>
               <div className="item">
                 <LanguageIcon />
-                <span>FPTU.dev</span>
+                <span>lama.dev</span>
               </div>
             </div>
             <button>Follow</button>
@@ -63,7 +102,11 @@ const Profile = () => {
             <MoreVertIcon />
           </div>
         </div>
-        <Posts />
+        {posts!="" ? (
+        <Posts posts={posts}/>
+        ):(
+          <div className='noPosts'>You don't have any posts yet</div>
+        )}
       </div>
     </div>
   );

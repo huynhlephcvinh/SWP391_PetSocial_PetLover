@@ -1,5 +1,8 @@
+import { BrowserRouter,Routes,Route } from "react-router-dom";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
+// import Waiting from "./pages/waiting/Waiting";
+
 import {
   createBrowserRouter,
   RouterProvider,
@@ -12,6 +15,7 @@ import LeftBar from "./components/leftBar/LeftBar";
 import RightBar from "./components/rightBar/RightBar";
 import Home from "./pages/home/Home";
 import Profile from "./pages/profile/Profile";
+import MyProfile from "./pages/myprofile/MyProfile";
 import "./style.scss";
 import { useContext } from "react";
 import { DarkModeContext } from "./context/darkModeContext";
@@ -55,7 +59,7 @@ function App() {
       ),
       children: [
         {
-          path: "/home",
+          path: "/",
           element: <Home />,
         },
         {
@@ -72,6 +76,11 @@ function App() {
       path: "/register",
       element: <Register />,
     },
+   
+    // {
+    //   path:"/waiting",
+    //   element:<Waiting/>
+    // },
   ]);
 
   return (

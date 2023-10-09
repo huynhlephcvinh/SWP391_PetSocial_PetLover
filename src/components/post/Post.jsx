@@ -19,13 +19,16 @@ const Post = ({ post }) => {
       <div className="container">
         <div className="user">
           <div className="userInfo">
-            <img src={post.profilePic} alt="" />
+            <div className="avatar">
+            <img className="avtuser" src={post.userPostDTO.avatar} alt="" />
+            <img className="avtpet" src={post.petToPostDTO.image} alt="" />
+            </div>
             <div className="details">
               <Link
-                to={`/profile/${post.userId}`}
+                to={`/profile/${post.userPostDTO.id}`}
                 style={{ textDecoration: "none", color: "inherit" }}
               >
-                <span className="name">{post.name}</span>
+                <span className="name">{post.userPostDTO.name} </span> <span style={{fontSize:14}}>with</span><span> {post.petToPostDTO.name}</span>
               </Link>
               <span className="date">1 min ago</span>
             </div>
@@ -33,13 +36,13 @@ const Post = ({ post }) => {
           <MoreHorizIcon />
         </div>
         <div className="content">
-          <p>{post.desc}</p>
-          <img src={post.img} alt="" />
+          <p>{post.content}</p>
+          <img src={post.image} alt="" />
         </div>
         <div className="info">
           <div className="item">
             {liked ? <FavoriteOutlinedIcon /> : <FavoriteBorderOutlinedIcon />}
-            12 Likes
+            {post.total_like} Likes
           </div>
           <div className="item" onClick={() => setCommentOpen(!commentOpen)}>
             <TextsmsOutlinedIcon />
