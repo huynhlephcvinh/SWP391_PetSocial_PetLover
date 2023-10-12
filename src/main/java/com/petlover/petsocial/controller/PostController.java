@@ -1,5 +1,6 @@
 package com.petlover.petsocial.controller;
 
+import com.petlover.petsocial.exception.PetException;
 import com.petlover.petsocial.exception.PostException;
 import com.petlover.petsocial.exception.UserException;
 import com.petlover.petsocial.model.entity.Pet;
@@ -43,7 +44,7 @@ public class PostController {
     }
     @PostMapping("/createpost")
     @ResponseBody
-    public ResponseEntity<?> createPost(@RequestHeader("Authorization") String jwt,@ModelAttribute CreatPostDTO creatPostDTO) throws UserException, PostException {
+    public ResponseEntity<?> createPost(@RequestHeader("Authorization") String jwt,@ModelAttribute CreatPostDTO creatPostDTO) throws UserException, PostException, PetException {
         ResponseData responseData = new ResponseData();
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);
         PostDTO postDTO = postService.insertPost(creatPostDTO,userDTO);
@@ -72,7 +73,7 @@ public class PostController {
         return new ResponseEntity<>(responseData,HttpStatus.OK);
     }
 
-    @GetMapping("/delete/{id}")
+    @PostMapping ("/delete/{id}")
     public ResponseEntity<?> deletePost(@PathVariable(value = "id") int id,@RequestHeader("Authorization") String jwt) throws UserException, PostException {
         ResponseData responseData = new ResponseData();
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);
@@ -90,9 +91,18 @@ public class PostController {
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);
         PostDTO postDTO = postService.updatePost(id, postUpdateDTO,userDTO);
         if(postDTO == null){
-         throw new PostException("Error");
+         throw new PostException("Error can are content null or empty");
         }
         responseData.setData(postDTO);
+        return new ResponseEntity<>(responseData,HttpStatus.OK);
+
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchPost(@RequestParam("content") String content) throws UserException, PostException {
+        ResponseData responseData = new ResponseData();
+        List<PostDTO> list = postService.sreachPost(content);
+        responseData.setData(list);
         return new ResponseEntity<>(responseData,HttpStatus.OK);
 
     }

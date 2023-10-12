@@ -193,25 +193,29 @@ public class UserServiceImp implements UserService {
         }
         List<PostDTO> postDTOList = new ArrayList<>();
         for(Post post: user.getPosts()){
-            PetToPostDTO petToPostDTO = new PetToPostDTO();
-            petToPostDTO.setId(post.getPet().getId());
-            petToPostDTO.setName(post.getPet().getName());
-            petToPostDTO.setImage(post.getPet().getImage());
+            if(post.isStatus()==true) {
+                PetToPostDTO petToPostDTO = new PetToPostDTO();
+                petToPostDTO.setId(post.getPet().getId());
+                petToPostDTO.setName(post.getPet().getName());
+                petToPostDTO.setImage(post.getPet().getImage());
 
 
-            UserPostDTO userPostDTO = new UserPostDTO();
-            userPostDTO.setId(post.getUser().getId());
-            userPostDTO.setName(post.getUser().getName());
-            userPostDTO.setAvatar(post.getUser().getAvatar());
+                UserPostDTO userPostDTO = new UserPostDTO();
+                userPostDTO.setId(post.getUser().getId());
+                userPostDTO.setName(post.getUser().getName());
+                userPostDTO.setAvatar(post.getUser().getAvatar());
 
-            PostDTO postDTO = new PostDTO(post.getId(),post.getImage(),post.getContent(),post.getCreate_date(),post.getTotal_like(),post.getComments(),petToPostDTO,userPostDTO);
-            postDTOList.add(postDTO);
+                PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), post.getComments(), petToPostDTO, userPostDTO);
+                postDTOList.add(postDTO);
+            }
         }
 
         List<PetDTO> petDTOList =new ArrayList<>();
         for(Pet pet: user.getPets()){
-                  PetDTO petDTO = new PetDTO(pet.getId(),pet.getImage(),pet.getName(),pet.getDescription());
-            petDTOList.add(petDTO);
+            if(pet.isStatus()==true) {
+                PetDTO petDTO = new PetDTO(pet.getId(), pet.getImage(), pet.getName(), pet.getDescription());
+                petDTOList.add(petDTO);
+            }
         }
 
         return new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(),petDTOList,postDTOList);
@@ -279,25 +283,29 @@ public class UserServiceImp implements UserService {
         }
         List<PostDTO> postDTOList = new ArrayList<>();
         for(Post post: user.getPosts()){
-            PetToPostDTO petToPostDTO = new PetToPostDTO();
-            petToPostDTO.setId(post.getPet().getId());
-            petToPostDTO.setName(post.getPet().getName());
-            petToPostDTO.setImage(post.getPet().getImage());
+            if(post.isStatus()==true) {
+                PetToPostDTO petToPostDTO = new PetToPostDTO();
+                petToPostDTO.setId(post.getPet().getId());
+                petToPostDTO.setName(post.getPet().getName());
+                petToPostDTO.setImage(post.getPet().getImage());
 
 
-            UserPostDTO userPostDTO = new UserPostDTO();
-            userPostDTO.setId(post.getUser().getId());
-            userPostDTO.setName(post.getUser().getName());
-            userPostDTO.setAvatar(post.getUser().getAvatar());
+                UserPostDTO userPostDTO = new UserPostDTO();
+                userPostDTO.setId(post.getUser().getId());
+                userPostDTO.setName(post.getUser().getName());
+                userPostDTO.setAvatar(post.getUser().getAvatar());
 
-            PostDTO postDTO = new PostDTO(post.getId(),post.getImage(),post.getContent(),post.getCreate_date(),post.getTotal_like(),post.getComments(),petToPostDTO,userPostDTO);
-            postDTOList.add(postDTO);
+                PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), post.getComments(), petToPostDTO, userPostDTO);
+                postDTOList.add(postDTO);
+            }
         }
 
         List<PetDTO> petDTOList =new ArrayList<>();
         for(Pet pet: user.getPets()){
-            PetDTO petDTO = new PetDTO(pet.getId(),pet.getImage(),pet.getName(),pet.getDescription());
-            petDTOList.add(petDTO);
+            if(pet.isStatus()==true) {
+                PetDTO petDTO = new PetDTO(pet.getId(), pet.getImage(), pet.getName(), pet.getDescription());
+                petDTOList.add(petDTO);
+            }
         }
 
         return new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(),petDTOList,postDTOList);

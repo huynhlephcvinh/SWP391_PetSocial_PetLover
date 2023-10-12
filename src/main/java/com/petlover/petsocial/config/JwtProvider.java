@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,16 @@ public class JwtProvider {
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime() + 86400000))
                 .claim("email",auth.getName())
+                .signWith(key)
+                .compact();
+        return jwt;
+    }
+
+    public String generateTokenLoginEMail(String email){
+        String jwt = Jwts.builder()
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(new Date().getTime() + 86400000))
+                .claim("email",email)
                 .signWith(key)
                 .compact();
         return jwt;

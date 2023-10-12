@@ -46,8 +46,14 @@ public class PetServiceImp implements PetService {
         if(createPetDTO.getFile()==null){
             throw new PetException("pet not found with image");
         }
+        if(createPetDTO.getName().equals("")){
+            throw new PetException("pet not found with name");
+        }
         if(createPetDTO.getName()==null){
             throw new PetException("pet not found with name");
+        }
+        if(createPetDTO.getDescription().equals("")){
+            throw new PetException("pet not found with description");
         }
         if(createPetDTO.getDescription()==null){
             throw new PetException("pet not found with description");
@@ -56,7 +62,9 @@ public class PetServiceImp implements PetService {
         try {
             String image = cloudinaryService.uploadFile(createPetDTO.getFile());
             newPet.setImage(image);
-        }catch(Exception e){}
+        }catch(Exception e){
+            throw new PetException("pet not found with image");
+        }
 
             newPet.setName(createPetDTO.getName());
             newPet.setDescription(createPetDTO.getDescription());
@@ -138,9 +146,15 @@ public class PetServiceImp implements PetService {
 
         if(petUpdateDTO.getFile()==null){
             if(petUpdateDTO.getName()!=null) {
+                if(petUpdateDTO.getName().equals("")){
+                    return null;
+                }
                 getPet.setName(petUpdateDTO.getName());
             }
             if(petUpdateDTO.getDescription()!=null) {
+                if(petUpdateDTO.getDescription().equals("")){
+                    return null;
+                }
                 getPet.setDescription(petUpdateDTO.getDescription());
             }
         }else{
@@ -151,9 +165,15 @@ public class PetServiceImp implements PetService {
 
             }
             if(petUpdateDTO.getName()!=null) {
+                if(petUpdateDTO.getName().equals("")){
+                    return null;
+                }
                 getPet.setName(petUpdateDTO.getName());
             }
             if(petUpdateDTO.getDescription()!=null) {
+                if(petUpdateDTO.getDescription().equals("")){
+                    return null;
+                }
                 getPet.setDescription(petUpdateDTO.getDescription());
             }
         }

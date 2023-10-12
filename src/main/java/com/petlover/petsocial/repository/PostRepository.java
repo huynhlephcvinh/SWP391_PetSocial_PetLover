@@ -13,7 +13,8 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     public List<Post> getAll();
     @Query(value="Select * From post p WHERE p.enable = 1 and p.status = 1 and p.user_id=%?1%",nativeQuery = true)
     public List<Post> getAllYourPost(int id);
-
+    @Query(value="Select * From post p WHERE p.enable = 1 and p.status = 1 and p.content like CONCAT('%',%?1%,'%') ",nativeQuery = true)
+    public List<Post> searchPost(String content);
     public Post getById(int id);
 
 }

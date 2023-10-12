@@ -1,5 +1,6 @@
 package com.petlover.petsocial.serviceImp;
 
+import com.petlover.petsocial.exception.PetException;
 import com.petlover.petsocial.exception.PostException;
 import com.petlover.petsocial.model.entity.*;
 import com.petlover.petsocial.payload.request.*;
@@ -34,17 +35,24 @@ public class PostServiceImp implements PostService {
     @Autowired
     private UserRepository userRepo;
 
-    public PostDTO insertPost(CreatPostDTO creatPostDTO, UserDTO userDTO) {
+    public PostDTO insertPost(CreatPostDTO creatPostDTO, UserDTO userDTO) throws PetException {
         Post newPost = new Post();
+
 
             if(creatPostDTO.getFile()!=null) {
                 Pet pet = petRepository.getById(creatPostDTO.getIdPet());
+                if(pet == null) {
+                    throw new PetException("Not found Pet");
+                }
                 System.out.println(pet);
 
                 try {
                     String image = cloudinaryService.uploadFile(creatPostDTO.getFile());
                     newPost.setImage(image);
                 }catch (Exception e){}
+                if(creatPostDTO.getContent().equals("")) {
+                    return null;
+                }
                 if(creatPostDTO.getContent()==null) {
                     return null;
                 }
@@ -64,9 +72,15 @@ public class PostServiceImp implements PostService {
 
             }else {
                 Pet pet = petRepository.getById(creatPostDTO.getIdPet());
+                if(pet == null) {
+                    throw new PetException("Not found Pet");
+                }
                 System.out.println(pet);
                 newPost.setImage(null);
-                if(creatPostDTO.getContent()==null){
+                if(creatPostDTO.getContent().equals("")){
+                    return null;
+                }
+                if(creatPostDTO.getContent()==null) {
                     return null;
                 }
                 newPost.setContent(creatPostDTO.getContent());
@@ -158,6 +172,36 @@ postRepository.save(newPost);
         }
         return listpostDTO;
     }
+    public List<PostDTO> sreachPost(String content)
+    {
+        List<Post> postListSearch = postRepository.searchPost(content);
+        List<PostDTO> listpostDTO = new ArrayList<>();
+        for(Post post : postListSearch) {
+            PostDTO postDTO = new PostDTO();
+            postDTO.setId(post.getId());
+            postDTO.setContent(post.getContent());
+            postDTO.setImage(post.getImage());
+            postDTO.setCreate_date(post.getCreate_date());
+            postDTO.setTotal_like(post.getTotal_like());
+            postDTO.setComments(post.getComments());
+
+            PetToPostDTO petToPostDTO = new PetToPostDTO();
+            petToPostDTO.setId(post.getPet().getId());
+            petToPostDTO.setName(post.getPet().getName());
+            petToPostDTO.setImage(post.getPet().getImage());
+            postDTO.setPetToPostDTO(petToPostDTO);
+
+            UserPostDTO userPostDTO = new UserPostDTO();
+            userPostDTO.setId(post.getUser().getId());
+            userPostDTO.setName(post.getUser().getName());
+            userPostDTO.setAvatar(post.getUser().getAvatar());
+            postDTO.setUserPostDTO(userPostDTO);
+            listpostDTO.add(postDTO);
+        }
+        return listpostDTO;
+    }
+
+
 
     public PostDTO findById(int idPost) throws PostException{
         Post getPost = postRepository.getById(idPost);
@@ -176,12 +220,14 @@ postRepository.save(newPost);
         userPostDTO.setAvatar(getPost.getUser().getAvatar());
         return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),getPost.getComments(),petToPostDTO,userPostDTO);
     }
-    public PostDTO deletePost(int id, UserDTO userDTO)
-    {
+    public PostDTO deletePost(int id, UserDTO userDTO)  {
 
         Post getPost = postRepository.getById(id);
+        if(getPost == null) {
+            return null;
+        }
         if(getPost.getUser().getId() == userDTO.getId()) {
-            getPost.setStatus(false);
+           getPost.setStatus(false);
         }
         else {
             return null;
@@ -207,6 +253,9 @@ postRepository.save(newPost);
         if(getPost == null) {
             return null;
         }
+        if(postUpdateDTO.getContent().equals("")) {
+            return null;
+        }
         if(getPost.getUser().getId() == userDTO.getId()) {
             getPost.setContent(postUpdateDTO.getContent());
         }else{
@@ -228,6 +277,8 @@ postRepository.save(newPost);
         return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),getPost.getComments(),petToPostDTO,userPostDTO);
 
     }
+
+
 
 
 

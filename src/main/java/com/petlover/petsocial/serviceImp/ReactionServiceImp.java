@@ -35,6 +35,10 @@ public class ReactionServiceImp implements ReactionService {
        if(isReactionExist!=null) {
 
            reactionRepository.deleteById(isReactionExist.getId());
+           Post post = postRepository.getById(idPost);
+           int countReaction = getAllReaction(idPost).size();
+           post.setTotal_like(countReaction);
+           postRepository.save(post);
            PostDTO postDTO = postService.findById(idPost);
            return new ReactionDTO(isReactionExist.getId(),userDTO,postDTO);
        }
@@ -48,7 +52,8 @@ public class ReactionServiceImp implements ReactionService {
        Reaction saveReaction = reactionRepository.save(reaction);
 
        post.getReactions().add(saveReaction);
-
+       int countReaction = getAllReaction(idPost).size();
+       post.setTotal_like(countReaction);
        postRepository.save(post);
        PostDTO postDTO = postService.findById(idPost);
          return new ReactionDTO(saveReaction.getId(),userDTO,postDTO);

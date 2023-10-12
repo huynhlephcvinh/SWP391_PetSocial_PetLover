@@ -92,6 +92,26 @@ public class HomeController {
 
     @PostMapping("/createUser")
     public ResponseEntity<?> createuser(@RequestBody SingupDTO userDTO, HttpSession session, HttpServletRequest request) throws UserException {
+       if(userDTO.getEmail().equals("")) {
+           throw new UserException("You have not entered your email yet");
+       }
+       if(userDTO.getName().equals("")) {
+            throw new UserException("You have not entered your name yet");
+        }
+       if(userDTO.getPhone().equals("")) {
+            throw new UserException("You have not entered your phone yet");
+        }
+        if(userDTO.getPassword().equals("")) {
+            throw new UserException("You have not entered your password yet");
+        }
+        if(!userDTO.getPhone().matches("^[0-9]+$")) {
+            throw new UserException("You must enter number phone is digit");
+        }
+        if(userDTO.getPhone().length() <10 || userDTO.getPhone().length() >12) {
+            throw new UserException("Enter number phone again");
+        }
+
+
         String url = request.getRequestURL().toString();
         http://localhost:8080/createUser
         url = url.replace(request.getServletPath(), "");

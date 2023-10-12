@@ -37,7 +37,7 @@ public class Post {
     @ToString.Exclude
     private Pet pet;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Comment> comments;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,fetch = FetchType.LAZY)

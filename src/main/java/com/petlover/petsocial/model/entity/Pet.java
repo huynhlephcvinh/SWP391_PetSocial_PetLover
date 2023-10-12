@@ -36,10 +36,10 @@ public class Pet {
     @ToString.Exclude
     private Pet_Type pet_type;
 
-    @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Post> posts;
 
-    @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Exchange> exchanges;
 
 

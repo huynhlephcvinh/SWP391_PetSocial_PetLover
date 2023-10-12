@@ -1,6 +1,7 @@
 package com.petlover.petsocial.config.oauth;
 
 
+import com.petlover.petsocial.config.JwtProvider;
 import com.petlover.petsocial.model.entity.AuthenticationProvider;
 import com.petlover.petsocial.model.entity.User;
 import com.petlover.petsocial.service.UserService;
@@ -22,6 +23,8 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     private UserService userService;
     @Autowired
     HttpSession session;
+    @Autowired
+    JwtProvider jwtProvider;
 
     private UserDetailsService userDetailsService;
 
@@ -35,20 +38,13 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         User user = userService.getUserByEmail(email);
         if(user == null){
             User user1 = userService.createUserAfterOAuthLoginSuccess(email,name, AuthenticationProvider.GOOGLE);
-            session.setAttribute("user",user1);
-            if(user1.getRole().contains("ROLE_USER")) {
-                response.sendRedirect("/user/profile");
-            }else {
-                response.sendRedirect("/admin/profile");
-            }
+            String token = jwtProvider.generateTokenLoginEMail(email);
+            System.out.println("token: " + token);
         }else {
             User user1 = userService.updateUserAfterOAuthLoginSuccess(user,name);
-            session.setAttribute("user",user1);
-            if(user1.getRole().contains("ROLE_USER")) {
-                response.sendRedirect("/user/profile");
-            }else {
-                response.sendRedirect("/admin/profile");
-            }
+            String token = jwtProvider.generateTokenLoginEMail(email);
+            System.out.println("token: " + token);
+
         }
         super.onAuthenticationSuccess(request, response, authentication);
     }

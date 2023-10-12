@@ -31,8 +31,8 @@ public class Exchange {
     @ToString.Exclude
     private Pet pet;
 
-    @OneToMany(mappedBy = "exchange", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "exchange", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Apply> applies;
-    @OneToMany(mappedBy = "exchange", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "exchange", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Chat> chats;
 }
