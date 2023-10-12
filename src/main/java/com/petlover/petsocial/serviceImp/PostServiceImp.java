@@ -66,7 +66,7 @@ public class PostServiceImp implements PostService {
                 DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
                 String formattedDate = dateFormat.format(date);
                 newPost.setCreate_date(formattedDate);
-                newPost.setEnable(true);
+                newPost.setEnable(false);
                 newPost.setTotal_like(0);
     postRepository.save(newPost);
 
