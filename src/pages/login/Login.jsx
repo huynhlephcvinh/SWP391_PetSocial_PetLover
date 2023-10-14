@@ -33,12 +33,12 @@ function Login() {
         });
         // console.log("res1: "+response1.data.data.postDTOList);
         localStorage.setItem('currentUser', JSON.stringify(response1.data.data));
-        localStorage.setItem('postsListDTO',JSON.stringify(response1.data.data.postDTOList));
-        const user2 = JSON.parse(localStorage.getItem('currentUser'));
+        // localStorage.setItem('postsListDTO',JSON.stringify(response1.data.data.postDTOList));
+        // const user2 = JSON.parse(localStorage.getItem('currentUser'));
         // console.log("list ="+JSON.parse(localStorage.getItem('postsListDTO')));      
         // console.log("current ="+user2.postDTOList);      
         // console.log("current ="+user2.name);      
-        navigate('/ ');
+        navigate('/');
       }
     } catch (error) {
       console.error(error);

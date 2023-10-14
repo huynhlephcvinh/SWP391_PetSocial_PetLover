@@ -18,14 +18,15 @@ import { Link } from "react-router-dom";
 import { useEffect } from "react";
 
 
+
 const LeftBar = () => {
   const { currentUser } = useContext(AuthContext);
-
   return (
     <div className="leftBar">
       <div className="container">
         <div className="menu">
-        <Link to='/profile/${currentUser.id}' className="custom-link">
+        {/* <Link to='/profile/${currentUser.id}' className="custom-link"> */}
+        <Link to='/my-profile' className="custom-link">
           <div className="user">
             <img
               src={currentUser.avatar}

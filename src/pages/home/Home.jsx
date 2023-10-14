@@ -20,7 +20,7 @@ const Home = () =>{
           }
         );
         setPosts(response.data.data);
-        console.log(posts);
+        // console.log(posts);
       } catch (error) {
         console.error("Error fetching posts:", error);
       }

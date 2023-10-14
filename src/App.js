@@ -49,6 +49,8 @@ function App() {
     return children;
   };
 
+  <Route path="/profile/:userID" component={Profile}/>
+
   const router = createBrowserRouter([
     {
       path: "/",
@@ -63,8 +65,12 @@ function App() {
           element: <Home />,
         },
         {
-          path: "/profile/:id",
+          path: "/profile/:userID",
           element: <Profile />,
+        },
+        {
+          path: "/my-profile",
+          element: <MyProfile />,
         },
       ],
     },

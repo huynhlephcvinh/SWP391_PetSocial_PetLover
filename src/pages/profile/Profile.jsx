@@ -1,45 +1,46 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import "./profile.scss";
-import FacebookTwoToneIcon from "@mui/icons-material/FacebookTwoTone";
-import LinkedInIcon from "@mui/icons-material/LinkedIn";
-import InstagramIcon from "@mui/icons-material/Instagram";
-import PinterestIcon from "@mui/icons-material/Pinterest";
-import TwitterIcon from "@mui/icons-material/Twitter";
 import PlaceIcon from "@mui/icons-material/Place";
 import LanguageIcon from "@mui/icons-material/Language";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Posts from "../../components/posts/Posts"
 import { CenterFocusStrong } from '@mui/icons-material';
+import { useParams } from 'react-router-dom';
+
 
 const Profile = () => {
   const currentUser = localStorage.getItem('currentUser');
-  const [userData, setUserData] = useState(null);
+  // const [userData, setUserData] = useState(null);
   const [jwt, setJwt] = useState();
   const cruser = JSON.parse(localStorage.getItem('currentUser'));
-
-
+  const [userData,setUserData]=useState("");
+  const {userID}=useParams();
   const [posts, setPosts] = useState([]);
   const token = localStorage.getItem('token');
   useEffect(() => {
-    async function fetchPosts() {
+    async function fetchProfile() {
       try {
-        const response = await axios.get("http://localhost:8080/post/getAllYourPost",
+        const response = await axios.get('http://localhost:8080/user/profile/'+userID,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        setPosts(response.data.data);
-        console.log(posts);
+        // console.log("respone ne:   "+response.data.name);
+           setUserData(response.data);
+           setPosts(response.data.postDTOList);
+           console.log(posts);
+          //  console.log(userData.name);
+
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
     }
 
-    fetchPosts();
+    fetchProfile();
   }, [token]);
 
 
@@ -57,7 +58,7 @@ const Profile = () => {
         />
         <img
           // src={userData && userData.avatar ? userData.avatar : 'https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png'}
-          src={cruser.avatar}
+          src={userData.avatar}
           alt=""
           className="profilePic"
         />
@@ -66,24 +67,10 @@ const Profile = () => {
       <div className="profileContainer">
         <div className="uInfo">
           <div className="left">
-            {/* <a href="http://facebook.com">
-              <FacebookTwoToneIcon fontSize="large" />
-            </a>
-            <a href="http://facebook.com">
-              <InstagramIcon fontSize="large" />
-            </a>
-            <a href="http://facebook.com">
-              <TwitterIcon fontSize="large" />
-            </a>
-            <a href="http://facebook.com">
-              <LinkedInIcon fontSize="large" />
-            </a>
-            <a href="http://facebook.com">
-              <PinterestIcon fontSize="large" />
-            </a> */}
+          
           </div>
           <div className="center">
-            <span>{cruser.name}</span>
+            <span>{userData.name}</span>
             
             <div className="info">
               <div className="item">

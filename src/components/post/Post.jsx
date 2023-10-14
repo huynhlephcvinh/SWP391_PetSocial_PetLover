@@ -8,9 +8,11 @@ import { Link } from "react-router-dom";
 import Comments from "../comments/Comments";
 import { useState } from "react";
 
+
 const Post = ({ post }) => {
   const [commentOpen, setCommentOpen] = useState(false);
-
+  // var uid=post.userDTO.id;
+  const currentUser=JSON.parse(localStorage.getItem("currentUser"));
   //TEMPORARY
   const liked = false;
 
@@ -25,7 +27,7 @@ const Post = ({ post }) => {
             </div>
             <div className="details">
               <Link
-                to={`/profile/${post.userPostDTO.id}`}
+                to={post.userPostDTO.id === currentUser.id ? '/my-profile' : `/profile/${post.userPostDTO.id}`}
                 style={{ textDecoration: "none", color: "inherit" }}
               >
                 <span className="name">{post.userPostDTO.name} </span> <span style={{fontSize:14}}>with</span><span> {post.petToPostDTO.name}</span>
