@@ -13,5 +13,5 @@ public interface PetService {
     public PetDTO deletePet(int id,UserDTO userDTO) throws PetException;
     public PetDTO getOnePet(int id, UserDTO userDTO);
     public PetDTO updatePet(int id,PetUpdateDTO petUpdateDTO, UserDTO userDTO);
-    public List<PetToPostDTO> getAllPetPost();
+    public List<PetToPostDTO> getAllPetPost(UserDTO userDTO);
 }

@@ -34,10 +34,10 @@ public class PostController {
     @Autowired
     private UserService userService;
     @GetMapping("/createpost")
-    public ResponseEntity<?> choosePetToPost(){
+    public ResponseEntity<?> choosePetToPost(@RequestHeader("Authorization") String jwt) throws UserException {
         ResponseData responseData = new ResponseData();
-        List<PetToPostDTO> list = petService.getAllPetPost();
-        request.setAttribute("listYourPet",list);
+        UserDTO userDTO = userService.findUserProfileByJwt(jwt);
+        List<PetToPostDTO> list = petService.getAllPetPost(userDTO);
         responseData.setData(list);
         return new ResponseEntity<>(responseData, HttpStatus.OK);
 
