@@ -7,6 +7,7 @@ import com.petlover.petsocial.exception.UserNotFoundException;
 import com.petlover.petsocial.model.entity.User;
 import com.petlover.petsocial.payload.request.SigninDTO;
 import com.petlover.petsocial.payload.request.SingupDTO;
+import com.petlover.petsocial.payload.request.UserDTO;
 import com.petlover.petsocial.payload.response.AuthResponse;
 import com.petlover.petsocial.payload.response.ResponseData;
 import com.petlover.petsocial.repository.UserRepository;
@@ -126,7 +127,8 @@ public class HomeController {
             Authentication authentication = new UsernamePasswordAuthenticationToken(userDTO.getEmail(),userDTO.getPassword());
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String token = jwtProvider.generateToken(authentication);
-            AuthResponse res = new AuthResponse(token ,true);
+
+            AuthResponse res = new AuthResponse(token ,true,null);
 
             responseData.setData(res);
 
@@ -151,8 +153,8 @@ public class HomeController {
         if(userService.checkLogin(signinDTO)) {
             Authentication authentication = authenticate(signinDTO.getUsername(), signinDTO.getPassword());
             String token = jwtProvider.generateToken(authentication);
-            AuthResponse res = new AuthResponse(token, true);
-
+            User user = userRepo.findByEmail(signinDTO.getUsername());
+            AuthResponse res = new AuthResponse(token, true,user.getRole());
             responseData.setData(res);
 
         }else{

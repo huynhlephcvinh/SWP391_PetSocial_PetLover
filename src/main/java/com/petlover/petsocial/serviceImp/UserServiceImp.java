@@ -218,7 +218,7 @@ public class UserServiceImp implements UserService {
             }
         }
 
-        return new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(),petDTOList,postDTOList);
+        return new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(), petDTOList,postDTOList);
     }
 
     public UserDTO editprofile(int id, UserUpdateDTO userDTO) throws UserException {
