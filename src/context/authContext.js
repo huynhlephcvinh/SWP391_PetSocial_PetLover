@@ -1,34 +1,48 @@
 import { createContext, useEffect, useState } from "react";
+import axios from "axios";
 
 export const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(
-    // JSON.parse(localStorage.getItem("user")) || null        
-    JSON.parse(localStorage.getItem('currentUser'))
-
+    JSON.parse(localStorage.getItem("currentUser")) || null
   );
 
-  // const login = () => {
-  //   TO DO
+  const login = async () => {
+    const token = localStorage.getItem("token"); // Đảm bảo bạn đã lưu token vào localStorage khi đăng nhập
 
-  //     {
-  //     id:1,
-  //     name: "John",
-  //     profilePic:
-  //       "https://images.pexels.com/photos/3228727/pexels-photo-3228727.jpeg?auto=compress&cs=tinysrgb&w=1600",
-  //   }
-  //   );
-  // };
+    if (!token) {
+      console.error("Không có token xác thực.");
+      return;
+    }
+
+    try {
+      const response = await axios.get("http://localhost:8080/user/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const userData = response.data; // Lấy dữ liệu người dùng từ response
+      console.log(userData);
+
+      // Cập nhật thông tin người dùng trong state
+      setCurrentUser({
+        id: userData.id,
+        name: userData.name,
+        avatar: userData.avatar,
+      });
+    } catch (error) {
+      console.error("Lỗi khi lấy thông tin người dùng:", error);
+      // Xử lý lỗi nếu cần
+    }
+  };
 
   useEffect(() => {
     localStorage.setItem("currentUser", JSON.stringify(currentUser));
-
   }, [currentUser]);
-  // console.log("tao la currentU" + currentUser.name);
 
   return (
-    <AuthContext.Provider value={{ currentUser }}>
+    <AuthContext.Provider value={{ currentUser, login }}>
       {children}
     </AuthContext.Provider>
   );

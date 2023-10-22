@@ -15,8 +15,8 @@ const RightBar = () => {
               <span>Jane Doe</span>
             </div>
             <div className="buttons">
-              <button>follow</button>
-              <button>dismiss</button>
+              <button>Follow</button>
+              <button>Unfollow</button>
             </div>
           </div>
           <div className="user">
@@ -28,8 +28,8 @@ const RightBar = () => {
               <span>Jane Doe</span>
             </div>
             <div className="buttons">
-              <button>follow</button>
-              <button>dismiss</button>
+              <button>Follow</button>
+              <button>Unfollow</button>
             </div>
           </div>
         </div>

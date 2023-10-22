@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import "./myprofile.scss";
 import FacebookTwoToneIcon from "@mui/icons-material/FacebookTwoTone";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
@@ -10,29 +10,32 @@ import PlaceIcon from "@mui/icons-material/Place";
 import LanguageIcon from "@mui/icons-material/Language";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import Posts from "../../components/posts/Posts"
-import { CenterFocusStrong, Pets } from '@mui/icons-material';
+import Posts from "../../components/posts/Posts";
+import { CenterFocusStrong, Pets } from "@mui/icons-material";
 
 const Profile = () => {
-  const currentUser = localStorage.getItem('currentUser');
+  const currentUser = localStorage.getItem("currentUser");
   const [userData, setUserData] = useState(null);
   const [jwt, setJwt] = useState();
-  const cruser = JSON.parse(localStorage.getItem('currentUser'));
+  const cruser = JSON.parse(localStorage.getItem("currentUser"));
 
   const [pets, setPets] = useState([]);
 
   const [posts, setPosts] = useState([]);
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     // Fetch pets
     async function fetchPet() {
       try {
-        const response1 = await axios.get("http://localhost:8080/pet/getAllPet", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response1 = await axios.get(
+          "http://localhost:8080/pet/getAllPet",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         setPets(response1.data.data);
         console.log("ListPetaaaa:", pets);
@@ -44,11 +47,11 @@ const Profile = () => {
     fetchPet();
   }, [token]);
 
-
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const response = await axios.get("http://localhost:8080/post/getAllYourPost",
+        const response = await axios.get(
+          "http://localhost:8080/post/getAllYourPost",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -56,20 +59,15 @@ const Profile = () => {
           }
         );
         setPosts(response.data.data);
-        console.log("Post: "+posts);
+        console.log("Post: " + posts);
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
       //
-     
     }
 
     fetchPosts();
   }, [token]);
-
-
-
-
 
   return (
     <div className="profile">
@@ -85,13 +83,10 @@ const Profile = () => {
           alt=""
           className="profilePic"
         />
-
       </div>
       <div className="profileContainer">
         <div className="uInfo">
-          <div className="left">
-          
-          </div>
+          <div className="left"></div>
           <div className="center">
             <span>{cruser.name}</span>
 
@@ -115,12 +110,12 @@ const Profile = () => {
         {pets != "" ? (
           <Pets pets={pets} />
         ) : (
-          <div className='noPosts'>You don't have any pets yet</div>
+          <div className="noPosts">You don't have any pets yet</div>
         )}
         {posts != "" ? (
           <Posts posts={posts} />
         ) : (
-          <div className='noPosts'>You don't have any posts yet</div>
+          <div className="noPosts">You don't have any posts yet</div>
         )}
       </div>
     </div>

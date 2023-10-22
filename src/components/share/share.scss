@@ -2,7 +2,6 @@
 
 .share {
   @include themify($themes) {
-    width: 725px;
     -webkit-box-shadow: 0px 0px 25px -10px rgba(0, 0, 0, 0.38);
     -moz-box-shadow: 0px 0px 25px -10px rgba(0, 0, 0, 0.38);
     box-shadow: 0px 0px 25px -10px rgba(0, 0, 0, 0.38);
@@ -30,10 +29,9 @@
           padding: 20px 10px;
           background-color: transparent;
           width: 60%;
-          // width: 590px;
           color: themed("textColor");
-          overflow-wrap: break-word;
-        }}
+        }
+      }
 
       hr {
         margin: 20px 0px;

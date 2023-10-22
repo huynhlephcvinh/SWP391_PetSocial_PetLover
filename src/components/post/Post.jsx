@@ -8,11 +8,9 @@ import { Link } from "react-router-dom";
 import Comments from "../comments/Comments";
 import { useState } from "react";
 
-
 const Post = ({ post }) => {
   const [commentOpen, setCommentOpen] = useState(false);
-  // var uid=post.userDTO.id;
-  const currentUser=JSON.parse(localStorage.getItem("currentUser"));
+
   //TEMPORARY
   const liked = false;
 
@@ -21,16 +19,13 @@ const Post = ({ post }) => {
       <div className="container">
         <div className="user">
           <div className="userInfo">
-            <div className="avatar">
-            <img className="avtuser" src={post.userPostDTO.avatar} alt="" />
-            <img className="avtpet" src={post.petToPostDTO.image} alt="" />
-            </div>
+            <img src={post.profilePic} alt="" />
             <div className="details">
               <Link
-                to={post.userPostDTO.id === currentUser.id ? '/my-profile' : `/profile/${post.userPostDTO.id}`}
+                to={`/profile/${post.userId}`}
                 style={{ textDecoration: "none", color: "inherit" }}
               >
-                <span className="name">{post.userPostDTO.name} </span> <span style={{fontSize:14}}>with</span><span> {post.petToPostDTO.name}</span>
+                <span className="name">{post.name}</span>
               </Link>
               <span className="date">1 min ago</span>
             </div>
@@ -38,13 +33,13 @@ const Post = ({ post }) => {
           <MoreHorizIcon />
         </div>
         <div className="content">
-          <p>{post.content}</p>
-          <img src={post.image} alt="" />
+          <p>{post.desc}</p>
+          <img src={post.img} alt="" />
         </div>
         <div className="info">
           <div className="item">
             {liked ? <FavoriteOutlinedIcon /> : <FavoriteBorderOutlinedIcon />}
-            {post.total_like} Likes
+            12 Likes
           </div>
           <div className="item" onClick={() => setCommentOpen(!commentOpen)}>
             <TextsmsOutlinedIcon />

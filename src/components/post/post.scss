@@ -2,16 +2,12 @@
 
 .post {
   @include themify($themes) {
-    // height: 192px;
-    // width: 712px;
-    width: 900x;
     -webkit-box-shadow: 0px 0px 25px -10px rgba(0, 0, 0, 0.38);
     -moz-box-shadow: 0px 0px 25px -10px rgba(0, 0, 0, 0.38);
     box-shadow: 0px 0px 25px -10px rgba(0, 0, 0, 0.38);
     border-radius: 20px;
     background-color: themed("bg");
     color: themed("textColor");
-    max-width: 100%;
 
     .container {
       padding: 20px;
@@ -25,28 +21,11 @@
           display: flex;
           gap: 20px;
 
-          .avatar{
-            width: 45px;
-            height: 45px;
-            position: relative;
-          }
           img {
             width: 40px;
             height: 40px;
             border-radius: 50%;
             object-fit: cover;
-            position: absolute;
-
-          }
-          
-          .avtpet {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            object-fit: cover;
-            position: absolute;
-            right: 0;
-            bottom: 0;
           }
 
           .details {
@@ -54,11 +33,7 @@
             flex-direction: column;
 
             .name {
-              font-weight: 600;
-            }
-            .pet-name{
               font-weight: 500;
-              font-size: 15px;
             }
 
             .date {
@@ -70,8 +45,6 @@
 
       .content {
         margin: 20px 0px;
-        max-width: 100%;
-        word-wrap: break-word;
 
         img {
           width: 100%;
@@ -84,7 +57,7 @@
       .info {
         display: flex;
         align-items: center;
-        gap: 190px;
+        gap: 20px;
 
         .item {
           display: flex;
