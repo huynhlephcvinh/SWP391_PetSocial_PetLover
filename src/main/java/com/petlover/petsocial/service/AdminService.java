@@ -2,11 +2,12 @@ package com.petlover.petsocial.service;
 
 import com.petlover.petsocial.exception.UserException;
 import com.petlover.petsocial.payload.request.UserForAdminDTO;
+import com.petlover.petsocial.payload.request.UserForAdminManager;
 
 import java.util.List;
 
 public interface AdminService {
-    public List<UserForAdminDTO> getListUserForAdmin();
+    public List<UserForAdminManager> getListUserForAdmin();
     public UserForAdminDTO getBlockUser(int idUser) throws UserException;
     public UserForAdminDTO getOffBlockUser(int idUser) throws UserException;
     public int getTotalUser();

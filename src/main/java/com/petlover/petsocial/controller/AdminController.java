@@ -7,6 +7,7 @@ import com.petlover.petsocial.model.entity.User;
 import com.petlover.petsocial.payload.request.PostDTO;
 import com.petlover.petsocial.payload.request.UserDTO;
 import com.petlover.petsocial.payload.request.UserForAdminDTO;
+import com.petlover.petsocial.payload.request.UserForAdminManager;
 import com.petlover.petsocial.payload.response.ResponseData;
 import com.petlover.petsocial.repository.UserRepository;
 import com.petlover.petsocial.service.AdminService;
@@ -40,7 +41,7 @@ public class AdminController {
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);
         User user = userRepo.getById(userDTO.getId());
         if(user.getRole().equals("ROLE_ADMIN")){
-            List<UserForAdminDTO> list = adminService.getListUserForAdmin();
+            List<UserForAdminManager> list = adminService.getListUserForAdmin();
             responseData.setData(list);
             return new ResponseEntity<>(responseData, HttpStatus.OK);
         }else{

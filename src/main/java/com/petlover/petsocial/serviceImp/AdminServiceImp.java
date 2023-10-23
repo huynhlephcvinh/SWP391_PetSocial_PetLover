@@ -3,6 +3,7 @@ package com.petlover.petsocial.serviceImp;
 import com.petlover.petsocial.exception.UserException;
 import com.petlover.petsocial.model.entity.User;
 import com.petlover.petsocial.payload.request.UserForAdminDTO;
+import com.petlover.petsocial.payload.request.UserForAdminManager;
 import com.petlover.petsocial.repository.UserRepository;
 import com.petlover.petsocial.service.AdminService;
 import com.petlover.petsocial.service.UserService;
@@ -19,12 +20,12 @@ public class AdminServiceImp implements AdminService {
     UserService userService;
 
     @Override
-    public List<UserForAdminDTO> getListUserForAdmin()
+    public List<UserForAdminManager> getListUserForAdmin()
     {
         List<User> listUser = userRepo.listUser();
-        List<UserForAdminDTO> getListUserForAdmin = new ArrayList<>();
+        List<UserForAdminManager> getListUserForAdmin = new ArrayList<>();
         for(User user : listUser) {
-            UserForAdminDTO userForAdminDTO = new UserForAdminDTO();
+            UserForAdminManager userForAdminDTO = new UserForAdminManager();
             userForAdminDTO.setId(user.getId());
             userForAdminDTO.setName(user.getName());
             userForAdminDTO.setAvatar(user.getAvatar());
@@ -32,6 +33,22 @@ public class AdminServiceImp implements AdminService {
             userForAdminDTO.setEmail(user.getEmail());
             userForAdminDTO.setPhone(user.getPhone());
             userForAdminDTO.setRole(user.getRole());
+            int countpet=0;
+            for(int i=0;i<user.getPets().size();i++) {
+                if(user.getPets().get(i).isStatus()==true) {
+                    countpet++;
+                }
+            }
+            userForAdminDTO.setTotalPet(countpet);
+            int countpost=0;
+            for(int i=0;i<user.getPosts().size();i++) {
+                if(user.getPosts().get(i).isStatus()==true) {
+                    if(user.getPosts().get(i).isEnable()==true) {
+                        countpost++;
+                    }
+                }
+            }
+            userForAdminDTO.setTotalPost(countpost);
             getListUserForAdmin.add(userForAdminDTO);
         }
         return getListUserForAdmin;
