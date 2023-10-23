@@ -59,7 +59,6 @@ public class PostController {
     public ResponseEntity<?> getAllPost(){
         ResponseData responseData = new ResponseData();
         List<PostDTO> list = postService.getAllPost();
-        request.setAttribute("listPost",list);
         responseData.setData(list);
         return new ResponseEntity<>(responseData,HttpStatus.OK);
     }

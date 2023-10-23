@@ -5,12 +5,14 @@ import com.petlover.petsocial.config.JwtProvider;
 import com.petlover.petsocial.exception.UserException;
 import com.petlover.petsocial.exception.UserNotFoundException;
 import com.petlover.petsocial.model.entity.User;
+import com.petlover.petsocial.payload.request.PostDTO;
 import com.petlover.petsocial.payload.request.SigninDTO;
 import com.petlover.petsocial.payload.request.SingupDTO;
 import com.petlover.petsocial.payload.request.UserDTO;
 import com.petlover.petsocial.payload.response.AuthResponse;
 import com.petlover.petsocial.payload.response.ResponseData;
 import com.petlover.petsocial.repository.UserRepository;
+import com.petlover.petsocial.service.PostService;
 import com.petlover.petsocial.service.UserService;
 import com.petlover.petsocial.serviceImp.CustomerUserDetailsServiceImp;
 import jakarta.mail.MessagingException;
@@ -42,6 +44,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.crypto.SecretKey;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 
@@ -60,6 +63,9 @@ public class HomeController {
     private JwtProvider jwtProvider;
     @Autowired
     private CustomerUserDetailsServiceImp customerUserDetailsServiceImp;
+
+    @Autowired
+    private PostService postService;
 
    @ModelAttribute
    public void commonUser(Principal p, Model m,@AuthenticationPrincipal OAuth2User usero2) {
@@ -172,6 +178,14 @@ public class HomeController {
             throw new BadCredentialsException("Invalid username or password..");
         }
         return new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
+    }
+
+    @GetMapping("/getAllPost")
+    public ResponseEntity<?> getAllPost(){
+        ResponseData responseData = new ResponseData();
+        List<PostDTO> list = postService.getAllPost();
+        responseData.setData(list);
+        return new ResponseEntity<>(responseData,HttpStatus.OK);
     }
     @GetMapping("/verify")
     public String verifyAccount(@Param("code") String code, Model m) {
