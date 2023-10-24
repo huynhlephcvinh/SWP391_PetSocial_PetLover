@@ -62,12 +62,16 @@ public class UserServiceImp implements UserService {
         return newSignupDTO;
     }
     @Override
-    public boolean checkLogin(SigninDTO signinDTO) {
+    public String checkLogin(SigninDTO signinDTO) {
         User user = userRepo.findByEmail(signinDTO.getUsername());
-        if(!user.isEnable()){
-            return false;
-        }else {
-            return true;
+        if (user == null) {
+            return "Incorrect username or password";
+        } else if (!user.isEnable()) {
+            return "Your account has not been activated!";
+        } else if (passwordEncoder.matches(signinDTO.getPassword(), user.getPassword())) {
+            return "Login success";
+        } else {
+            return "Incorrect username or password";
         }
 
     }
