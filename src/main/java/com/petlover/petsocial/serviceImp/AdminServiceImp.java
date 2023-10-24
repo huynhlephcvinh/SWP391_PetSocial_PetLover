@@ -1,9 +1,15 @@
 package com.petlover.petsocial.serviceImp;
 
 import com.petlover.petsocial.exception.UserException;
+import com.petlover.petsocial.model.entity.Pet;
+import com.petlover.petsocial.model.entity.Post;
 import com.petlover.petsocial.model.entity.User;
+import com.petlover.petsocial.payload.request.PetForAdminDTO;
+import com.petlover.petsocial.payload.request.PostForAdminDTO;
 import com.petlover.petsocial.payload.request.UserForAdminDTO;
 import com.petlover.petsocial.payload.request.UserForAdminManager;
+import com.petlover.petsocial.repository.PetRepository;
+import com.petlover.petsocial.repository.PostRepository;
 import com.petlover.petsocial.repository.UserRepository;
 import com.petlover.petsocial.service.AdminService;
 import com.petlover.petsocial.service.UserService;
@@ -18,6 +24,10 @@ public class AdminServiceImp implements AdminService {
     UserRepository userRepo;
     @Autowired
     UserService userService;
+    @Autowired
+    PostRepository postRepository;
+    @Autowired
+    PetRepository petRepository;
 
     @Override
     public List<UserForAdminManager> getListUserForAdmin()
@@ -41,9 +51,9 @@ public class AdminServiceImp implements AdminService {
             }
             userForAdminDTO.setTotalPet(countpet);
             int countpost=0;
-            for(int i=0;i<user.getPosts().size();i++) {
-                if(user.getPosts().get(i).isStatus()==true) {
-                    if(user.getPosts().get(i).isEnable()==true) {
+            for(int y=0;y<user.getPosts().size();y++) {
+                if(user.getPosts().get(y).isStatus()==true) {
+                    if(user.getPosts().get(y).isEnable()==true) {
                         countpost++;
                     }
                 }
@@ -118,6 +128,42 @@ public class AdminServiceImp implements AdminService {
             }
         }
         return getListUserForAdmin;
+    }
+
+
+    public List<PostForAdminDTO> listAllPost() {
+        List<Post> listPost = postRepository.getAllPostForAdmin();
+        List<PostForAdminDTO> postForAdminDTOS = new ArrayList<>();
+        for(Post post : listPost) {
+            PostForAdminDTO postDTO = new PostForAdminDTO();
+            postDTO.setId(post.getId());
+            postDTO.setContent(post.getContent());
+            postDTO.setImage(post.getImage());
+            postDTO.setCreate_date(post.getCreate_date());
+            postDTO.setTotal_like(post.getTotal_like());
+            postDTO.setUser_name(post.getUser().getName());
+            postDTO.setStatus(post.isStatus());
+            postDTO.setEnable(post.isEnable());
+            postForAdminDTOS.add(postDTO);
+        }
+        return postForAdminDTOS;
+    }
+
+    public List<PetForAdminDTO> listAllPet() {
+        List<Pet> listPet = petRepository.getAllPetForAdmin();
+        List<PetForAdminDTO> petForAdminDTOS = new ArrayList<>();
+        for(Pet pet : listPet) {
+            PetForAdminDTO petForAdminDTO = new PetForAdminDTO();
+            petForAdminDTO.setId(pet.getId());
+            petForAdminDTO.setName(pet.getName());
+            petForAdminDTO.setDescription(pet.getDescription());
+            petForAdminDTO.setImage(pet.getImage());
+            petForAdminDTO.setPetType_name(pet.getPet_type().getName());
+            petForAdminDTO.setUser_name(pet.getUser().getName());
+            petForAdminDTO.setStatus(pet.isStatus());
+            petForAdminDTOS.add(petForAdminDTO);
+        }
+        return petForAdminDTOS;
     }
 
 

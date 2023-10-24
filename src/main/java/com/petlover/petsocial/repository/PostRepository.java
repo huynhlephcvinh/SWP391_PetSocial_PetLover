@@ -19,4 +19,6 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     @Query(value="Select * From post p WHERE p.enable = 0 and p.status = 1",nativeQuery = true)
     public List<Post> getAllPostDisable();
+    @Query(value="Select * From post p",nativeQuery = true)
+    public List<Post> getAllPostForAdmin();
 }

@@ -4,10 +4,7 @@ package com.petlover.petsocial.controller;
 import com.petlover.petsocial.exception.PostException;
 import com.petlover.petsocial.exception.UserException;
 import com.petlover.petsocial.model.entity.User;
-import com.petlover.petsocial.payload.request.PostDTO;
-import com.petlover.petsocial.payload.request.UserDTO;
-import com.petlover.petsocial.payload.request.UserForAdminDTO;
-import com.petlover.petsocial.payload.request.UserForAdminManager;
+import com.petlover.petsocial.payload.request.*;
 import com.petlover.petsocial.payload.response.ResponseData;
 import com.petlover.petsocial.repository.UserRepository;
 import com.petlover.petsocial.service.AdminService;
@@ -36,7 +33,7 @@ public class AdminController {
 
 
     @GetMapping("/getAllUser")
-    public ResponseEntity<?> getAllPostDisable(@RequestHeader("Authorization") String jwt) throws UserException {
+    public ResponseEntity<?> getAllAccount(@RequestHeader("Authorization") String jwt) throws UserException {
         ResponseData responseData = new ResponseData();
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);
         User user = userRepo.getById(userDTO.getId());
@@ -121,5 +118,38 @@ public class AdminController {
         }
     }
 
+    @GetMapping("/getAllPost")
+    public ResponseEntity<?> getAllPost(@RequestHeader("Authorization") String jwt) throws UserException {
+        ResponseData responseData = new ResponseData();
+        UserDTO userDTO = userService.findUserProfileByJwt(jwt);
+        User user = userRepo.getById(userDTO.getId());
+        if(user.getRole().equals("ROLE_ADMIN")){
+            List<PostForAdminDTO> list = adminService.listAllPost();
+            responseData.setData(list);
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
+        }else{
+            responseData.setData("Only Admin");
+            responseData.setStatus(403);
+            responseData.setIsSuccess(false);
+            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/getAllPet")
+    public ResponseEntity<?> getAllPet(@RequestHeader("Authorization") String jwt) throws UserException {
+        ResponseData responseData = new ResponseData();
+        UserDTO userDTO = userService.findUserProfileByJwt(jwt);
+        User user = userRepo.getById(userDTO.getId());
+        if(user.getRole().equals("ROLE_ADMIN")){
+            List<PetForAdminDTO> list = adminService.listAllPet();
+            responseData.setData(list);
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
+        }else{
+            responseData.setData("Only Admin");
+            responseData.setStatus(403);
+            responseData.setIsSuccess(false);
+            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
+        }
+    }
 
 }
