@@ -143,7 +143,6 @@ public class AdminServiceImp implements AdminService {
         }catch(Exception ex){ }
         return size;
     }
-
     public int getTotalPostDisplayInMonth() {
         int size =0;
         try {
@@ -154,14 +153,219 @@ public class AdminServiceImp implements AdminService {
             String formattedDate = dateFormat.format(date);
             for(Post p : listPost) {
                 if(p.getCreate_date().substring(3,5).equals(formattedDate.substring(3,5))) {
-                     size++;
+                    size++;
                 }
             }
         }catch(Exception ex){ }
         return size;
     }
 
+    public int getTotalPostDisplayInMonth01() {
+        int size =0;
+        try {
+            List<Post> listPost= postRepository.getAllPostDisplayUserForAdmin();
+            Calendar cal = Calendar.getInstance();
+            Date date = cal.getTime();
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+            String formattedDate = dateFormat.format(date);
+            for(Post p : listPost) {
+                if(p.getCreate_date().substring(3,5).equals("01")) {
+                    if(p.getCreate_date().substring(6,10).equals(formattedDate.substring(6,10)))
+                     size++;
+                }
+            }
+        }catch(Exception ex){ }
+        return size;
+    }
+    public int getTotalPostDisplayInMonth02() {
+        int size =0;
+        try {
+            List<Post> listPost= postRepository.getAllPostDisplayUserForAdmin();
+            Calendar cal = Calendar.getInstance();
+            Date date = cal.getTime();
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+            String formattedDate = dateFormat.format(date);
+            for(Post p : listPost) {
 
+                if(p.getCreate_date().substring(3,5).equals("02")) {
+                    if(p.getCreate_date().substring(6,10).equals(formattedDate.substring(6,10)))
+                    size++;
+                }
+            }
+        }catch(Exception ex){ }
+        return size;
+    }
+    public int getTotalPostDisplayInMonth03() {
+        int size =0;
+        try {
+            List<Post> listPost= postRepository.getAllPostDisplayUserForAdmin();
+            Calendar cal = Calendar.getInstance();
+            Date date = cal.getTime();
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+            String formattedDate = dateFormat.format(date);
+            for(Post p : listPost) {
+                if(p.getCreate_date().substring(3,5).equals("03")) {
+                    if(p.getCreate_date().substring(6,10).equals(formattedDate.substring(6,10)))
+                    size++;
+                }
+            }
+        }catch(Exception ex){ }
+        return size;
+    }
+    public int getTotalPostDisplayInMonth04() {
+        int size =0;
+        try {
+            List<Post> listPost= postRepository.getAllPostDisplayUserForAdmin();
+            Calendar cal = Calendar.getInstance();
+            Date date = cal.getTime();
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+            String formattedDate = dateFormat.format(date);
+            for(Post p : listPost) {
+                if(p.getCreate_date().substring(3,5).equals("04")) {
+                    if(p.getCreate_date().substring(6,10).equals(formattedDate.substring(6,10)))
+                    size++;
+                }
+            }
+        }catch(Exception ex){ }
+        return size;
+    }
+    public int getTotalPostDisplayInMonth05() {
+        int size =0;
+        try {
+            List<Post> listPost= postRepository.getAllPostDisplayUserForAdmin();
+            Calendar cal = Calendar.getInstance();
+            Date date = cal.getTime();
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+            String formattedDate = dateFormat.format(date);
+            for(Post p : listPost) {
+                if(p.getCreate_date().substring(3,5).equals("05")) {
+                    if(p.getCreate_date().substring(6,10).equals(formattedDate.substring(6,10)))
+                    size++;
+                }
+            }
+        }catch(Exception ex){ }
+        return size;
+    }
+    public int getTotalPostDisplayInMonth06() {
+        int size =0;
+        try {
+            List<Post> listPost= postRepository.getAllPostDisplayUserForAdmin();
+            Calendar cal = Calendar.getInstance();
+            Date date = cal.getTime();
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+            String formattedDate = dateFormat.format(date);
+            for(Post p : listPost) {
+                if(p.getCreate_date().substring(3,5).equals("06")) {
+                    if(p.getCreate_date().substring(6,10).equals(formattedDate.substring(6,10)))
+                    size++;
+                }
+            }
+        }catch(Exception ex){ }
+        return size;
+    }
+    public int getTotalPostDisplayInMonth07() {
+        int size =0;
+        try {
+            List<Post> listPost= postRepository.getAllPostDisplayUserForAdmin();
+            Calendar cal = Calendar.getInstance();
+            Date date = cal.getTime();
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+            String formattedDate = dateFormat.format(date);
+            for(Post p : listPost) {
+                if(p.getCreate_date().substring(3,5).equals("07")) {
+                    if(p.getCreate_date().substring(6,10).equals(formattedDate.substring(6,10)))
+                    size++;
+                }
+            }
+        }catch(Exception ex){ }
+        return size;
+    }
+    public int getTotalPostDisplayInMonth08() {
+        int size =0;
+        try {
+            List<Post> listPost= postRepository.getAllPostDisplayUserForAdmin();
+            Calendar cal = Calendar.getInstance();
+            Date date = cal.getTime();
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+            String formattedDate = dateFormat.format(date);
+            for(Post p : listPost) {
+                if(p.getCreate_date().substring(3,5).equals("08")) {
+                    if(p.getCreate_date().substring(6,10).equals(formattedDate.substring(6,10)))
+                    size++;
+                }
+            }
+        }catch(Exception ex){ }
+        return size;
+    }
+    public int getTotalPostDisplayInMonth09() {
+        int size =0;
+        try {
+            List<Post> listPost= postRepository.getAllPostDisplayUserForAdmin();
+            Calendar cal = Calendar.getInstance();
+            Date date = cal.getTime();
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+            String formattedDate = dateFormat.format(date);
+            for(Post p : listPost) {
+                if(p.getCreate_date().substring(3,5).equals("09")) {
+                    if(p.getCreate_date().substring(6,10).equals(formattedDate.substring(6,10)))
+                    size++;
+                }
+            }
+        }catch(Exception ex){ }
+        return size;
+    }
+
+    public int getTotalPostDisplayInMonth10() {
+        int size =0;
+        try {
+            List<Post> listPost= postRepository.getAllPostDisplayUserForAdmin();
+            Calendar cal = Calendar.getInstance();
+            Date date = cal.getTime();
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+            String formattedDate = dateFormat.format(date);
+            for(Post p : listPost) {
+                if(p.getCreate_date().substring(3,5).equals("10")) {
+                    if(p.getCreate_date().substring(6,10).equals(formattedDate.substring(6,10)))
+                    size++;
+                }
+            }
+        }catch(Exception ex){ }
+        return size;
+    }
+    public int getTotalPostDisplayInMonth11() {
+        int size =0;
+        try {
+            List<Post> listPost= postRepository.getAllPostDisplayUserForAdmin();
+            Calendar cal = Calendar.getInstance();
+            Date date = cal.getTime();
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+            String formattedDate = dateFormat.format(date);
+            for(Post p : listPost) {
+                if(p.getCreate_date().substring(3,5).equals("11")) {
+                    if(p.getCreate_date().substring(6,10).equals(formattedDate.substring(6,10)))
+                    size++;
+                }
+            }
+        }catch(Exception ex){ }
+        return size;
+    }
+    public int getTotalPostDisplayInMonth12() {
+        int size =0;
+        try {
+            List<Post> listPost= postRepository.getAllPostDisplayUserForAdmin();
+            Calendar cal = Calendar.getInstance();
+            Date date = cal.getTime();
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+            String formattedDate = dateFormat.format(date);
+            for(Post p : listPost) {
+                if(p.getCreate_date().substring(3,5).equals("12")) {
+                    if(p.getCreate_date().substring(6,10).equals(formattedDate.substring(6,10)))
+                    size++;
+                }
+            }
+        }catch(Exception ex){ }
+        return size;
+    }
     public List<UserForAdminDTO> searchUser(String name) {
         List<User> listUser = userRepo.listUser();
         List<UserForAdminDTO> getListUserForAdmin = new ArrayList<>();

@@ -171,14 +171,39 @@ public class AdminController {
                 int totalPostDelete = adminService.getTotalPostDete();
                 int totalPet = adminService.getTotalPetDisplay();
                 int totalPostDisplay = adminService.getTotalPostDisplay();
-                int totalPostInMonth = adminService.getTotalPostDisplayInMonth();
+             //   int totalPostInMonth = adminService.getTotalPostDisplayInMonth();
+                int totalPostInMonth01 = adminService.getTotalPostDisplayInMonth01();
+                int totalPostInMonth02 = adminService.getTotalPostDisplayInMonth02();
+                int totalPostInMonth03 = adminService.getTotalPostDisplayInMonth03();
+                int totalPostInMonth04 = adminService.getTotalPostDisplayInMonth04();
+                int totalPostInMonth05 = adminService.getTotalPostDisplayInMonth05();
+                int totalPostInMonth06 = adminService.getTotalPostDisplayInMonth06();
+                int totalPostInMonth07 = adminService.getTotalPostDisplayInMonth07();
+                int totalPostInMonth08 = adminService.getTotalPostDisplayInMonth08();
+                int totalPostInMonth09 = adminService.getTotalPostDisplayInMonth09();
+                int totalPostInMonth10 = adminService.getTotalPostDisplayInMonth10();
+                int totalPostInMonth11 = adminService.getTotalPostDisplayInMonth11();
+                int totalPostInMonth12 = adminService.getTotalPostDisplayInMonth12();
                 // Tạo một đối tượng JSON để chứa thông tin thống kê
                 Map<String, Integer> statistics = new HashMap<>();
                 statistics.put("totalUser", totalUser);
                 statistics.put("totalPostDelete", totalPostDelete);
                 statistics.put("totalPet", totalPet);
                 statistics.put("totalPostDisplay", totalPostDisplay);
-                statistics.put("totalPostInMonth" +formattedDate.substring(3,5), totalPostInMonth);
+  //              statistics.put("totalPostInMonth" +formattedDate.substring(3,5), totalPostInMonth);
+                statistics.put("totalPostInMonth01", totalPostInMonth01);
+                statistics.put("totalPostInMonth02", totalPostInMonth02);
+                statistics.put("totalPostInMonth03", totalPostInMonth03);
+                statistics.put("totalPostInMonth04", totalPostInMonth04);
+                statistics.put("totalPostInMonth05", totalPostInMonth05);
+                statistics.put("totalPostInMonth06", totalPostInMonth06);
+                statistics.put("totalPostInMonth07", totalPostInMonth07);
+                statistics.put("totalPostInMonth08", totalPostInMonth08);
+                statistics.put("totalPostInMonth09", totalPostInMonth09);
+                statistics.put("totalPostInMonth10", totalPostInMonth10);
+                statistics.put("totalPostInMonth11", totalPostInMonth11);
+                statistics.put("totalPostInMonth12", totalPostInMonth12);
+
                 responseData.setData(statistics);
                 return new ResponseEntity<>(responseData, HttpStatus.OK);
             } else {
