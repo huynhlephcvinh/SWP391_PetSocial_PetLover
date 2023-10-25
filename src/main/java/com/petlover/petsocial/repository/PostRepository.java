@@ -21,4 +21,8 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     public List<Post> getAllPostDisable();
     @Query(value="Select * From post p",nativeQuery = true)
     public List<Post> getAllPostForAdmin();
+    @Query(value="Select * From post p WHERE p.status = 0",nativeQuery = true)
+    public List<Post> getAllPostDeleteForAdmin();
+    @Query(value="Select * From post p WHERE p.status = 1",nativeQuery = true)
+    public List<Post> getAllPostDisplayUserForAdmin();
 }

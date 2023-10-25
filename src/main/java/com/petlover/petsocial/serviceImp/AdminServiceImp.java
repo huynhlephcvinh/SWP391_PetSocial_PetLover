@@ -107,9 +107,39 @@ public class AdminServiceImp implements AdminService {
     }
 
     public int getTotalUser() {
-        List<User> listUser = userRepo.listUser();
-        return listUser.size();
+        int size =0;
+        try {
+            List<User> listUser = userRepo.listUser();
+            size = listUser.size();
+        }catch(Exception ex){ }
+        return size;
     }
+    public int getTotalPostDete() {
+        int size =0;
+        try {
+        List<Post> listPostDelete = postRepository.getAllPostDeleteForAdmin();
+        size = listPostDelete.size();
+        }catch(Exception ex){ }
+        return size;
+    }
+
+    public int getTotalPostDisplay() {
+        int size =0;
+        try {
+            List<Post> listPostDisplay = postRepository.getAllPostDisplayUserForAdmin();
+            size = listPostDisplay.size();
+        }catch(Exception ex){ }
+        return size;
+    }
+    public int getTotalPetDisplay() {
+        int size =0;
+        try {
+            List<Pet> listPetDisplay = petRepository.getAllPetDisplayForAdmin();
+            size = listPetDisplay.size();
+        }catch(Exception ex){ }
+        return size;
+    }
+
 
     public List<UserForAdminDTO> searchUser(String name) {
         List<User> listUser = userRepo.listUser();

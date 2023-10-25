@@ -19,7 +19,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/admin")
@@ -152,4 +154,35 @@ public class AdminController {
         }
     }
 
-}
+
+        @GetMapping("/totalstatistics")
+        public ResponseEntity<?> getTotalStatistics(@RequestHeader("Authorization") String jwt) throws UserException {
+            ResponseData responseData = new ResponseData();
+            UserDTO userDTO = userService.findUserProfileByJwt(jwt);
+            User user = userRepo.getById(userDTO.getId());
+
+            if(user.getRole().equals("ROLE_ADMIN")){
+                // Sử dụng các service để tính toán thông tin thống kê
+                int totalUser = adminService.getTotalUser();
+                int totalPostDelete = adminService.getTotalPostDete();
+                int totalPet = adminService.getTotalPetDisplay();
+                int totalPostDisplay = adminService.getTotalPostDisplay();
+
+                // Tạo một đối tượng JSON để chứa thông tin thống kê
+                Map<String, Integer> statistics = new HashMap<>();
+                statistics.put("totalUser", totalUser);
+                statistics.put("totalPostDelete", totalPostDelete);
+                statistics.put("totalPet", totalPet);
+                statistics.put("totalPostDisplay", totalPostDisplay);
+                responseData.setData(statistics);
+                return new ResponseEntity<>(responseData, HttpStatus.OK);
+            } else {
+                responseData.setData("Only Admin");
+                responseData.setStatus(403);
+                responseData.setIsSuccess(false);
+                return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
+            }
+        }
+    }
+
+
