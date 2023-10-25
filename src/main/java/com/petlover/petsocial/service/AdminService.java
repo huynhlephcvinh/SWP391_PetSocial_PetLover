@@ -19,4 +19,5 @@ public interface AdminService {
     public int getTotalPostDete();
     public int getTotalPostDisplay();
     public int getTotalPetDisplay();
+    public int getTotalPostDisplayInMonth();
 }

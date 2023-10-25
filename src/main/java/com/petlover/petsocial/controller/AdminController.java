@@ -19,9 +19,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @RestController
 @RequestMapping("/admin")
@@ -162,18 +162,23 @@ public class AdminController {
             User user = userRepo.getById(userDTO.getId());
 
             if(user.getRole().equals("ROLE_ADMIN")){
+                Calendar cal = Calendar.getInstance();
+                Date date = cal.getTime();
+                DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+                String formattedDate = dateFormat.format(date);
                 // Sử dụng các service để tính toán thông tin thống kê
                 int totalUser = adminService.getTotalUser();
                 int totalPostDelete = adminService.getTotalPostDete();
                 int totalPet = adminService.getTotalPetDisplay();
                 int totalPostDisplay = adminService.getTotalPostDisplay();
-
+                int totalPostInMonth = adminService.getTotalPostDisplayInMonth();
                 // Tạo một đối tượng JSON để chứa thông tin thống kê
                 Map<String, Integer> statistics = new HashMap<>();
                 statistics.put("totalUser", totalUser);
                 statistics.put("totalPostDelete", totalPostDelete);
                 statistics.put("totalPet", totalPet);
                 statistics.put("totalPostDisplay", totalPostDisplay);
+                statistics.put("totalPostInMonth" +formattedDate.substring(3,5), totalPostInMonth);
                 responseData.setData(statistics);
                 return new ResponseEntity<>(responseData, HttpStatus.OK);
             } else {

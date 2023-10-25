@@ -16,7 +16,11 @@ import com.petlover.petsocial.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 @Service
 public class AdminServiceImp implements AdminService {
@@ -136,6 +140,23 @@ public class AdminServiceImp implements AdminService {
         try {
             List<Pet> listPetDisplay = petRepository.getAllPetDisplayForAdmin();
             size = listPetDisplay.size();
+        }catch(Exception ex){ }
+        return size;
+    }
+
+    public int getTotalPostDisplayInMonth() {
+        int size =0;
+        try {
+            List<Post> listPost= postRepository.getAllPostDisplayUserForAdmin();
+            Calendar cal = Calendar.getInstance();
+            Date date = cal.getTime();
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+            String formattedDate = dateFormat.format(date);
+            for(Post p : listPost) {
+                if(p.getCreate_date().substring(3,5).equals(formattedDate.substring(3,5))) {
+                     size++;
+                }
+            }
         }catch(Exception ex){ }
         return size;
     }
