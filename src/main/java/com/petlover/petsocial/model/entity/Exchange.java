@@ -17,6 +17,7 @@ public class Exchange {
     private int id;
     private Date exchange_date;
     private int payment_amount;
+    private String description;
 
     @Enumerated(EnumType.STRING)
     private ExStatus status;
