@@ -16,4 +16,5 @@ public interface ApplyService {
     public List<Apply> getApplyForUser(UserDTO userDTO, Exchange exchange );
     public Apply getApplyById(int appId);
 
+
 }

@@ -10,10 +10,12 @@ import com.petlover.petsocial.payload.request.SingupDTO;
 import com.petlover.petsocial.payload.request.UserDTO;
 import com.petlover.petsocial.payload.request.UserUpdateDTO;
 
+import java.util.List;
+
 
 public interface UserService {
     public SingupDTO createUser(SingupDTO signupDTO, String url);
-    public boolean checkLogin(SigninDTO signinDTO);
+    public String checkLogin(SigninDTO signinDTO);
     public User getUserByEmail(String email);
 
     public boolean checkEmail(String email);
@@ -30,5 +32,7 @@ public interface UserService {
     public UserDTO findUserProfileByJwt(String jwt) throws UserException;
     public UserDTO editprofile(int id, UserUpdateDTO userDTO) throws UserException;
     public UserDTO findUserProfileById(int idUser) throws UserException;
+
+    public List<User> getAllUsers();
 
 }

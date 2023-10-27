@@ -56,7 +56,7 @@ public class ExchangeController {
     }
 
     //Update payment amout for exchange
-    @PutMapping("/id/edit-cash")
+    @PutMapping("/{id}/edit-cash")
     public ResponseEntity<?> editCashExchange(@RequestHeader("Authorization") String jwt, @PathVariable int id, @RequestParam("paymentAmount") int paymentAmount) throws UserException {
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);
         ExchangeDTO updatedExchange = exchangeService.editCashExchange(userDTO, id, paymentAmount);

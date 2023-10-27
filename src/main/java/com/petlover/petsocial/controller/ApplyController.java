@@ -8,6 +8,7 @@ import com.petlover.petsocial.payload.request.ApplyDTO;
 import com.petlover.petsocial.payload.request.UserDTO;
 import com.petlover.petsocial.service.ApplyService;
 import com.petlover.petsocial.service.ExchangeService;
+import com.petlover.petsocial.service.PetService;
 import com.petlover.petsocial.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,9 @@ public class ApplyController {
 
     @Autowired
     private ApplyService applyService;
+
+    @Autowired
+    private PetService petService;
 
     @PostMapping("/create")
     public ResponseEntity<?> createApply (@RequestHeader("Authorization") String jwt, @RequestParam int userid, @RequestParam int id) throws UserException {
@@ -53,4 +57,6 @@ public class ApplyController {
         }
 
     }
+
+
 }

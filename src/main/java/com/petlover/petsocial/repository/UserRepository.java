@@ -3,6 +3,8 @@ package com.petlover.petsocial.repository;
 import com.petlover.petsocial.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface UserRepository extends JpaRepository<User, Integer> {
     public boolean existsByEmail(String email);
 
@@ -17,5 +19,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     public User getById(int id);
 
-
+    public Optional<User> findByName(String name);
 }

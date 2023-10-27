@@ -51,8 +51,8 @@ public class User {
     private List<Exchange> exchanges;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Apply> applies;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private List<Chat> chats;
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+//    private List<Message> messages;
 
 
 }

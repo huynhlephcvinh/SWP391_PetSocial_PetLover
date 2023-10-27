@@ -1,5 +1,6 @@
 package com.petlover.petsocial.model.entity;
 
+import com.petlover.petsocial.websocket.domain.Message;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,6 +36,6 @@ public class Exchange {
 
     @OneToMany(mappedBy = "exchange", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Apply> applies;
-    @OneToMany(mappedBy = "exchange", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private List<Chat> chats;
+//    @OneToMany(mappedBy = "exchange", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+//    private List<Message> messages;
 }

@@ -60,5 +60,11 @@ public class UserController {
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
 
+    @GetMapping("/{id}")
+    public  ResponseEntity<?> getUserById(@PathVariable int id) throws UserException {
+        UserDTO userDTO = userService.findUserProfileById(id);
+        return ResponseEntity.ok(userDTO.getId());
+    }
+
 
 }
