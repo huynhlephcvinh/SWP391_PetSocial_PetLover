@@ -142,7 +142,7 @@ public class HomeController {
     }else {
 //      responseData.setToken(token);
 //      responseData.setData(res);
-      Authentication authentication = authenticate(signinDTO.getUsername(), signinDTO.getPassword());
+      Authentication authentication = authenticate(signinDTO.getEmail(), signinDTO.getPassword());
       String token = jwtProvider.generateToken(authentication);
       AuthResponse res = new AuthResponse(token, true,null);
       System.out.println(token);

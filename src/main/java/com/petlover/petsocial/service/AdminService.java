@@ -16,4 +16,10 @@ public interface AdminService {
     public List<UserForAdminDTO> searchUser(String name);
     public List<PostForAdminDTO> listAllPost();
     public List<PetForAdminDTO> listAllPet();
+
+    public int getTotalPostDete();
+    public int getTotalPostDisplay();
+    public int getTotalPetDisplay();
+
+    public int getTotalPostDisplayInMonth(int month);
 }

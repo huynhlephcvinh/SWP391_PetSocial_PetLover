@@ -63,7 +63,7 @@ public class UserServiceImp implements UserService {
     }
     @Override
     public String checkLogin(SigninDTO signinDTO) {
-        User user = userRepo.findByEmail(signinDTO.getUsername());
+        User user = userRepo.findByEmail(signinDTO.getEmail());
         if (user == null) {
             return "Incorrect username or password";
         } else if (!user.isEnable()) {

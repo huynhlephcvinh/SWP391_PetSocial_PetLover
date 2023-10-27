@@ -16,7 +16,14 @@ import com.petlover.petsocial.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 @Service
 public class AdminServiceImp implements AdminService {
@@ -111,6 +118,45 @@ public class AdminServiceImp implements AdminService {
         return listUser.size();
     }
 
+    public int getTotalPostDete() {
+        int size =0;
+        try {
+            List<Post> listPostDelete = postRepository.getAllPostDeleteForAdmin();
+            size = listPostDelete.size();
+        }catch(Exception ex){ }
+        return size;
+    }
+
+    public int getTotalPostDisplay() {
+        int size =0;
+        try {
+            List<Post> listPostDisplay = postRepository.getAllPostDisplayUserForAdmin();
+            size = listPostDisplay.size();
+        }catch(Exception ex){ }
+        return size;
+    }
+    public int getTotalPetDisplay() {
+        int size =0;
+        try {
+            List<Pet> listPetDisplay = petRepository.getAllPetDisplayForAdmin();
+            size = listPetDisplay.size();
+        }catch(Exception ex){ }
+        return size;
+    }
+
+    public int getTotalPostDisplayInMonth(int month) {
+        int count = 0;
+        List<Post> listPostDisplay = postRepository.getAllPostDisplayUserForAdmin();
+        for (Post post : listPostDisplay) {
+            String postDate = post.getCreate_date();
+            LocalDate localDate = LocalDate.parse(postDate, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+            if (localDate.getMonthValue() == month) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     public List<UserForAdminDTO> searchUser(String name) {
         List<User> listUser = userRepo.listUser();
         List<UserForAdminDTO> getListUserForAdmin = new ArrayList<>();
@@ -141,6 +187,7 @@ public class AdminServiceImp implements AdminService {
             postDTO.setImage(post.getImage());
             postDTO.setCreate_date(post.getCreate_date());
             postDTO.setTotal_like(post.getTotal_like());
+            postDTO.setTotal_comment(post.getComments().size());
             postDTO.setUser_name(post.getUser().getName());
             postDTO.setStatus(post.isStatus());
             postDTO.setEnable(post.isEnable());
