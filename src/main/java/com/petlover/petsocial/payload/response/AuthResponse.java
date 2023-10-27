@@ -1,5 +1,6 @@
 package com.petlover.petsocial.payload.response;
 
+import com.petlover.petsocial.payload.request.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -111,6 +111,7 @@ public class PetServiceImp implements PetService {
         if(getPet==null) {
             return null;
         }
+
         if(getPet.getUser().getId() == userDTO.getId()) {
             getPet.setStatus(false);
         }

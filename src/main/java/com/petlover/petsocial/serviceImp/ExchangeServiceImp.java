@@ -3,9 +3,15 @@ package com.petlover.petsocial.serviceImp;
 import com.petlover.petsocial.model.entity.ExStatus;
 import com.petlover.petsocial.model.entity.Exchange;
 import com.petlover.petsocial.model.entity.Pet;
+import com.petlover.petsocial.model.entity.Post;
 import com.petlover.petsocial.model.entity.User;
+import com.petlover.petsocial.payload.request.CreateExchangeDTO;
 import com.petlover.petsocial.payload.request.ExchangeDTO;
+import com.petlover.petsocial.payload.request.PetDTO;
+import com.petlover.petsocial.payload.request.PetToPostDTO;
+import com.petlover.petsocial.payload.request.PostDTO;
 import com.petlover.petsocial.payload.request.UserDTO;
+import com.petlover.petsocial.payload.request.UserPostDTO;
 import com.petlover.petsocial.repository.ExchangeRepository;
 import com.petlover.petsocial.repository.PetRepository;
 import com.petlover.petsocial.repository.UserRepository;
@@ -35,16 +41,17 @@ public class ExchangeServiceImp implements ExchangeService {
 
 
     @Override
-    public ExchangeDTO addExchange(UserDTO userDTO, int petId, int paymentAmount) {
+    public ExchangeDTO addExchange(UserDTO userDTO, CreateExchangeDTO createExchangeDTO) {
         Exchange exchange = new Exchange();
         User user = userRepository.findById(userDTO.getId());
-        Pet pet = petRepository.getById(petId);
+        Pet pet = petRepository.getById(createExchangeDTO.getPetDTO().getId());
         if (user != null && pet != null) {
             exchange.setUser(user);
             exchange.setPet(pet);
             exchange.setExchange_date(new Date());
-            exchange.setPayment_amount(paymentAmount);
+            exchange.setPayment_amount(createExchangeDTO.getPaymentAmount());
             exchange.setStatus(ExStatus.PENDING);
+            exchange.setDescription(createExchangeDTO.getDescription());
             exchangeRepository.save(exchange);
             return convertToDTO(exchange);
         } else {
@@ -81,12 +88,13 @@ public class ExchangeServiceImp implements ExchangeService {
     }
 
     @Override
-    public ExchangeDTO editCashExchange(UserDTO userDTO, int id, int paymentAmount) {
+    public ExchangeDTO editCashExchange(UserDTO userDTO, int id, CreateExchangeDTO createExchangeDTO) {
         Exchange exchange = exchangeRepository.findById(id);
         User user = userRepository.findById(userDTO.getId());
 
-        if(paymentAmount>0 && exchange.getUser().getId()==user.getId()){
-            exchange.setPayment_amount(paymentAmount);
+        if(createExchangeDTO.getPaymentAmount()>0 && exchange.getUser().getId()==user.getId()){
+            exchange.setPayment_amount(createExchangeDTO.getPaymentAmount());
+            exchange.setDescription(createExchangeDTO.getDescription());
             exchangeRepository.save(exchange);
             return convertToDTO(exchange);
         }else {
@@ -108,7 +116,16 @@ public class ExchangeServiceImp implements ExchangeService {
         } else {
             return null;
         }
+    }
 
+    @Override
+    public List<ExchangeDTO> getAllExchangeToShow() {
+        List<ExchangeDTO> exchangeDTOList = new ArrayList<>();
+        for (Exchange exchange : exchangeRepository.getAllExchange()) {
+            ExchangeDTO exchangeDTO = convertToDTO(exchange);
+            exchangeDTOList.add(exchangeDTO);
+        }
+        return exchangeDTOList;
     }
 
     @Override
@@ -230,8 +247,41 @@ public class ExchangeServiceImp implements ExchangeService {
         exchangeDTO.setExchangeDate(exchange.getExchange_date());
         exchangeDTO.setPaymentAmount(exchange.getPayment_amount());
         exchangeDTO.setStatus(exchange.getStatus());
-        exchangeDTO.setUserId(exchange.getUser().getId());
-        exchangeDTO.setPetId(exchange.getPet().getId());
+        exchangeDTO.setDescription(exchange.getDescription());
+        User user = exchange.getUser();
+        List<PostDTO> postDTOList = new ArrayList<>();
+        for(Post post: user.getPosts()){
+            if(post.isStatus()==true) {
+                if(post.isEnable()==true) {
+                    PetToPostDTO petToPostDTO = new PetToPostDTO();
+                    petToPostDTO.setId(post.getPet().getId());
+                    petToPostDTO.setName(post.getPet().getName());
+                    petToPostDTO.setImage(post.getPet().getImage());
+
+
+                    UserPostDTO userPostDTO = new UserPostDTO();
+                    userPostDTO.setId(post.getUser().getId());
+                    userPostDTO.setName(post.getUser().getName());
+                    userPostDTO.setAvatar(post.getUser().getAvatar());
+
+                    PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), post.getComments(), petToPostDTO, userPostDTO);
+                    postDTOList.add(postDTO);
+                }
+            }
+        }
+
+        List<PetDTO> petDTOList =new ArrayList<>();
+        for(Pet pet: user.getPets()){
+            if(pet.isStatus()==true) {
+                PetDTO petDTO = new PetDTO(pet.getId(), pet.getImage(), pet.getName(), pet.getDescription());
+                petDTOList.add(petDTO);
+            }
+        }
+        UserDTO userDTO = new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(), petDTOList,postDTOList);
+        exchangeDTO.setUserDTO(userDTO);
+        Pet pet = exchange.getPet();
+        PetDTO petDTO = new PetDTO(pet.getId(),pet.getImage(),pet.getName(),pet.getDescription());
+        exchangeDTO.setPetDTO(petDTO);
         return exchangeDTO;
     }
 

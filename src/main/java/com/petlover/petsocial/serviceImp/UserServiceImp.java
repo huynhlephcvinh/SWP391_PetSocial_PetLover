@@ -198,19 +198,21 @@ public class UserServiceImp implements UserService {
         List<PostDTO> postDTOList = new ArrayList<>();
         for(Post post: user.getPosts()){
             if(post.isStatus()==true) {
-                PetToPostDTO petToPostDTO = new PetToPostDTO();
-                petToPostDTO.setId(post.getPet().getId());
-                petToPostDTO.setName(post.getPet().getName());
-                petToPostDTO.setImage(post.getPet().getImage());
+                if(post.isEnable()==true) {
+                    PetToPostDTO petToPostDTO = new PetToPostDTO();
+                    petToPostDTO.setId(post.getPet().getId());
+                    petToPostDTO.setName(post.getPet().getName());
+                    petToPostDTO.setImage(post.getPet().getImage());
 
 
-                UserPostDTO userPostDTO = new UserPostDTO();
-                userPostDTO.setId(post.getUser().getId());
-                userPostDTO.setName(post.getUser().getName());
-                userPostDTO.setAvatar(post.getUser().getAvatar());
+                    UserPostDTO userPostDTO = new UserPostDTO();
+                    userPostDTO.setId(post.getUser().getId());
+                    userPostDTO.setName(post.getUser().getName());
+                    userPostDTO.setAvatar(post.getUser().getAvatar());
 
-                PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), post.getComments(), petToPostDTO, userPostDTO);
-                postDTOList.add(postDTO);
+                    PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), post.getComments(), petToPostDTO, userPostDTO);
+                    postDTOList.add(postDTO);
+                }
             }
         }
 
@@ -222,7 +224,7 @@ public class UserServiceImp implements UserService {
             }
         }
 
-        return new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(),petDTOList,postDTOList);
+        return new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(), petDTOList,postDTOList);
     }
 
     public UserDTO editprofile(int id, UserUpdateDTO userDTO) throws UserException {

@@ -174,29 +174,31 @@ postRepository.save(newPost);
     }
     public List<PostDTO> sreachPost(String content)
     {
-        List<Post> postListSearch = postRepository.searchPost(content);
+        List<Post> postListSearch = postRepository.getAll();
         List<PostDTO> listpostDTO = new ArrayList<>();
         for(Post post : postListSearch) {
-            PostDTO postDTO = new PostDTO();
-            postDTO.setId(post.getId());
-            postDTO.setContent(post.getContent());
-            postDTO.setImage(post.getImage());
-            postDTO.setCreate_date(post.getCreate_date());
-            postDTO.setTotal_like(post.getTotal_like());
-            postDTO.setComments(post.getComments());
+            if(post.getContent().toLowerCase().contains(content.toLowerCase())) {
+                PostDTO postDTO = new PostDTO();
+                postDTO.setId(post.getId());
+                postDTO.setContent(post.getContent());
+                postDTO.setImage(post.getImage());
+                postDTO.setCreate_date(post.getCreate_date());
+                postDTO.setTotal_like(post.getTotal_like());
+                postDTO.setComments(post.getComments());
 
-            PetToPostDTO petToPostDTO = new PetToPostDTO();
-            petToPostDTO.setId(post.getPet().getId());
-            petToPostDTO.setName(post.getPet().getName());
-            petToPostDTO.setImage(post.getPet().getImage());
-            postDTO.setPetToPostDTO(petToPostDTO);
+                PetToPostDTO petToPostDTO = new PetToPostDTO();
+                petToPostDTO.setId(post.getPet().getId());
+                petToPostDTO.setName(post.getPet().getName());
+                petToPostDTO.setImage(post.getPet().getImage());
+                postDTO.setPetToPostDTO(petToPostDTO);
 
-            UserPostDTO userPostDTO = new UserPostDTO();
-            userPostDTO.setId(post.getUser().getId());
-            userPostDTO.setName(post.getUser().getName());
-            userPostDTO.setAvatar(post.getUser().getAvatar());
-            postDTO.setUserPostDTO(userPostDTO);
-            listpostDTO.add(postDTO);
+                UserPostDTO userPostDTO = new UserPostDTO();
+                userPostDTO.setId(post.getUser().getId());
+                userPostDTO.setName(post.getUser().getName());
+                userPostDTO.setAvatar(post.getUser().getAvatar());
+                postDTO.setUserPostDTO(userPostDTO);
+                listpostDTO.add(postDTO);
+            }
         }
         return listpostDTO;
     }

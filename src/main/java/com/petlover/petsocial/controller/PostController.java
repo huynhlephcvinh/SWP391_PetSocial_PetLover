@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/post")
 public class PostController {
     @Autowired
@@ -59,7 +60,6 @@ public class PostController {
     public ResponseEntity<?> getAllPost(){
         ResponseData responseData = new ResponseData();
         List<PostDTO> list = postService.getAllPost();
-        request.setAttribute("listPost",list);
         responseData.setData(list);
         return new ResponseEntity<>(responseData,HttpStatus.OK);
     }
@@ -73,7 +73,7 @@ public class PostController {
         return new ResponseEntity<>(responseData,HttpStatus.OK);
     }
 
-    @PostMapping ("/delete/{id}")
+    @DeleteMapping ("/delete/{id}")
     public ResponseEntity<?> deletePost(@PathVariable(value = "id") int id,@RequestHeader("Authorization") String jwt) throws UserException, PostException {
         ResponseData responseData = new ResponseData();
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);

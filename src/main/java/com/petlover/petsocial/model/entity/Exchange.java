@@ -18,6 +18,7 @@ public class Exchange {
     private int id;
     private Date exchange_date;
     private int payment_amount;
+    private String description;
 
     @Enumerated(EnumType.STRING)
     private ExStatus status;
@@ -36,6 +37,12 @@ public class Exchange {
 
     @OneToMany(mappedBy = "exchange", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Apply> applies;
+
 //    @OneToMany(mappedBy = "exchange", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
 //    private List<Message> messages;
 }
+
+//    @OneToMany(mappedBy = "exchange", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+//    private List<Chat> chats;
+//}
+
