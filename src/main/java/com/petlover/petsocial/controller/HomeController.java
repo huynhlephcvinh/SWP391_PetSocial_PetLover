@@ -2,13 +2,11 @@ package com.petlover.petsocial.controller;
 
 
 import com.petlover.petsocial.config.JwtProvider;
+import com.petlover.petsocial.exception.PostException;
 import com.petlover.petsocial.exception.UserException;
 import com.petlover.petsocial.exception.UserNotFoundException;
 import com.petlover.petsocial.model.entity.User;
-import com.petlover.petsocial.payload.request.PostDTO;
-import com.petlover.petsocial.payload.request.SigninDTO;
-import com.petlover.petsocial.payload.request.SingupDTO;
-import com.petlover.petsocial.payload.request.UserDTO;
+import com.petlover.petsocial.payload.request.*;
 import com.petlover.petsocial.payload.response.AuthResponse;
 import com.petlover.petsocial.payload.response.ResponseData;
 import com.petlover.petsocial.repository.UserRepository;
@@ -174,6 +172,32 @@ public class HomeController {
         List<PostDTO> list = postService.getAllPost();
         responseData.setData(list);
         return new ResponseEntity<>(responseData,HttpStatus.OK);
+    }
+
+    @GetMapping("/getAllUser")
+    public ResponseEntity<?> getAllUser(){
+        ResponseData responseData = new ResponseData();
+        List<UserHomeDTO> list = userService.getListUser();
+        responseData.setData(list);
+        return new ResponseEntity<>(responseData,HttpStatus.OK);
+    }
+
+    @GetMapping("/searchUser")
+    public ResponseEntity<?> searchUser(@RequestParam("name") String name) throws UserException, PostException {
+        ResponseData responseData = new ResponseData();
+        List<UserHomeDTO> list = userService.getSearchListUser(name);
+        responseData.setData(list);
+        return new ResponseEntity<>(responseData,HttpStatus.OK);
+
+    }
+
+    @GetMapping("/searchPost")
+    public ResponseEntity<?> searchPost(@RequestParam("content") String content) throws UserException, PostException {
+        ResponseData responseData = new ResponseData();
+        List<PostDTO> list = postService.sreachPost(content);
+        responseData.setData(list);
+        return new ResponseEntity<>(responseData,HttpStatus.OK);
+
     }
     @GetMapping("/verify")
     public String verifyAccount(@Param("code") String code, Model m) {

@@ -146,11 +146,18 @@ public class AdminServiceImp implements AdminService {
 
     public int getTotalPostDisplayInMonth(int month) {
         int count = 0;
+        Calendar cal = Calendar.getInstance();
+        Date date = cal.getTime();
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+        String formattedDate = dateFormat.format(date);
+        LocalDate localDateNow = LocalDate.parse(formattedDate,DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
         List<Post> listPostDisplay = postRepository.getAllPostDisplayUserForAdmin();
         for (Post post : listPostDisplay) {
             String postDate = post.getCreate_date();
             LocalDate localDate = LocalDate.parse(postDate, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+
             if (localDate.getMonthValue() == month) {
+                if(localDate.getYear() == localDateNow.getYear())
                 count++;
             }
         }

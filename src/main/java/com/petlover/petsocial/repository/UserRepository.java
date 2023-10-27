@@ -25,7 +25,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value="SELECT * FROM user u where u.role <> \"ROLE_ADMIN\"",nativeQuery = true)
     public List<User> listUser();
 
-
+    @Query(value="SELECT * FROM user u where u.enable=1",nativeQuery = true)
+    public List<User> listUserHome();
     public Optional<User> findByName(String name);
 
     @Query(value="SELECT * FROM user u where u.role <> \"ROLE_ADMIN\" and u.name like CONCAT('%',%?1%,'%') ",nativeQuery = true)

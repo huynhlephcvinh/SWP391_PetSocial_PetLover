@@ -5,10 +5,7 @@ import com.petlover.petsocial.exception.UserException;
 import com.petlover.petsocial.exception.UserNotFoundException;
 import com.petlover.petsocial.model.entity.AuthenticationProvider;
 import com.petlover.petsocial.model.entity.User;
-import com.petlover.petsocial.payload.request.SigninDTO;
-import com.petlover.petsocial.payload.request.SingupDTO;
-import com.petlover.petsocial.payload.request.UserDTO;
-import com.petlover.petsocial.payload.request.UserUpdateDTO;
+import com.petlover.petsocial.payload.request.*;
 
 import java.util.List;
 
@@ -34,5 +31,8 @@ public interface UserService {
     public UserDTO findUserProfileById(int idUser) throws UserException;
 
     public List<User> getAllUsers();
+
+    public List<UserHomeDTO> getListUser();
+    public List<UserHomeDTO> getSearchListUser(String name);
 
 }

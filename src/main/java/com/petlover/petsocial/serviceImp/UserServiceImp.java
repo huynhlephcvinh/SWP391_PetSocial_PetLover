@@ -325,4 +325,35 @@ public class UserServiceImp implements UserService {
     }
 
 
+    public List<UserHomeDTO> getListUser() {
+       List<User> userList = userRepo.listUserHome();
+       List<UserHomeDTO> userHomeDTOList = new ArrayList<>();
+       for(User user : userList) {
+           UserHomeDTO userHomeDTO = new UserHomeDTO();
+           userHomeDTO.setId(user.getId());
+           userHomeDTO.setName(user.getName());
+           userHomeDTO.setAvatar(user.getAvatar());
+           userHomeDTOList.add(userHomeDTO);
+       }
+
+       return userHomeDTOList;
+    }
+
+    public List<UserHomeDTO> getSearchListUser(String name){
+        List<User> userList = userRepo.listUserHome();
+        List<UserHomeDTO> userHomeDTOList = new ArrayList<>();
+        for(User user : userList) {
+            if(user.getName().toLowerCase().contains(name.toLowerCase())) {
+                UserHomeDTO userHomeDTO = new UserHomeDTO();
+                userHomeDTO.setId(user.getId());
+                userHomeDTO.setName(user.getName());
+                userHomeDTO.setAvatar(user.getAvatar());
+                userHomeDTOList.add(userHomeDTO);
+            }
+        }
+
+        return userHomeDTOList;
+    }
+
+
 }
