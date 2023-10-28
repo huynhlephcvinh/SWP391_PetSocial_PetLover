@@ -14,32 +14,43 @@ const Team = () => {
 
   const [rows, setRows] = useState([]);
   const token = localStorage.getItem("token");
+
   useEffect(() => {
-    // Gọi API để lấy dữ liệu từ backend
-    axios
-      .get("http://localhost:8080/user/profile", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        // Lấy dữ liệu từ response và cập nhật vào `rows`
-        const userData = response.data.data;
-        setRows([
-          {
-            id: userData.id,
-            name: userData.name,
-            phone: userData.phone,
-            email: userData.email,
-            accessLevel: userData.role,
+    if (token) {
+      // Gọi API để lấy dữ liệu từ phía backend
+      axios
+        .get("http://localhost:8080/admin/getAllUser", {
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
-          // Thêm dòng dữ liệu khác tương tự nếu cần
-        ]);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+        })
+        .then((response) => {
+          //console.log(response.data.data);
+          // Lấy dữ liệu từ response và cập nhật vào `rows`
+          const userData = response.data.data;
+          const updatedRows = Array.isArray(userData)
+            ? userData.map((user, index) => ({
+                id: index + 1,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                enable: user.enable,
+                accessLevel: user.role,
+              }))
+            : [];
+
+          setRows(updatedRows);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
   }, [token]);
+
+  useEffect(() => {
+    // This will log rows every time it changes
+    console.log(rows);
+  }, [rows]);
 
   const columns = [
     { field: "id", headerName: "ID" },
@@ -60,6 +71,10 @@ const Team = () => {
       flex: 1,
     },
     {
+      field: "enable",
+      headerName: "Enable",
+    },
+    {
       field: "accessLevel",
       headerName: "Access Level",
       flex: 1,
@@ -72,17 +87,17 @@ const Team = () => {
             display="flex"
             justifyContent="center"
             backgroundColor={
-              accessLevel === "admin"
+              accessLevel === "ROLE_ADMIN"
                 ? colors.greenAccent[600]
-                : accessLevel === "manager"
-                ? colors.greenAccent[700]
+                : accessLevel === "ROLE_STAFF"
+                ? colors.blueAccent[700]
                 : colors.greenAccent[700]
             }
             borderRadius="4px"
           >
-            {accessLevel === "admin" && <AdminPanelSettingsOutlinedIcon />}
-            {accessLevel === "manager" && <SecurityOutlinedIcon />}
-            {accessLevel === "user" && <LockOpenOutlinedIcon />}
+            {accessLevel === "ROLE_ADMIN" && <AdminPanelSettingsOutlinedIcon />}
+            {accessLevel === "ROLE_STAFF" && <SecurityOutlinedIcon />}
+            {accessLevel === "ROLE_USER" && <LockOpenOutlinedIcon />}
             <Typography color={colors.grey[100]} sx={{ ml: "5px" }}>
               {accessLevel}
             </Typography>

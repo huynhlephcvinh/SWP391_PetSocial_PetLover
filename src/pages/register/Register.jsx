@@ -1,12 +1,57 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 import "./register.scss";
 
-const Register = () => {
+function Register() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+
+  function isFormValid() {
+    return name.trim() !== "" && email.trim() !== "" && phone.trim() !== "" && password.trim() !== "";
+  }
+
+  async function register(event) {
+    event.preventDefault();
+
+    if (!isFormValid()) {
+      setError("Please fill in all fields");
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://localhost:8080/createUser", {
+        name: name,
+        email: email,
+        phone: phone,
+        password: password,
+      }
+      );
+
+      console.log(response.data);
+
+      if (response.data === true
+        ) {
+          setSuccess("Register success. Check your email to complete verification");
+      } else {
+        setError("Email is already exists");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <div className="register">
       <div className="card">
         <div className="left">
-          <h1>DC Social.</h1>
+          <h1>Lama Social.</h1>
           <p>
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero cum,
             alias totam numquam ipsa exercitationem dignissimos, error nam,
@@ -19,17 +64,39 @@ const Register = () => {
         </div>
         <div className="right">
           <h1>Register</h1>
-          <form>
-            <input type="email" placeholder="Email" />
-            <input type="text" placeholder="Name" />
-            <input type="password" placeholder="Password" />
-            <input type="text" placeholder="Phone" />
-            <button>Register</button>
+          <form onSubmit={register}>
+          {success && <h5 style={{ color: 'greenyellow', fontStyle: 'italic' }}>{success}</h5>}
+          {error && <h5 style={{ color: 'red', fontStyle: 'italic' }}>{error}</h5>}
+            <input
+              type="text"
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Phone"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button type="submit">Register</button>
           </form>
         </div>
       </div>
     </div>
   );
-};
+}
 
 export default Register;

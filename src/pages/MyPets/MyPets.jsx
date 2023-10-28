@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import "./myprofile.scss";
+import "./mypets.scss";
 import FacebookTwoToneIcon from "@mui/icons-material/FacebookTwoTone";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import InstagramIcon from "@mui/icons-material/Instagram";
@@ -14,7 +14,7 @@ import Posts from "../../components/posts/Posts";
 import Pets from "../../components/pets/Pets";
 // import { CenterFocusStrong, Pets } from '@mui/icons-material';
 
-const Profile = () => {
+const MyPets = () => {
   const currentUser = localStorage.getItem('currentUser');
   const [userData, setUserData] = useState(null);
   const [jwt, setJwt] = useState();
@@ -25,51 +25,25 @@ const Profile = () => {
   const [posts, setPosts] = useState([]);
   const token = localStorage.getItem('token');
 
-  // useEffect(() => {
-  //   // Fetch pets
-  //   async function fetchPet() {
-  //     try {
-  //       const response1 = await axios.get("http://localhost:8080/pet/getAllPet", {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-
-  //       setPets(response1.data.data);
-  //       console.log("ListPetaaaa:", pets);
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   }
-
-  //   fetchPet();
-  // }, [token]);
-
-
   useEffect(() => {
-    async function fetchPosts() {
+    // Fetch pets
+    async function fetchPet() {
       try {
-        const response = await axios.get("http://localhost:8080/post/getAllYourPost",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setPosts(response.data.data);
-        console.log("Post: "+posts);
+        const response1 = await axios.get("http://localhost:8080/pet/getAllPet", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setPets(response1.data.data);
+        console.log("ListPetaaaa:", pets);
       } catch (error) {
-        console.error("Error fetching posts:", error);
+        console.error(error);
       }
-      //
-     
     }
 
-    fetchPosts();
+    fetchPet();
   }, [token]);
-
-
-
 
 
   return (
@@ -113,19 +87,14 @@ const Profile = () => {
             <MoreVertIcon />
           </div>
         </div>
-        {/* {pets != "" ? (
+        {pets != "" ? (
           <Pets pets={pets} />
         ) : (
           <div className='noPosts'>You don't have any pets yet</div>
-        )} */}
-        {posts != "" ? (
-          <Posts posts={posts} />
-        ) : (
-          <div className='noPosts'>You don't have any posts yet</div>
         )}
       </div>
     </div>
   );
 };
 
-export default Profile;
+export default MyPets;

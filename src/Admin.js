@@ -12,10 +12,12 @@ import { useState } from "react";
 import { CssBaseline } from "@mui/material";
 import Calendar from "./pages/adminpage/calendar/calendar";
 import Team from "./pages/adminpage/team/Team";
-import Contacts from "./pages/adminpage/contacts";
-import Invoices from "./pages/adminpage/invoices";
+// import Contacts from "./pages/adminpage/contacts";
+// import Invoices from "./pages/adminpage/invoices";
 import FAQ from "./pages/adminpage/faq";
 import Form from "./pages/adminpage/form";
+import PostsUser from "./pages/adminpage/postadmin";
+import PetsUser from "./pages/adminpage/invoices";
 
 function Admin() {
   const [theme, colorMode] = useMode();
@@ -32,8 +34,8 @@ function Admin() {
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/team" element={<Team />} />
-              <Route path="/contacts" element={<Contacts />} />
-              <Route path="/invoices" element={<Invoices />} />
+              <Route path="/posts" element={<PostsUser />} />
+              <Route path="/pets" element={<PetsUser />} />
               <Route path="/form" element={<Form />} />
               <Route path="/bar" element={<Bar />} />
               <Route path="/pie" element={<Pie />} />

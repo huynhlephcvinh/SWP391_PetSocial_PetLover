@@ -1,6 +1,6 @@
 @import "../../style.scss";
 
-.myprofile {
+.marketplace {
   @include themify($themes) {
     background-color: themed("bgSoft");
 
@@ -15,7 +15,7 @@
         object-fit: cover;
       }
 
-      .myprofilePic {
+      .marketplacePic {
         width: 200px;
         height: 200px;
         border-radius: 50%;
@@ -27,7 +27,7 @@
         top: 200px;
       }
     }
-    .myprofileContainer {
+    .marketplaceContainer {
       padding: 20px 70px;
 
       @include mobile{

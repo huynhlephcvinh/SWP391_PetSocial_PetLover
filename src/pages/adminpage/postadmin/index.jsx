@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Box, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import Header from "../../../components/admin/Header";
 import { tokens } from "../../../theme";
+import Header from "../../../components/admin/Header";
 
-const PetsUser = () => {
+const Posts = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -14,26 +14,26 @@ const PetsUser = () => {
 
   useEffect(() => {
     if (token) {
-      // Fetch a list of pets from the backend
+      // Gọi API để lấy danh sách bài đăng từ phía backend
       axios
-        .get("http://localhost:8080/admin/getAllPet", {
+        .get("http://localhost:8080/admin/getAllPost", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         })
         .then((response) => {
-          console.log(response.data);
-          const petData = response.data.data;
-          const updatedRows = Array.isArray(petData)
-            ? petData.map((pet, index) => ({
+          // Lấy dữ liệu từ response và cập nhật vào `rows`
+          console.log(response.data.data);
+          const postData = response.data.data;
+          const updatedRows = Array.isArray(postData)
+            ? postData.map((post, index) => ({
                 id: index + 1,
-                user: pet.user_name,
-                name: pet.name,
-                description: pet.description,
-                image: pet.image,
-                pet_type: pet.petType_name,
-                status: pet.status,
-                // Add more fields as needed
+                name: post.user_name,
+                content: post.content,
+                date: formatDate(post.create_date),
+                image: post.image,
+                like: post.total_like,
+                comment: post.total_comment,
               }))
             : [];
 
@@ -45,46 +45,59 @@ const PetsUser = () => {
     }
   }, [token]);
 
+  const formatDate = (dateString) => {
+    // Split the date string by a common set of date separators
+    const dateComponents = dateString.split(/[/\- ]/);
+
+    // Reorder the components to match the standard format: YYYY-MM-DD
+    const formattedDate = `${dateComponents[2]}-${dateComponents[1]}-${dateComponents[0]}`;
+
+    return formattedDate;
+  };
+
   const columns = [
     { field: "id", headerName: "ID" },
     {
-      field: "user",
+      field: "name",
       headerName: "User",
       flex: 0.5,
     },
     {
-      field: "pet_type",
-      headerName: "Pet Type",
-    },
-    {
-      field: "name",
-      headerName: "Name",
-      flex: 0.5,
-    },
-    {
-      field: "description",
-      headerName: "Description",
+      field: "content",
+      headerName: "Content",
       flex: 1,
+    },
+    {
+      field: "date",
+      headerName: "Date",
+      type: "date",
+      valueGetter: (params) => {
+        return new Date(params.value);
+      },
     },
     {
       field: "image",
       headerName: "Image",
+      flex: 1,
     },
-
     {
-      field: "status",
-      headerName: "Status",
+      field: "like",
+      headerName: "Like",
     },
-    // Add more fields as needed
+    {
+      field: "comment",
+      headerName: "Comment",
+    },
   ];
 
   return (
     <Box m="20px">
-      <Header title="PETS" subtitle="List of Pets" />
+      <Header title="POSTS" subtitle="List of User Posts" />
       <Box
         m="40px 0 0 0"
         height="75vh"
         sx={{
+          // Tùy chỉnh giao diện của DataGrid theo nhu cầu của bạn
           "& .MuiDataGrid-root": {
             border: "none",
           },
@@ -110,4 +123,4 @@ const PetsUser = () => {
   );
 };
 
-export default PetsUser;
+export default Posts;

@@ -5,44 +5,49 @@ export const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(
-    JSON.parse(localStorage.getItem("currentUser")) || null
+    // JSON.parse(localStorage.getItem("user")) || null        
+    JSON.parse(localStorage.getItem('currentUser'))
+
   );
 
-  const login = async () => {
-    const token = localStorage.getItem("token"); // Đảm bảo bạn đã lưu token vào localStorage khi đăng nhập
-
-    if (!token) {
-      console.error("Không có token xác thực.");
-      return;
+  const LoginAuth = (username, password) => {
+    const response = axios.post("http://localhost:8080/signin", {
+      email: username,
+      password: password,
     }
-
-    try {
-      const response = await axios.get("http://localhost:8080/user/profile", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const userData = response.data; // Lấy dữ liệu người dùng từ response
-      console.log(userData);
-
-      // Cập nhật thông tin người dùng trong state
-      setCurrentUser({
-        id: userData.id,
-        name: userData.name,
-        avatar: userData.avatar,
-      });
-    } catch (error) {
-      console.error("Lỗi khi lấy thông tin người dùng:", error);
-      // Xử lý lỗi nếu cần
-    }
+    );
+    return response;
   };
 
-  useEffect(() => {
-    localStorage.setItem("currentUser", JSON.stringify(currentUser));
-  }, [currentUser]);
+
+// useEffect(() => {
+//   const fetchUserData = async () => {
+//     try {
+//       const token = localStorage.getItem('token');
+//       if (token) {
+//         const response1 = await axios.get('http://localhost:8080/user/profile', {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//           },
+//         });
+
+//         // localStorage.setItem('currentUser', JSON.stringify(response1.data));
+//         setCurrentUser(response1.data.data);
+//         console.log(">>> Current: " + response1.data.data.name);
+//       }
+//     } catch (error) {
+//       console.error("Error fetching user data:", error);
+//     }
+//   };
+
+//   fetchUserData();
+// }, []); // không có dependency
+
+// useEffect để theo dõi thay đổi của currentUser
+
 
   return (
-    <AuthContext.Provider value={{ currentUser, login }}>
+    <AuthContext.Provider value={{ currentUser, LoginAuth }}>
       {children}
     </AuthContext.Provider>
   );
