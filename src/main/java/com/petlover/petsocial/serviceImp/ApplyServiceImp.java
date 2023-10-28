@@ -32,9 +32,9 @@ public class ApplyServiceImp implements ApplyService {
 
     @Override
     public Apply createApply(Exchange exchange, UserDTO userDTO, UserDTO userDTOown) {
-        User user = userRepository.findById(userDTO.getId());
-        User userown = userRepository.findById(userDTOown.getId());
-        Exchange exchange1 = exchangeRepository.findById(exchange.getId());
+        User user = userRepository.findById(userDTO.getId()).orElse(null);
+        User userown = userRepository.findById(userDTOown.getId()).orElse(null);
+        Exchange exchange1 = exchangeRepository.findById(exchange.getId()).orElse(null);
         if (exchange1 != null && exchange1.getUser().getId()==userown.getId()){
             Apply apply = new Apply();
             apply.setExchange(exchange1);
@@ -49,9 +49,9 @@ public class ApplyServiceImp implements ApplyService {
     }
 
     @Override
-    public Apply updateApply(UserDTO userDTO, int applyid) {
-        User user = userRepository.findById(userDTO.getId());
-        Apply apply = applyRepository.findById(applyid);
+    public Apply updateApply(UserDTO userDTO, Long applyid) {
+        User user = userRepository.findById(userDTO.getId()).orElse(null);
+        Apply apply = applyRepository.findById(applyid).orElse(null);
         if(apply!=null){
             for(Apply apply1 : user.getApplies()){
                 if (!apply1.isStatus() && apply1.getId()==apply.getId()){
@@ -68,9 +68,9 @@ public class ApplyServiceImp implements ApplyService {
 
 
     @Override
-    public List<ApplyDTO> getApplyForExchange(UserDTO userDTO, int id) {
-        User user = userRepository.findById(userDTO.getId());
-        Exchange exchange = exchangeRepository.findById(id);
+    public List<ApplyDTO> getApplyForExchange(UserDTO userDTO, Long id) {
+        User user = userRepository.findById(userDTO.getId()).orElse(null);
+        Exchange exchange = exchangeRepository.findById(id).orElse(null);
         List<ApplyDTO> applyDTOS = new ArrayList<>();
         if (exchange!=null && user.getExchanges().contains(exchange)){
              for (Apply apply : exchange.getApplies()){
@@ -91,7 +91,7 @@ public class ApplyServiceImp implements ApplyService {
     }
 
     @Override
-    public Apply getApplyById(int appId) {
-        return applyRepository.findById(appId);
+    public Apply getApplyById(Long appId) {
+        return applyRepository.findById(appId).orElse(null);
     }
 }

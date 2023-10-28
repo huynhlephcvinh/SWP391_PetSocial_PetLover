@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 public class PostDTO {
-    private int id;
+    private Long id;
     private String image;
     private String content;
     private String create_date;

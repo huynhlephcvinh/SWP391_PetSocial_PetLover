@@ -10,8 +10,8 @@ import java.util.List;
 public interface PetService {
     public PetDTO insertPet(CreatePetDTO createPetDTO, UserDTO userDTO) throws PetException;
     public List<PetDTO> getAllPet(UserDTO userDTO);
-    public PetDTO deletePet(int id,UserDTO userDTO) throws PetException;
-    public PetDTO getOnePet(int id, UserDTO userDTO);
-    public PetDTO updatePet(int id,PetUpdateDTO petUpdateDTO, UserDTO userDTO);
-    public List<PetToPostDTO> getAllPetPost(UserDTO userDTO);
+    public PetDTO deletePet(Long id,UserDTO userDTO) throws PetException;
+    public PetDTO getOnePet(Long id, UserDTO userDTO);
+    public PetDTO updatePet(Long id,PetUpdateDTO petUpdateDTO, UserDTO userDTO);
+    public List<PetToPostDTO> getAllPetPost();
 }

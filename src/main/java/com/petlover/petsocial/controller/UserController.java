@@ -2,11 +2,9 @@ package com.petlover.petsocial.controller;
 
 
 import com.petlover.petsocial.config.JwtProvider;
-import com.petlover.petsocial.exception.PostException;
 import com.petlover.petsocial.exception.UserException;
 import com.petlover.petsocial.model.entity.User;
 import com.petlover.petsocial.payload.request.UserDTO;
-import com.petlover.petsocial.payload.request.UserHomeDTO;
 import com.petlover.petsocial.payload.request.UserUpdateDTO;
 import com.petlover.petsocial.payload.response.ResponseData;
 import com.petlover.petsocial.repository.UserRepository;
@@ -24,10 +22,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.List;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/user")
 public class UserController {
     @Autowired
@@ -56,34 +52,13 @@ public class UserController {
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
 
-    @GetMapping("/profile/{id}")
-    public ResponseEntity<?> getUserProfileById(@PathVariable(value = "id") int id) throws UserException {
+    @PostMapping("/profile/{id}")
+    public ResponseEntity<?> getUserProfileById(@PathVariable(value = "id") Long id) throws UserException {
         ResponseData responseData = new ResponseData();
         UserDTO userDTO = userService.findUserProfileById(id);
         responseData.setData(userDTO);
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public  ResponseEntity<?> getUserById(@PathVariable int id) throws UserException {
-        UserDTO userDTO = userService.findUserProfileById(id);
-        return ResponseEntity.ok(userDTO.getId());
-    }
-
-    @GetMapping("/getAllUser")
-    public ResponseEntity<?> getAllUser(){
-        ResponseData responseData = new ResponseData();
-        List<UserHomeDTO> list = userService.getListUser();
-        responseData.setData(list);
-        return new ResponseEntity<>(responseData,HttpStatus.OK);
-    }
-    @GetMapping("/searchUser")
-    public ResponseEntity<?> searchUser(@RequestParam("name") String name) throws UserException, PostException {
-        ResponseData responseData = new ResponseData();
-        List<UserHomeDTO> list = userService.getSearchListUser(name);
-        responseData.setData(list);
-        return new ResponseEntity<>(responseData,HttpStatus.OK);
-
-    }
 
 }

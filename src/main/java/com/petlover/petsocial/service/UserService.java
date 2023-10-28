@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface UserService {
     public SingupDTO createUser(SingupDTO signupDTO, String url);
-    public String checkLogin(SigninDTO signinDTO);
+    public boolean checkLogin(SigninDTO signinDTO);
     public User getUserByEmail(String email);
 
     public boolean checkEmail(String email);
@@ -27,12 +27,12 @@ public interface UserService {
     public User updateUserAfterOAuthLoginSuccess(User user ,String name);
 
     public UserDTO findUserProfileByJwt(String jwt) throws UserException;
-    public UserDTO editprofile(int id, UserUpdateDTO userDTO) throws UserException;
-    public UserDTO findUserProfileById(int idUser) throws UserException;
+    public UserDTO editprofile(Long id, UserUpdateDTO userDTO) throws UserException;
+    public UserDTO findUserProfileById(Long idUser) throws UserException;
 
+    public User findById(Long id);
     public List<User> getAllUsers();
 
     public List<UserHomeDTO> getListUser();
     public List<UserHomeDTO> getSearchListUser(String name);
-
 }

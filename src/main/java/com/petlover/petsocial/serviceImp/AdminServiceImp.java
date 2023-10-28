@@ -71,7 +71,7 @@ public class AdminServiceImp implements AdminService {
         return getListUserForAdmin;
     }
 
-    public UserForAdminDTO getBlockUser(int idUser) throws UserException {
+    public UserForAdminDTO getBlockUser(Long idUser) throws UserException {
         User user = userRepo.getById(idUser);
         if(user ==null) {
             throw new UserException("Not found User");
@@ -92,7 +92,7 @@ public class AdminServiceImp implements AdminService {
         return userForAdminDTO;
     }
 
-    public UserForAdminDTO getOffBlockUser(int idUser) throws UserException {
+    public UserForAdminDTO getOffBlockUser(Long idUser) throws UserException {
         User user = userRepo.getById(idUser);
         if(user ==null) {
             throw new UserException("Not found User");

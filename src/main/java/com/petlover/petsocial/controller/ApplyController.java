@@ -8,7 +8,6 @@ import com.petlover.petsocial.payload.request.ApplyDTO;
 import com.petlover.petsocial.payload.request.UserDTO;
 import com.petlover.petsocial.service.ApplyService;
 import com.petlover.petsocial.service.ExchangeService;
-import com.petlover.petsocial.service.PetService;
 import com.petlover.petsocial.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,11 +27,8 @@ public class ApplyController {
     @Autowired
     private ApplyService applyService;
 
-    @Autowired
-    private PetService petService;
-
     @PostMapping("/create")
-    public ResponseEntity<?> createApply (@RequestHeader("Authorization") String jwt, @RequestParam int userid, @RequestParam int id) throws UserException {
+    public ResponseEntity<?> createApply (@RequestHeader("Authorization") String jwt, @RequestParam Long userid, @RequestParam Long id) throws UserException {
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);
         UserDTO userDTO1 = userService.findUserProfileById(userid);
         Exchange exchange = exchangeService.getOneExchange(userDTO1, id);
@@ -45,7 +41,7 @@ public class ApplyController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateStatus(@RequestHeader("Authorization") String jwt, @PathVariable int id) throws UserException {
+    public ResponseEntity<?> updateStatus(@RequestHeader("Authorization") String jwt, @PathVariable Long id) throws UserException {
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);
         Apply apply = applyService.updateApply(userDTO, id);
         if (apply!=null){
@@ -57,6 +53,4 @@ public class ApplyController {
         }
 
     }
-
-
 }

@@ -1,6 +1,5 @@
 package com.petlover.petsocial.model.entity;
 
-import com.petlover.petsocial.websocket.domain.Message;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,10 +14,9 @@ import java.util.List;
 public class Exchange {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     private Date exchange_date;
     private int payment_amount;
-    private String description;
 
     @Enumerated(EnumType.STRING)
     private ExStatus status;
@@ -37,12 +35,6 @@ public class Exchange {
 
     @OneToMany(mappedBy = "exchange", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Apply> applies;
-
-//    @OneToMany(mappedBy = "exchange", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-//    private List<Message> messages;
+    @OneToMany(mappedBy = "exchange", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<Chat> chats;
 }
-
-//    @OneToMany(mappedBy = "exchange", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-//    private List<Chat> chats;
-//}
-

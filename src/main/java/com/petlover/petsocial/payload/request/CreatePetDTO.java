@@ -12,5 +12,5 @@ public class CreatePetDTO {
     private MultipartFile file;
     private String name;
     private String description;
-    private int idPetType;
+    private Long idPetType;
 }

@@ -144,7 +144,7 @@ postRepository.save(newPost);
         }
         return listpostDTO;
     }
-    public List<PostDTO> getAllYourPost(int idUser)
+    public List<PostDTO> getAllYourPost(Long idUser)
     {
         List<Post> postList = postRepository.getAllYourPost(idUser);
         List<PostDTO> listpostDTO = new ArrayList<>();
@@ -174,38 +174,36 @@ postRepository.save(newPost);
     }
     public List<PostDTO> sreachPost(String content)
     {
-        List<Post> postListSearch = postRepository.getAll();
+        List<Post> postListSearch = postRepository.searchPost(content);
         List<PostDTO> listpostDTO = new ArrayList<>();
         for(Post post : postListSearch) {
-            if(post.getContent().toLowerCase().contains(content.toLowerCase())) {
-                PostDTO postDTO = new PostDTO();
-                postDTO.setId(post.getId());
-                postDTO.setContent(post.getContent());
-                postDTO.setImage(post.getImage());
-                postDTO.setCreate_date(post.getCreate_date());
-                postDTO.setTotal_like(post.getTotal_like());
-                postDTO.setComments(post.getComments());
+            PostDTO postDTO = new PostDTO();
+            postDTO.setId(post.getId());
+            postDTO.setContent(post.getContent());
+            postDTO.setImage(post.getImage());
+            postDTO.setCreate_date(post.getCreate_date());
+            postDTO.setTotal_like(post.getTotal_like());
+            postDTO.setComments(post.getComments());
 
-                PetToPostDTO petToPostDTO = new PetToPostDTO();
-                petToPostDTO.setId(post.getPet().getId());
-                petToPostDTO.setName(post.getPet().getName());
-                petToPostDTO.setImage(post.getPet().getImage());
-                postDTO.setPetToPostDTO(petToPostDTO);
+            PetToPostDTO petToPostDTO = new PetToPostDTO();
+            petToPostDTO.setId(post.getPet().getId());
+            petToPostDTO.setName(post.getPet().getName());
+            petToPostDTO.setImage(post.getPet().getImage());
+            postDTO.setPetToPostDTO(petToPostDTO);
 
-                UserPostDTO userPostDTO = new UserPostDTO();
-                userPostDTO.setId(post.getUser().getId());
-                userPostDTO.setName(post.getUser().getName());
-                userPostDTO.setAvatar(post.getUser().getAvatar());
-                postDTO.setUserPostDTO(userPostDTO);
-                listpostDTO.add(postDTO);
-            }
+            UserPostDTO userPostDTO = new UserPostDTO();
+            userPostDTO.setId(post.getUser().getId());
+            userPostDTO.setName(post.getUser().getName());
+            userPostDTO.setAvatar(post.getUser().getAvatar());
+            postDTO.setUserPostDTO(userPostDTO);
+            listpostDTO.add(postDTO);
         }
         return listpostDTO;
     }
 
 
 
-    public PostDTO findById(int idPost) throws PostException{
+    public PostDTO findById(Long idPost) throws PostException{
         Post getPost = postRepository.getById(idPost);
         if(getPost == null){
             throw new PostException("Not found");
@@ -222,7 +220,7 @@ postRepository.save(newPost);
         userPostDTO.setAvatar(getPost.getUser().getAvatar());
         return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),getPost.getComments(),petToPostDTO,userPostDTO);
     }
-    public PostDTO deletePost(int id, UserDTO userDTO)  {
+    public PostDTO deletePost(Long id, UserDTO userDTO)  {
 
         Post getPost = postRepository.getById(id);
         if(getPost == null) {
@@ -249,7 +247,7 @@ postRepository.save(newPost);
         return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),getPost.getComments(),petToPostDTO,userPostDTO);
     }
 
-    public PostDTO updatePost(int id, PostUpdateDTO postUpdateDTO,UserDTO userDTO)
+    public PostDTO updatePost(Long id, PostUpdateDTO postUpdateDTO,UserDTO userDTO)
     {
         Post getPost = postRepository.getById(id);
         if(getPost == null) {

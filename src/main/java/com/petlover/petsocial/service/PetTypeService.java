@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface PetTypeService {
     public List<PetTypeDTO> getAllTypePet();
-    public Pet_Type getPetType(int id);
+    public Pet_Type getPetType(Long id);
 }

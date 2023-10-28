@@ -10,8 +10,8 @@ import java.util.List;
 
 public interface AdminService {
     public List<UserForAdminManager> getListUserForAdmin();
-    public UserForAdminDTO getBlockUser(int idUser) throws UserException;
-    public UserForAdminDTO getOffBlockUser(int idUser) throws UserException;
+    public UserForAdminDTO getBlockUser(Long idUser) throws UserException;
+    public UserForAdminDTO getOffBlockUser(Long  idUser) throws UserException;
     public int getTotalUser();
     public List<UserForAdminDTO> searchUser(String name);
     public List<PostForAdminDTO> listAllPost();

@@ -16,7 +16,7 @@ import java.util.List;
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     @Column(name = "content", columnDefinition = "nvarchar(1111)")
     private String content;
     @Column(name = "image", columnDefinition = "nvarchar(1111)")
@@ -44,6 +44,5 @@ public class Post {
     private List<Reaction> reactions;
     @Column(name = "status")
     private boolean status;
-
 
 }

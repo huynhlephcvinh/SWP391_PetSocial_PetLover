@@ -2,11 +2,9 @@ package com.petlover.petsocial.serviceImp;
 
 import com.petlover.petsocial.exception.PostException;
 import com.petlover.petsocial.exception.UserException;
-import com.petlover.petsocial.model.entity.Pet;
-import com.petlover.petsocial.model.entity.Post;
-import com.petlover.petsocial.model.entity.Reaction;
-import com.petlover.petsocial.model.entity.User;
+import com.petlover.petsocial.model.entity.*;
 import com.petlover.petsocial.payload.request.*;
+import com.petlover.petsocial.repository.CommentRepository;
 import com.petlover.petsocial.repository.PostRepository;
 import com.petlover.petsocial.repository.ReactionRepository;
 import com.petlover.petsocial.repository.UserRepository;
@@ -29,8 +27,10 @@ public class ReactionServiceImp implements ReactionService {
     PostService postService;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    CommentRepository commentRepository;
 
-   public ReactionDTO reactionPost(int idPost, UserDTO userDTO) throws UserException, PostException {
+   public ReactionDTO reactionPost(Long idPost, UserDTO userDTO) throws UserException, PostException {
        Reaction isReactionExist = reactionRepository.isReactionExist(userDTO.getId(),idPost);
        if(isReactionExist!=null) {
 
@@ -40,7 +40,7 @@ public class ReactionServiceImp implements ReactionService {
            post.setTotal_like(countReaction);
            postRepository.save(post);
            PostDTO postDTO = postService.findById(idPost);
-           return new ReactionDTO(isReactionExist.getId(),userDTO,postDTO);
+           return new ReactionDTO(isReactionExist.getId(),userDTO.getId(),postDTO.getId());
        }
 
        Post post = postRepository.getById(idPost);
@@ -56,10 +56,10 @@ public class ReactionServiceImp implements ReactionService {
        post.setTotal_like(countReaction);
        postRepository.save(post);
        PostDTO postDTO = postService.findById(idPost);
-         return new ReactionDTO(saveReaction.getId(),userDTO,postDTO);
+         return new ReactionDTO(saveReaction.getId(),userDTO.getId(),postDTO.getId());
    }
 
-   public List<ReactionDTO> getAllReaction(int idPost) throws PostException {
+   public List<ReactionDTO> getAllReaction(Long idPost) throws PostException {
        PostDTO postDTO = postService.findById(idPost);
        List<Reaction> reactionList = reactionRepository.findByPostId(idPost);
         List<ReactionDTO> reactionDTOList = new ArrayList<>();
@@ -91,12 +91,37 @@ public class ReactionServiceImp implements ReactionService {
             }
 
             UserDTO userDTO = new UserDTO(reaction.getUser().getId(),reaction.getUser().getName(),reaction.getUser().getEmail(),reaction.getUser().getPhone(),reaction.getUser().getAvatar(),petDTOList,postDTOList);
-            reactionDTO.setUserDTO(userDTO);
+            reactionDTO.setUserId(userDTO.getId());
             PostDTO postDTO1 = postService.findById(idPost);
-            reactionDTO.setPostDTO(postDTO1);
+            reactionDTO.setPostId(postDTO1.getId());
             reactionDTOList.add(reactionDTO);
         }
         return reactionDTOList;
    }
 
+    public ReactionDTO reactComment(Long idComment, UserDTO userDTO) throws UserException {
+        Comment comment = commentRepository.getById(idComment);
+        User user = userRepository.getById(userDTO.getId());
+        Reaction reaction = new Reaction();
+        reaction.setActive(true);
+        reaction.setUser(user);
+        reaction.setComment(comment);
+        Reaction savedReaction = reactionRepository.save(reaction);
+
+        return convertToDTO(savedReaction);
+    }
+
+    private ReactionDTO convertToDTO(Reaction reaction) {
+        ReactionDTO dto = new ReactionDTO();
+        dto.setId(reaction.getId());
+        dto.setActive(reaction.isActive());
+        dto.setUserId(reaction.getUser().getId());
+        if (reaction.getPost() != null) {
+            dto.setPostId(reaction.getPost().getId());
+        }
+        if (reaction.getComment() != null) {
+            dto.setCommentId(reaction.getComment().getId());
+        }
+        return dto;
+    }
 }

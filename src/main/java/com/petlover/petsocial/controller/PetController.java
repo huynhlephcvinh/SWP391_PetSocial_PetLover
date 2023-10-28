@@ -24,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/pet")
 public class PetController {
 
@@ -67,7 +66,7 @@ public class PetController {
         return new ResponseEntity<>(responseData,HttpStatus.OK);
     }
     @GetMapping("/delete/{id}")
-    public ResponseEntity<?> deletePet(@RequestHeader("Authorization") String jwt,@PathVariable(value = "id") int id) throws PetException, UserException {
+    public ResponseEntity<?> deletePet(@RequestHeader("Authorization") String jwt,@PathVariable(value = "id") Long id) throws PetException, UserException {
         ResponseData responseData = new ResponseData();
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);
           PetDTO petDTO = petService.deletePet(id,userDTO);
@@ -78,7 +77,7 @@ public class PetController {
         return new ResponseEntity<>(responseData,HttpStatus.OK);
     }
     @GetMapping("/getOnePet/{id}")
-    public ResponseEntity<?> getOnePet(@RequestHeader("Authorization") String jwt,@PathVariable(value = "id") int id) throws UserException, PetException {
+    public ResponseEntity<?> getOnePet(@RequestHeader("Authorization") String jwt,@PathVariable(value = "id") Long id) throws UserException, PetException {
         ResponseData responseData = new ResponseData();
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);
         PetDTO petDTO = petService.getOnePet(id,userDTO);
@@ -90,7 +89,7 @@ public class PetController {
     }
     @PutMapping("/updatePet/{id}")
     //@PostMapping ("/updatePet")
-    public  ResponseEntity<?> updatePet(@PathVariable(value = "id") int id, @ModelAttribute PetUpdateDTO petUpdateDTO,@RequestHeader("Authorization") String jwt) throws UserException, PetException {
+    public  ResponseEntity<?> updatePet(@PathVariable(value = "id") Long id, @ModelAttribute PetUpdateDTO petUpdateDTO,@RequestHeader("Authorization") String jwt) throws UserException, PetException {
         ResponseData responseData = new ResponseData();
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);
         PetDTO petDTO1 = petService.updatePet(id,petUpdateDTO,userDTO);

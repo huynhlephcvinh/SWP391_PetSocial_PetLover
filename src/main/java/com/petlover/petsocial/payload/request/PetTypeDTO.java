@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class PetTypeDTO {
-    private int id;
+    private Long id;
     private String name;
 }

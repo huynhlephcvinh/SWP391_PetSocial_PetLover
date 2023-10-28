@@ -10,5 +10,5 @@ import org.springframework.web.multipart.MultipartFile;
 public class CreatPostDTO {
     private MultipartFile file;
     private String content;
-    private int idPet;
+    private Long idPet;
 }

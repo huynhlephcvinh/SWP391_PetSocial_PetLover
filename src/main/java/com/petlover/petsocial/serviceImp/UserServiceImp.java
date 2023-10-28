@@ -43,6 +43,10 @@ public class UserServiceImp implements UserService {
     CloudinaryService cloudinaryService;
 
     @Override
+    public User findById(Long id) {
+        return userRepo.findById(id).orElse(null);
+    }
+    @Override
     public SingupDTO createUser(SingupDTO signupDTO, String url) {
         User user = new User();
         user.setEmail(signupDTO.getEmail());
@@ -62,16 +66,12 @@ public class UserServiceImp implements UserService {
         return newSignupDTO;
     }
     @Override
-    public String checkLogin(SigninDTO signinDTO) {
-        User user = userRepo.findByEmail(signinDTO.getEmail());
-        if (user == null) {
-            return "Incorrect username or password";
-        } else if (!user.isEnable()) {
-            return "Your account has not been activated!";
-        } else if (passwordEncoder.matches(signinDTO.getPassword(), user.getPassword())) {
-            return "Login success";
-        } else {
-            return "Incorrect username or password";
+    public boolean checkLogin(SigninDTO signinDTO) {
+        User user = userRepo.findByEmail(signinDTO.getUsername());
+        if(!user.isEnable()){
+            return false;
+        }else {
+            return true;
         }
 
     }
@@ -198,21 +198,19 @@ public class UserServiceImp implements UserService {
         List<PostDTO> postDTOList = new ArrayList<>();
         for(Post post: user.getPosts()){
             if(post.isStatus()==true) {
-                if(post.isEnable()==true) {
-                    PetToPostDTO petToPostDTO = new PetToPostDTO();
-                    petToPostDTO.setId(post.getPet().getId());
-                    petToPostDTO.setName(post.getPet().getName());
-                    petToPostDTO.setImage(post.getPet().getImage());
+                PetToPostDTO petToPostDTO = new PetToPostDTO();
+                petToPostDTO.setId(post.getPet().getId());
+                petToPostDTO.setName(post.getPet().getName());
+                petToPostDTO.setImage(post.getPet().getImage());
 
 
-                    UserPostDTO userPostDTO = new UserPostDTO();
-                    userPostDTO.setId(post.getUser().getId());
-                    userPostDTO.setName(post.getUser().getName());
-                    userPostDTO.setAvatar(post.getUser().getAvatar());
+                UserPostDTO userPostDTO = new UserPostDTO();
+                userPostDTO.setId(post.getUser().getId());
+                userPostDTO.setName(post.getUser().getName());
+                userPostDTO.setAvatar(post.getUser().getAvatar());
 
-                    PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), post.getComments(), petToPostDTO, userPostDTO);
-                    postDTOList.add(postDTO);
-                }
+                PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), post.getComments(), petToPostDTO, userPostDTO);
+                postDTOList.add(postDTO);
             }
         }
 
@@ -224,10 +222,10 @@ public class UserServiceImp implements UserService {
             }
         }
 
-        return new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(), petDTOList,postDTOList);
+        return new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(),petDTOList,postDTOList);
     }
 
-    public UserDTO editprofile(int id, UserUpdateDTO userDTO) throws UserException {
+    public UserDTO editprofile(Long id, UserUpdateDTO userDTO) throws UserException {
         User user = userRepo.getById(id);
 
 
@@ -281,7 +279,7 @@ public class UserServiceImp implements UserService {
 
     }
 
-    public UserDTO findUserProfileById(int idUser) throws UserException {
+    public UserDTO findUserProfileById(Long idUser) throws UserException {
 
         User user = userRepo.getById(idUser);
         if(user==null) {
@@ -321,22 +319,22 @@ public class UserServiceImp implements UserService {
 
     @Override
     public List<User> getAllUsers() {
-         return userRepo.findAll();
+        return userRepo.findAll();
     }
 
 
     public List<UserHomeDTO> getListUser() {
-       List<User> userList = userRepo.listUserHome();
-       List<UserHomeDTO> userHomeDTOList = new ArrayList<>();
-       for(User user : userList) {
-           UserHomeDTO userHomeDTO = new UserHomeDTO();
-           userHomeDTO.setId(user.getId());
-           userHomeDTO.setName(user.getName());
-           userHomeDTO.setAvatar(user.getAvatar());
-           userHomeDTOList.add(userHomeDTO);
-       }
+        List<User> userList = userRepo.listUserHome();
+        List<UserHomeDTO> userHomeDTOList = new ArrayList<>();
+        for(User user : userList) {
+            UserHomeDTO userHomeDTO = new UserHomeDTO();
+            userHomeDTO.setId(user.getId());
+            userHomeDTO.setName(user.getName());
+            userHomeDTO.setAvatar(user.getAvatar());
+            userHomeDTOList.add(userHomeDTO);
+        }
 
-       return userHomeDTOList;
+        return userHomeDTOList;
     }
 
     public List<UserHomeDTO> getSearchListUser(String name){
@@ -354,6 +352,7 @@ public class UserServiceImp implements UserService {
 
         return userHomeDTOList;
     }
+
 
 
 }

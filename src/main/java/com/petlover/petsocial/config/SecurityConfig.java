@@ -46,8 +46,8 @@ public class SecurityConfig {
    {
        http.sessionManagement()
                .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeHttpRequests(Authorize -> Authorize.requestMatchers("/","/register","/signin","/createUser","/oauth/**","/verify","/forgot_password","/reset_password","/getAllUser","/getAllPost"
-                           ,"/searchUser","/searchPost"
+                .authorizeHttpRequests(Authorize -> Authorize.requestMatchers("/","/register","/signin","/createUser","/oauth/**","/verify","/forgot_password","/reset_password"
+
                         ).permitAll().anyRequest().authenticated()).
 //                        "api/v1/**",
 //                        "/v2/api-docs",
@@ -88,7 +88,7 @@ and()
             @Override
             public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                 CorsConfiguration cfg =  new CorsConfiguration();
-                cfg.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000","*"));
+                cfg.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
                 cfg.setAllowedMethods(Collections.singletonList("*"));
                 cfg.setAllowCredentials(true);
                 cfg.setAllowedHeaders(Collections.singletonList("*"));

@@ -2,15 +2,14 @@ package com.petlover.petsocial.controller;
 
 
 import com.petlover.petsocial.config.JwtProvider;
-import com.petlover.petsocial.exception.PostException;
 import com.petlover.petsocial.exception.UserException;
 import com.petlover.petsocial.exception.UserNotFoundException;
 import com.petlover.petsocial.model.entity.User;
-import com.petlover.petsocial.payload.request.*;
+import com.petlover.petsocial.payload.request.SigninDTO;
+import com.petlover.petsocial.payload.request.SingupDTO;
 import com.petlover.petsocial.payload.response.AuthResponse;
 import com.petlover.petsocial.payload.response.ResponseData;
 import com.petlover.petsocial.repository.UserRepository;
-import com.petlover.petsocial.service.PostService;
 import com.petlover.petsocial.service.UserService;
 import com.petlover.petsocial.serviceImp.CustomerUserDetailsServiceImp;
 import jakarta.mail.MessagingException;
@@ -42,10 +41,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.crypto.SecretKey;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
-import java.util.List;
 
 @RestController
-@CrossOrigin
+
 public class HomeController {
     @Autowired
     private UserService userService;
@@ -61,9 +59,6 @@ public class HomeController {
     private JwtProvider jwtProvider;
     @Autowired
     private CustomerUserDetailsServiceImp customerUserDetailsServiceImp;
-
-    @Autowired
-    private PostService postService;
 
    @ModelAttribute
    public void commonUser(Principal p, Model m,@AuthenticationPrincipal OAuth2User usero2) {
@@ -95,65 +90,76 @@ public class HomeController {
         return "register";
     }
 
-  @PostMapping("/createUser")
-  public ResponseEntity<?> createuser(@RequestBody SingupDTO userDTO, HttpSession session, HttpServletRequest request) throws UserException {
-    String url = request.getRequestURL().toString();
-    http://localhost:8080/createUser
-    url = url.replace(request.getServletPath(), "");
-    System.out.println(userDTO);
-    boolean f = userService.checkEmail(userDTO.getEmail());
-    ResponseData responseData = new ResponseData();
-    if (f) {
-//            throw new UserException("Email is already used with another account");
-      responseData.setIsSuccess(false);
-    } else {
-
-      SingupDTO userDtls = userService.createUser(userDTO,url);
-      Authentication authentication = new UsernamePasswordAuthenticationToken(userDTO.getEmail(),userDTO.getPassword());
-      SecurityContextHolder.getContext().setAuthentication(authentication);
-      String token = jwtProvider.generateToken(authentication);
-      AuthResponse res = new AuthResponse(token ,true,null);
-
-      responseData.setData(res);
-
-    }
-
-    return new ResponseEntity<>(responseData.getIsSuccess(), HttpStatus.CREATED);
-  }
-  @PostMapping("/signin")
-  public ResponseEntity<?> signin(@RequestBody SigninDTO signinDTO) throws UserException{
-    ResponseData responseData = new ResponseData();
-    //SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    // String encrypted = Encoders.BASE64.encode(secretKey.getEncoded());
-    //System.out.println(encrypted);
-
-    System.out.println(signinDTO);
-//    String token = jwtUtilHelper.generateToken(signinDTO.getUsername());
-//    System.out.println(token);
-
-//    responseData.setDescription(res.toString());
-    String userLogin = userService.checkLogin(signinDTO);
-    if(userLogin.equals("Incorrect username or password")){
-      responseData.setData("Incorrect");
-    }else if(userLogin.equals("Your account has not been activated!")){
-      responseData.setData("Activated");
-    }else {
-//      responseData.setToken(token);
-//      responseData.setData(res);
-      Authentication authentication = authenticate(signinDTO.getEmail(), signinDTO.getPassword());
-      String token = jwtProvider.generateToken(authentication);
-      AuthResponse res = new AuthResponse(token, true,null);
-      System.out.println(token);
-      responseData.setData(token);
+    @PostMapping("/createUser")
+    public ResponseEntity<?> createuser(@RequestBody SingupDTO userDTO, HttpSession session, HttpServletRequest request) throws UserException {
+       if(userDTO.getEmail().equals("")) {
+           throw new UserException("You have not entered your email yet");
+       }
+       if(userDTO.getName().equals("")) {
+            throw new UserException("You have not entered your name yet");
+        }
+       if(userDTO.getPhone().equals("")) {
+            throw new UserException("You have not entered your phone yet");
+        }
+        if(userDTO.getPassword().equals("")) {
+            throw new UserException("You have not entered your password yet");
+        }
+        if(!userDTO.getPhone().matches("^[0-9]+$")) {
+            throw new UserException("You must enter number phone is digit");
+        }
+        if(userDTO.getPhone().length() <10 || userDTO.getPhone().length() >12) {
+            throw new UserException("Enter number phone again");
+        }
 
 
+        String url = request.getRequestURL().toString();
+        http://localhost:8080/createUser
+        url = url.replace(request.getServletPath(), "");
+        System.out.println(userDTO);
+        boolean f = userService.checkEmail(userDTO.getEmail());
+        ResponseData responseData = new ResponseData();
+        if (f) {
+            throw new UserException("Email is already used with another account");
+        } else {
+
+            SingupDTO userDtls = userService.createUser(userDTO,url);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(userDTO.getEmail(),userDTO.getPassword());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String token = jwtProvider.generateToken(authentication);
+            AuthResponse res = new AuthResponse(token ,true);
+
+            responseData.setData(res);
 
         }
 
         return new ResponseEntity<>(responseData, HttpStatus.CREATED);
     }
+    @PostMapping("/signin")
+    public ResponseEntity<?> signin(@RequestBody SigninDTO signinDTO) throws UserException{
+        ResponseData responseData = new ResponseData();
+        System.out.println(signinDTO);
+//        if(userService.checkLogin(signinDTO)){
+//            String token = jwtUtilHelper.generateToken(signinDTO.getUsername());
+//            responseData.setData(token);
+//            User user = userService.getUserByEmail(signinDTO.getUsername());
+//            session.setAttribute("user",user);
+//
+//        }else{
+//            responseData.setData("");
+//            responseData.setIsSuccess(false);
+//        }
+        if(userService.checkLogin(signinDTO)) {
+            Authentication authentication = authenticate(signinDTO.getUsername(), signinDTO.getPassword());
+            String token = jwtProvider.generateToken(authentication);
+            AuthResponse res = new AuthResponse(token, true);
 
+            responseData.setData(res);
 
+        }else{
+            throw new UserException("Email not enable");
+        }
+        return new ResponseEntity<>(responseData, HttpStatus.ACCEPTED);
+    }
     private Authentication authenticate( String username, String password) {
         UserDetails userDetails = customerUserDetailsServiceImp.loadUserByUsername(username);
         if(userDetails==null) {
@@ -164,40 +170,6 @@ public class HomeController {
             throw new BadCredentialsException("Invalid username or password..");
         }
         return new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
-    }
-
-    @GetMapping("/getAllPost")
-    public ResponseEntity<?> getAllPost(){
-        ResponseData responseData = new ResponseData();
-        List<PostDTO> list = postService.getAllPost();
-        responseData.setData(list);
-        return new ResponseEntity<>(responseData,HttpStatus.OK);
-    }
-
-    @GetMapping("/getAllUser")
-    public ResponseEntity<?> getAllUser(){
-        ResponseData responseData = new ResponseData();
-        List<UserHomeDTO> list = userService.getListUser();
-        responseData.setData(list);
-        return new ResponseEntity<>(responseData,HttpStatus.OK);
-    }
-
-    @GetMapping("/searchUser")
-    public ResponseEntity<?> searchUser(@RequestParam("name") String name) throws UserException, PostException {
-        ResponseData responseData = new ResponseData();
-        List<UserHomeDTO> list = userService.getSearchListUser(name);
-        responseData.setData(list);
-        return new ResponseEntity<>(responseData,HttpStatus.OK);
-
-    }
-
-    @GetMapping("/searchPost")
-    public ResponseEntity<?> searchPost(@RequestParam("content") String content) throws UserException, PostException {
-        ResponseData responseData = new ResponseData();
-        List<PostDTO> list = postService.sreachPost(content);
-        responseData.setData(list);
-        return new ResponseEntity<>(responseData,HttpStatus.OK);
-
     }
     @GetMapping("/verify")
     public String verifyAccount(@Param("code") String code, Model m) {

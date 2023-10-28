@@ -17,7 +17,7 @@ import java.util.List;
 public class Pet_Type {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     @Column(name = "name", columnDefinition = "nvarchar(255)")
     private String name;
     @OneToMany(mappedBy = "pet_type", cascade = CascadeType.ALL,fetch = FetchType.LAZY)

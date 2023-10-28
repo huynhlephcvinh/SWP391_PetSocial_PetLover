@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface StaffService {
     public List<PostDTO> getAllPostDisable();
-    public PostDTO getEnablePost(int idPost) throws PostException;
+    public PostDTO getEnablePost(Long idPost) throws PostException;
 }

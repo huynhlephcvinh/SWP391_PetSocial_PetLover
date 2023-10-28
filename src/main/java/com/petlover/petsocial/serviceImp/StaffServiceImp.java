@@ -54,7 +54,7 @@ public class StaffServiceImp implements StaffService {
         return listpostDTO;
     }
 
-    public PostDTO getEnablePost(int idPost) throws PostException {
+    public PostDTO getEnablePost(Long  idPost) throws PostException {
        Post getPost = postRepository.getById(idPost);
        if(getPost == null){
            throw new PostException("Not found Post");
