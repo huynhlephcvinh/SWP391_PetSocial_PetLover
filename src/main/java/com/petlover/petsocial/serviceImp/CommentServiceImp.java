@@ -37,7 +37,10 @@ public class CommentServiceImp implements CommentService {
                     CommentDTO dto = new CommentDTO();
                     dto.setId(c.getId());
                     dto.setContent(c.getContent());
-                    // map other fields
+                    dto.setMedia(c.getMedia());
+                    dto.setUserId(c.getUser().getId());
+                    dto.setPostId(c.getPost().getId());
+                    dto.setCreatedTime(c.getCreatedTime());
                     return dto;
                 })
                 .collect(Collectors.toList());
