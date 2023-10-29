@@ -2,24 +2,17 @@ package com.petlover.petsocial.controller;
 
 import com.petlover.petsocial.exception.PetException;
 import com.petlover.petsocial.exception.UserException;
-import com.petlover.petsocial.model.entity.Pet_Type;
-import com.petlover.petsocial.model.entity.User;
 import com.petlover.petsocial.payload.request.*;
 import com.petlover.petsocial.payload.response.ResponseData;
-import com.petlover.petsocial.service.CloudinaryService;
 import com.petlover.petsocial.service.PetService;
 import com.petlover.petsocial.service.PetTypeService;
 import com.petlover.petsocial.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 

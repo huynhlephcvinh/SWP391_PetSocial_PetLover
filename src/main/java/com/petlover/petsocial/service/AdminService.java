@@ -9,17 +9,17 @@ import com.petlover.petsocial.payload.request.UserForAdminManager;
 import java.util.List;
 
 public interface AdminService {
-    public List<UserForAdminManager> getListUserForAdmin();
-    public UserForAdminDTO getBlockUser(Long idUser) throws UserException;
-    public UserForAdminDTO getOffBlockUser(Long  idUser) throws UserException;
-    public int getTotalUser();
-    public List<UserForAdminDTO> searchUser(String name);
-    public List<PostForAdminDTO> listAllPost();
-    public List<PetForAdminDTO> listAllPet();
+    List<UserForAdminManager> getListUserForAdmin();
+    UserForAdminDTO getBlockUser(Long idUser) throws UserException;
+    UserForAdminDTO getOffBlockUser(Long  idUser) throws UserException;
+    int getTotalUser();
+    List<UserForAdminDTO> searchUser(String name);
+    List<PostForAdminDTO> listAllPost();
+    List<PetForAdminDTO> listAllPet();
 
-    public int getTotalPostDete();
-    public int getTotalPostDisplay();
-    public int getTotalPetDisplay();
+    int getTotalPostDete();
+    int getTotalPostDisplay();
+    int getTotalPetDisplay();
 
-    public int getTotalPostDisplayInMonth(int month);
+    int getTotalPostDisplayInMonth(int month);
 }

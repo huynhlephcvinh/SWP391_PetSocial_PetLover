@@ -4,7 +4,6 @@ import com.petlover.petsocial.exception.PostException;
 import com.petlover.petsocial.model.entity.Post;
 import com.petlover.petsocial.payload.request.PetToPostDTO;
 import com.petlover.petsocial.payload.request.PostDTO;
-import com.petlover.petsocial.payload.request.UserDTO;
 import com.petlover.petsocial.payload.request.UserPostDTO;
 import com.petlover.petsocial.repository.PostRepository;
 import com.petlover.petsocial.repository.UserRepository;
@@ -35,7 +34,7 @@ public class StaffServiceImp implements StaffService {
             postDTO.setImage(post.getImage());
             postDTO.setCreate_date(post.getCreate_date());
             postDTO.setTotal_like(post.getTotal_like());
-            postDTO.setComments(post.getComments());
+            postDTO.setComments(post.convertCommentListToDTO(post.getComments()));
 
             PetToPostDTO petToPostDTO = new PetToPostDTO();
             petToPostDTO.setId(post.getPet().getId());
@@ -75,7 +74,7 @@ public class StaffServiceImp implements StaffService {
         userPostDTO.setName(getPost.getUser().getName());
         userPostDTO.setAvatar(getPost.getUser().getAvatar());
 
-        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),getPost.getComments(),petToPostDTO,userPostDTO);
+        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),getPost.convertCommentListToDTO(getPost.getComments()),petToPostDTO,userPostDTO);
 
     }
 

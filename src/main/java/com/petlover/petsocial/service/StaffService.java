@@ -6,6 +6,6 @@ import com.petlover.petsocial.payload.request.PostDTO;
 import java.util.List;
 
 public interface StaffService {
-    public List<PostDTO> getAllPostDisable();
-    public PostDTO getEnablePost(Long idPost) throws PostException;
+    List<PostDTO> getAllPostDisable();
+    PostDTO getEnablePost(Long idPost) throws PostException;
 }

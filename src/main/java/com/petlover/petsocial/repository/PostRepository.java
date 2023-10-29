@@ -1,7 +1,6 @@
 package com.petlover.petsocial.repository;
 
-import com.petlover.petsocial.model.entity.Pet;
-import com.petlover.petsocial.model.entity.Pet_Type;
+
 import com.petlover.petsocial.model.entity.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,19 +9,19 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
     @Query(value="Select * From post p WHERE p.enable = 1 and p.status = 1",nativeQuery = true)
-    public List<Post> getAll();
+    List<Post> getAll();
     @Query(value="Select * From post p WHERE p.enable = 1 and p.status = 1 and p.user_id=%?1%",nativeQuery = true)
-    public List<Post> getAllYourPost(Long id);
+    List<Post> getAllYourPost(Long id);
     @Query(value="Select * From post p WHERE p.enable = 1 and p.status = 1 and p.content like CONCAT('%',%?1%,'%') ",nativeQuery = true)
-    public List<Post> searchPost(String content);
-    public Post getById(Long id);
+    List<Post> searchPost(String content);
+    Post getById(Long id);
     @Query(value="Select * From post p WHERE p.enable = 0 and p.status = 1",nativeQuery = true)
-    public List<Post> getAllPostDisable();
+    List<Post> getAllPostDisable();
     @Query(value="Select * From post p",nativeQuery = true)
-    public List<Post> getAllPostForAdmin();
+    List<Post> getAllPostForAdmin();
 
     @Query(value="Select * From post p WHERE p.status = 0",nativeQuery = true)
-    public List<Post> getAllPostDeleteForAdmin();
+    List<Post> getAllPostDeleteForAdmin();
     @Query(value="Select * From post p WHERE p.status = 1",nativeQuery = true)
-    public List<Post> getAllPostDisplayUserForAdmin();
+    List<Post> getAllPostDisplayUserForAdmin();
 }

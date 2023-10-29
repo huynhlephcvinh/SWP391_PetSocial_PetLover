@@ -17,7 +17,7 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
-import jdk.jshell.spi.ExecutionControl;
+
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -29,16 +29,13 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.crypto.SecretKey;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 
@@ -92,16 +89,16 @@ public class HomeController {
 
     @PostMapping("/createUser")
     public ResponseEntity<?> createuser(@RequestBody SingupDTO userDTO, HttpSession session, HttpServletRequest request) throws UserException {
-       if(userDTO.getEmail().equals("")) {
+       if(userDTO.getEmail().isEmpty()) {
            throw new UserException("You have not entered your email yet");
        }
-       if(userDTO.getName().equals("")) {
+       if(userDTO.getName().isEmpty()) {
             throw new UserException("You have not entered your name yet");
         }
-       if(userDTO.getPhone().equals("")) {
+       if(userDTO.getPhone().isEmpty()) {
             throw new UserException("You have not entered your phone yet");
         }
-        if(userDTO.getPassword().equals("")) {
+        if(userDTO.getPassword().isEmpty()) {
             throw new UserException("You have not entered your password yet");
         }
         if(!userDTO.getPhone().matches("^[0-9]+$")) {

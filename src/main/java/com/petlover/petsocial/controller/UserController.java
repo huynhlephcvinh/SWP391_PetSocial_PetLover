@@ -1,29 +1,21 @@
 package com.petlover.petsocial.controller;
 
 
-import com.petlover.petsocial.config.JwtProvider;
+
 import com.petlover.petsocial.exception.PostException;
 import com.petlover.petsocial.exception.UserException;
-import com.petlover.petsocial.model.entity.User;
 import com.petlover.petsocial.payload.request.UserDTO;
 import com.petlover.petsocial.payload.request.UserHomeDTO;
 import com.petlover.petsocial.payload.request.UserUpdateDTO;
 import com.petlover.petsocial.payload.response.ResponseData;
-import com.petlover.petsocial.repository.UserRepository;
 import com.petlover.petsocial.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
+
 import java.util.List;
 
 @RestController

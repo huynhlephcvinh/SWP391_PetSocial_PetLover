@@ -6,6 +6,6 @@ import com.petlover.petsocial.payload.request.PetTypeDTO;
 import java.util.List;
 
 public interface PetTypeService {
-    public List<PetTypeDTO> getAllTypePet();
-    public Pet_Type getPetType(Long id);
+    List<PetTypeDTO> getAllTypePet();
+    Pet_Type getPetType(Long id);
 }

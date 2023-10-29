@@ -1,12 +1,10 @@
 package com.petlover.petsocial.serviceImp;
 
-import com.petlover.petsocial.model.entity.Pet;
+
 import com.petlover.petsocial.model.entity.Pet_Type;
 import com.petlover.petsocial.payload.request.PetTypeDTO;
 import com.petlover.petsocial.repository.PetRepository;
 import com.petlover.petsocial.repository.PetTypeRepository;
-import com.petlover.petsocial.repository.UserRepository;
-import com.petlover.petsocial.service.PetService;
 import com.petlover.petsocial.service.PetTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
