@@ -222,7 +222,7 @@ public class UserServiceImp implements UserService {
             }
         }
 
-        return new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(),petDTOList,postDTOList);
+        return new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(),user.getRole(),petDTOList,postDTOList);
     }
 
     public UserDTO editprofile(Long id, UserUpdateDTO userDTO) throws UserException {
@@ -275,7 +275,7 @@ public class UserServiceImp implements UserService {
             petDTOList.add(petDTO);
         }
 
-        return new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(),petDTOList,postDTOList);
+        return new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(),user.getRole(),petDTOList,postDTOList);
 
     }
 
@@ -314,7 +314,7 @@ public class UserServiceImp implements UserService {
             }
         }
 
-        return new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(),petDTOList,postDTOList);
+        return new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(),user.getRole(),petDTOList,postDTOList);
     }
 
     @Override

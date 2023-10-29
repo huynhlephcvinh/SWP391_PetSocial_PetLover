@@ -90,7 +90,7 @@ public class ReactionServiceImp implements ReactionService {
                 petDTOList.add(petDTO);
             }
 
-            UserDTO userDTO = new UserDTO(reaction.getUser().getId(),reaction.getUser().getName(),reaction.getUser().getEmail(),reaction.getUser().getPhone(),reaction.getUser().getAvatar(),petDTOList,postDTOList);
+            UserDTO userDTO = new UserDTO(reaction.getUser().getId(),reaction.getUser().getName(),reaction.getUser().getEmail(),reaction.getUser().getPhone(),reaction.getUser().getAvatar(),reaction.getUser().getRole(),petDTOList,postDTOList);
             reactionDTO.setUserId(userDTO.getId());
             PostDTO postDTO1 = postService.findById(idPost);
             reactionDTO.setPostId(postDTO1.getId());

@@ -16,6 +16,7 @@ public class Exchange {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Date exchange_date;
+    private String description;
     private int payment_amount;
 
     @Enumerated(EnumType.STRING)

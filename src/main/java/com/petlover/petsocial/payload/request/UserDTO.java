@@ -18,6 +18,7 @@ public class UserDTO {
     private String email;
     private String phone;
     private String avatar;
+    private String role;
     private List<PetDTO> petDTOList;
     private List<PostDTO> postDTOList;
 
