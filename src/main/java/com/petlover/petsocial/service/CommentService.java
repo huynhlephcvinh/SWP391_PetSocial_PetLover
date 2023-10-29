@@ -1,7 +1,6 @@
 package com.petlover.petsocial.service;
 
-import com.petlover.petsocial.exception.PostException;
-import com.petlover.petsocial.exception.UserException;
+
 import com.petlover.petsocial.model.entity.Comment;
 import com.petlover.petsocial.payload.request.CommentDTO;
 

@@ -24,7 +24,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 @Service
 public class UserServiceImp implements UserService {
@@ -209,7 +208,7 @@ public class UserServiceImp implements UserService {
                 userPostDTO.setName(post.getUser().getName());
                 userPostDTO.setAvatar(post.getUser().getAvatar());
 
-                PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), post.getComments(), petToPostDTO, userPostDTO);
+                PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), post.convertCommentListToDTO(post.getComments()), petToPostDTO, userPostDTO);
                 postDTOList.add(postDTO);
             }
         }
@@ -265,7 +264,7 @@ public class UserServiceImp implements UserService {
             userPostDTO.setName(post.getUser().getName());
             userPostDTO.setAvatar(post.getUser().getAvatar());
 
-            PostDTO postDTO = new PostDTO(post.getId(),post.getImage(),post.getContent(),post.getCreate_date(),post.getTotal_like(),post.getComments(),petToPostDTO,userPostDTO);
+            PostDTO postDTO = new PostDTO(post.getId(),post.getImage(),post.getContent(),post.getCreate_date(),post.getTotal_like(),post.convertCommentListToDTO(post.getComments()),petToPostDTO,userPostDTO);
             postDTOList.add(postDTO);
         }
 
@@ -300,7 +299,7 @@ public class UserServiceImp implements UserService {
                     userPostDTO.setName(post.getUser().getName());
                     userPostDTO.setAvatar(post.getUser().getAvatar());
 
-                    PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), post.getComments(), petToPostDTO, userPostDTO);
+                    PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), post.convertCommentListToDTO(post.getComments()), petToPostDTO, userPostDTO);
                     postDTOList.add(postDTO);
                 }
             }

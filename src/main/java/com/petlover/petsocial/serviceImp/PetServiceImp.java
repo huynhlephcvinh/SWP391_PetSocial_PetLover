@@ -2,7 +2,6 @@ package com.petlover.petsocial.serviceImp;
 
 
 import com.petlover.petsocial.exception.PetException;
-import com.petlover.petsocial.exception.UserException;
 import com.petlover.petsocial.model.entity.Pet;
 import com.petlover.petsocial.model.entity.Pet_Type;
 import com.petlover.petsocial.model.entity.User;
@@ -16,12 +15,11 @@ import com.petlover.petsocial.service.PetTypeService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.file.Path;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
 
 @Service
 public class PetServiceImp implements PetService {
@@ -46,7 +44,7 @@ public class PetServiceImp implements PetService {
         if(createPetDTO.getFile()==null){
             throw new PetException("pet not found with image");
         }
-        if(createPetDTO.getName().equals("")){
+        if(createPetDTO.getName().isEmpty()){
             throw new PetException("pet not found with name");
         }
         if(createPetDTO.getName()==null){

@@ -11,28 +11,28 @@ import java.util.List;
 
 
 public interface UserService {
-    public SingupDTO createUser(SingupDTO signupDTO, String url);
-    public boolean checkLogin(SigninDTO signinDTO);
-    public User getUserByEmail(String email);
+    SingupDTO createUser(SingupDTO signupDTO, String url);
+    boolean checkLogin(SigninDTO signinDTO);
+    User getUserByEmail(String email);
 
-    public boolean checkEmail(String email);
+    boolean checkEmail(String email);
 
-    public void removeSessionMessage();
-    public void sendEmail(User user, String path);
-    public boolean verifyAccount(String verificationCode);
-    public void updateResetPasswordToken(String token, String email) throws UserNotFoundException;
-    public User getByResetPasswordToken(String token);
-    public void updatePassword(User user, String newPassword);
-    public User createUserAfterOAuthLoginSuccess(String email,String name, AuthenticationProvider provider);
-    public User updateUserAfterOAuthLoginSuccess(User user ,String name);
+    void removeSessionMessage();
+    void sendEmail(User user, String path);
+    boolean verifyAccount(String verificationCode);
+    void updateResetPasswordToken(String token, String email) throws UserNotFoundException;
+    User getByResetPasswordToken(String token);
+    void updatePassword(User user, String newPassword);
+    User createUserAfterOAuthLoginSuccess(String email,String name, AuthenticationProvider provider);
+    User updateUserAfterOAuthLoginSuccess(User user ,String name);
 
-    public UserDTO findUserProfileByJwt(String jwt) throws UserException;
-    public UserDTO editprofile(Long id, UserUpdateDTO userDTO) throws UserException;
-    public UserDTO findUserProfileById(Long idUser) throws UserException;
+    UserDTO findUserProfileByJwt(String jwt) throws UserException;
+    UserDTO editprofile(Long id, UserUpdateDTO userDTO) throws UserException;
+    UserDTO findUserProfileById(Long idUser) throws UserException;
 
-    public User findById(Long id);
-    public List<User> getAllUsers();
+    User findById(Long id);
+    List<User> getAllUsers();
 
-    public List<UserHomeDTO> getListUser();
-    public List<UserHomeDTO> getSearchListUser(String name);
+    List<UserHomeDTO> getListUser();
+    List<UserHomeDTO> getSearchListUser(String name);
 }

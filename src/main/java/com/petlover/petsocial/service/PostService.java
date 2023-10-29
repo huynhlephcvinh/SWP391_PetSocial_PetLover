@@ -2,21 +2,19 @@ package com.petlover.petsocial.service;
 
 import com.petlover.petsocial.exception.PetException;
 import com.petlover.petsocial.exception.PostException;
-import com.petlover.petsocial.model.entity.User;
 import com.petlover.petsocial.payload.request.CreatPostDTO;
 import com.petlover.petsocial.payload.request.PostDTO;
 import com.petlover.petsocial.payload.request.PostUpdateDTO;
 import com.petlover.petsocial.payload.request.UserDTO;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface PostService {
-    public PostDTO insertPost(CreatPostDTO creatPostDTO, UserDTO userDTO) throws PetException;
-    public List<PostDTO> getAllPost();
-    public List<PostDTO> getAllYourPost(Long idUser);
-    public PostDTO deletePost(Long id, UserDTO userDTO) throws PostException;
-    public PostDTO updatePost(Long id, PostUpdateDTO postUpdateDTO,UserDTO userDTO);
-    public PostDTO findById(Long idPost) throws PostException;
-    public List<PostDTO> sreachPost(String content);
+    PostDTO insertPost(CreatPostDTO creatPostDTO, UserDTO userDTO) throws PetException;
+    List<PostDTO> getAllPost();
+    List<PostDTO> getAllYourPost(Long idUser);
+    PostDTO deletePost(Long id, UserDTO userDTO) throws PostException;
+    PostDTO updatePost(Long id, PostUpdateDTO postUpdateDTO,UserDTO userDTO);
+    PostDTO findById(Long idPost) throws PostException;
+    List<PostDTO> sreachPost(String content);
 }

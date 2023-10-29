@@ -1,12 +1,7 @@
 package com.petlover.petsocial.payload.request;
 
-import com.petlover.petsocial.model.entity.Post;
-import com.petlover.petsocial.model.entity.User;
-import jakarta.persistence.*;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 public class CommentDTO {

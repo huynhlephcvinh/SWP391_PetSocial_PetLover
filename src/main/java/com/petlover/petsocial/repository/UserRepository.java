@@ -8,26 +8,26 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    public boolean existsByEmail(String email);
+    boolean existsByEmail(String email);
 
 
-    public User findByEmail(String email);
+    User findByEmail(String email);
 
 
 
 
-    public User findByVerificationCode(String code);
-    public User findByResetPasswordToken(String token);
+    User findByVerificationCode(String code);
+    User findByResetPasswordToken(String token);
 
-    public User getById(Long id);
+    User getById(Long id);
 
     @Query(value="SELECT * FROM user u where u.role <> \"ROLE_ADMIN\"",nativeQuery = true)
-    public List<User> listUser();
+    List<User> listUser();
 
     @Query (value="SELECT * FROM user u where u.enable=1", nativeQuery = true)
-    public List<User> listUserHome();
-    public Optional<User> findByName(String name);
+    List<User> listUserHome();
+    Optional<User> findByName(String name);
 
     @Query(value="SELECT * FROM user u where u.role <> \"ROLE_ADMIN\" and u.name like CONCAT('%',%?1%,'%') ",nativeQuery = true)
-    public List<User> searchUserForAdmin(String name);
+    List<User> searchUserForAdmin(String name);
 }

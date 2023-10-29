@@ -3,8 +3,6 @@ package com.petlover.petsocial.controller;
 import com.petlover.petsocial.exception.PetException;
 import com.petlover.petsocial.exception.PostException;
 import com.petlover.petsocial.exception.UserException;
-import com.petlover.petsocial.model.entity.Pet;
-import com.petlover.petsocial.model.entity.User;
 import com.petlover.petsocial.payload.request.*;
 import com.petlover.petsocial.payload.response.ResponseData;
 import com.petlover.petsocial.service.PetService;
@@ -16,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 

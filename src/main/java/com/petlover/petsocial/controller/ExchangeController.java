@@ -1,9 +1,6 @@
 package com.petlover.petsocial.controller;
 
 import com.petlover.petsocial.exception.UserException;
-import com.petlover.petsocial.model.entity.Apply;
-import com.petlover.petsocial.model.entity.Exchange;
-import com.petlover.petsocial.model.entity.User;
 import com.petlover.petsocial.payload.request.ApplyDTO;
 import com.petlover.petsocial.payload.request.ExchangeDTO;
 import com.petlover.petsocial.payload.request.PetDTO;

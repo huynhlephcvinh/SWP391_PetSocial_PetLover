@@ -12,15 +12,12 @@ import com.petlover.petsocial.service.PostService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.nio.file.Path;
+
 import java.text.DateFormat;
 import java.util.*;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 
 @Service
 public class PostServiceImp implements PostService {
@@ -119,7 +116,7 @@ postRepository.save(newPost);
         userPostDTO.setName(newPost.getUser().getName());
         userPostDTO.setAvatar(newPost.getUser().getAvatar());
 
-            return new PostDTO(newPost.getId(),newPost.getImage(),newPost.getContent(),newPost.getCreate_date(),newPost.getTotal_like(),newPost.getComments(),petToPostDTO,userPostDTO);
+            return new PostDTO(newPost.getId(),newPost.getImage(),newPost.getContent(),newPost.getCreate_date(),newPost.getTotal_like(),newPost.convertCommentListToDTO(newPost.getComments()),petToPostDTO,userPostDTO);
 
     }
 
@@ -134,7 +131,7 @@ postRepository.save(newPost);
             postDTO.setImage(post.getImage());
             postDTO.setCreate_date(post.getCreate_date());
             postDTO.setTotal_like(post.getTotal_like());
-            postDTO.setComments(post.getComments());
+            postDTO.setComments(post.convertCommentListToDTO(post.getComments()));
 
             PetToPostDTO petToPostDTO = new PetToPostDTO();
             petToPostDTO.setId(post.getPet().getId());
@@ -163,7 +160,7 @@ postRepository.save(newPost);
             postDTO.setImage(post.getImage());
             postDTO.setCreate_date(post.getCreate_date());
             postDTO.setTotal_like(post.getTotal_like());
-            postDTO.setComments(post.getComments());
+            postDTO.setComments(post.convertCommentListToDTO(post.getComments()));
 
             PetToPostDTO petToPostDTO = new PetToPostDTO();
             petToPostDTO.setId(post.getPet().getId());
@@ -191,7 +188,7 @@ postRepository.save(newPost);
             postDTO.setImage(post.getImage());
             postDTO.setCreate_date(post.getCreate_date());
             postDTO.setTotal_like(post.getTotal_like());
-            postDTO.setComments(post.getComments());
+            postDTO.setComments(post.convertCommentListToDTO(post.getComments()));
 
             PetToPostDTO petToPostDTO = new PetToPostDTO();
             petToPostDTO.setId(post.getPet().getId());
@@ -226,7 +223,7 @@ postRepository.save(newPost);
         userPostDTO.setId(getPost.getUser().getId());
         userPostDTO.setName(getPost.getUser().getName());
         userPostDTO.setAvatar(getPost.getUser().getAvatar());
-        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),getPost.getComments(),petToPostDTO,userPostDTO);
+        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),getPost.convertCommentListToDTO(getPost.getComments()),petToPostDTO,userPostDTO);
     }
     public PostDTO deletePost(Long id, UserDTO userDTO)  {
 
@@ -252,7 +249,7 @@ postRepository.save(newPost);
         userPostDTO.setName(getPost.getUser().getName());
         userPostDTO.setAvatar(getPost.getUser().getAvatar());
 
-        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),getPost.getComments(),petToPostDTO,userPostDTO);
+        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),getPost.convertCommentListToDTO(getPost.getComments()),petToPostDTO,userPostDTO);
     }
 
     public PostDTO updatePost(Long id, PostUpdateDTO postUpdateDTO,UserDTO userDTO)
@@ -282,7 +279,7 @@ postRepository.save(newPost);
         userPostDTO.setName(getPost.getUser().getName());
         userPostDTO.setAvatar(getPost.getUser().getAvatar());
 
-        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),getPost.getComments(),petToPostDTO,userPostDTO);
+        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),getPost.convertCommentListToDTO(getPost.getComments()),petToPostDTO,userPostDTO);
 
     }
 

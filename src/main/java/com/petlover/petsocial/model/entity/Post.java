@@ -1,11 +1,13 @@
 package com.petlover.petsocial.model.entity;
 
 
+import com.petlover.petsocial.payload.request.CommentDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @NoArgsConstructor
@@ -45,4 +47,21 @@ public class Post {
     @Column(name = "status")
     private boolean status;
 
+    public CommentDTO convertCommentToDTO(Comment comment) {
+        CommentDTO commentDTO = new CommentDTO();
+        commentDTO.setId(comment.getId());
+        commentDTO.setContent(comment.getContent());
+        commentDTO.setMedia(comment.getMedia());
+        commentDTO.setUserId(comment.getUser().getId());
+        commentDTO.setPostId(comment.getPost().getId());
+        if (comment.getReplyFor() != null) {
+            commentDTO.setReplyForId(comment.getReplyFor().getId());
+        }
+        commentDTO.setCreatedTime(comment.getCreatedTime());
+        return commentDTO;
+    }
+
+    public List<CommentDTO> convertCommentListToDTO(List<Comment> commentList) {
+        return commentList.stream().map(this::convertCommentToDTO).collect(Collectors.toList());
+    }
 }
