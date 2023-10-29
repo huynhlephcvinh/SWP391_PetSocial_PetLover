@@ -192,14 +192,10 @@ public class HomeController {
             m.addAttribute("msg", "may be your vefication code is incorrect or already veified ");
         }
 
-        return "message";
+        return "You can login";
     }
 
-    @GetMapping("/forgot_password")
-    public String showForgotPasswordForm(Model model) {
-        model.addAttribute("pageTitle","Forgot Password");
-        return "forgot_password_form";
-    }
+
     @PostMapping("/forgot_password")
     public String processForgotPassword(@RequestParam String email,HttpServletRequest request, Model model) {
         String token = RandomString.make(30);
@@ -213,15 +209,15 @@ public class HomeController {
             System.out.println(url);
 //            String resetPasswordLink = Utility.getSiteURL(request) + "/reset_password?token=" + token;
             sendEmail(email, url);
-            model.addAttribute("message", "We have sent a reset password link to your email. Please check.");
+
 //
         } catch (UserNotFoundException ex) {
-            model.addAttribute("error", ex.getMessage());
+          return "Error!";
         } catch (UnsupportedEncodingException | MessagingException e) {
-            model.addAttribute("error", "Error while sending email");
+            return "Erorr when send email";
         }
 
-        return "forgot_password_form";
+        return "We have sent a reset password link to your email. Please check.";
     }
 
     public void sendEmail(String recipientEmail, String link)
@@ -248,36 +244,21 @@ public class HomeController {
 
         mailSender.send(message);
     }
-    @GetMapping("/reset_password")
-    public String showResetPasswordForm(@Param(value = "token") String token, Model model) {
-        User user = userService.getByResetPasswordToken(token);
-        model.addAttribute("token", token);
-
-        if (user == null) {
-            model.addAttribute("message", "Invalid Token");
-            return "message";
-        }
-
-        return "reset_password_form";
-    }
     @PostMapping("/reset_password")
-    public String processResetPassword(HttpServletRequest request, Model model) {
-        String token = request.getParameter("token");
-        String password = request.getParameter("password");
+    public String processResetPassword(@Param("token") String token,@RequestParam String password) {
+        String gettoken = token;
+        String pass =password;
 
-        User user = userService.getByResetPasswordToken(token);
-        model.addAttribute("title", "Reset your password");
-
+        User user = userService.getByResetPasswordToken(gettoken);
         if (user == null) {
-            model.addAttribute("message", "Invalid Token");
-            return "message";
-        } else {
-            userService.updatePassword(user, password);
 
-            model.addAttribute("message", "You have successfully changed your password.");
+            return "Invalid Token";
+        } else {
+            userService.updatePassword(user, pass);
+
         }
 
-        return "reset_password_form";
+        return "Reset password correct !";
     }
 
 
