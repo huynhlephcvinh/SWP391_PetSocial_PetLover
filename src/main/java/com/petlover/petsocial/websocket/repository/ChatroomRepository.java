@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ChatroomRepository extends JpaRepository<Chatroom, Integer> {
+public interface ChatroomRepository extends JpaRepository<Chatroom, Long> {
     @Query("FROM Chatroom c WHERE c.senderId = :senderId AND c.recipientId = :recipientId")
-    Optional<Chatroom> findChatroomBySenderIdAndRecipientId(int senderId, int recipientId);
+    Optional<Chatroom> findChatroomBySenderIdAndRecipientId(Long senderId, Long recipientId);
 }

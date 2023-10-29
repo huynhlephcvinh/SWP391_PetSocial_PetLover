@@ -13,7 +13,7 @@ public class ChatroomService {
     ChatroomRepository chatroomRepository;
 
 
-    public Chatroom findChatroomBySenderIdAndRecipientId(int senderId, int recipientId){
+    public Chatroom findChatroomBySenderIdAndRecipientId(Long senderId, Long recipientId){
         Optional<Chatroom> found = chatroomRepository.findChatroomBySenderIdAndRecipientId(senderId, recipientId);
         if(found.isPresent()){
             return found.get();

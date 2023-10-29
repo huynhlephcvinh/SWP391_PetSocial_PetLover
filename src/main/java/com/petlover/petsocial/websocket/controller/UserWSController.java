@@ -32,7 +32,7 @@ public class UserWSController {
 
 
     @GetMapping("/{currentUserId}")
-    public ResponseEntity<List<OnlineUserDto>> getOnlineUsers(@PathVariable int currentUserId) {
+    public ResponseEntity<List<OnlineUserDto>> getOnlineUsers(@PathVariable Long currentUserId) {
         List<OnlineUserDto>usersWithStatus = new ArrayList<>();
 
 

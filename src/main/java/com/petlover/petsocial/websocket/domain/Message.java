@@ -18,16 +18,16 @@ public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "message_id")
-    private int messageId;
+    private Long messageId;
 
     @Column(name="chatroom_id")
     private String chatroomId;
 
     @Column(name="sender_id")
-    private int senderId;
+    private Long senderId;
 
     @Column(name="recipient_id")
-    private int recipientId;
+    private Long recipientId;
 
     @Column(name="sender_name")
     private String senderName;

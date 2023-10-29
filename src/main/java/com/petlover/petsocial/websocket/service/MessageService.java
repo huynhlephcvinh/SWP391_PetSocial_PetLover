@@ -12,11 +12,11 @@ public class MessageService {
     @Autowired
     private MessageRepository messageRepository;
 
-    public int countNewMessagesFromOnlineUser(int currentUserId, int userId){
+    public int countNewMessagesFromOnlineUser(Long currentUserId, Long userId){
         return messageRepository.countNewMessagesFromOnlineUser(currentUserId, userId);
     }
 
-    public List<Message>findChatMessagesFromSelectedUser(int senderId, int recipientId){
+    public List<Message>findChatMessagesFromSelectedUser(Long senderId, Long recipientId){
         return messageRepository.findChatMessagesFromSelectedUser(senderId, recipientId);
     }
 

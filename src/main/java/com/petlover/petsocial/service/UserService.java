@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface UserService {
     public SingupDTO createUser(SingupDTO signupDTO, String url);
-    public boolean checkLogin(SigninDTO signinDTO);
+    public String checkLogin(SigninDTO signinDTO);
     public User getUserByEmail(String email);
 
     public boolean checkEmail(String email);

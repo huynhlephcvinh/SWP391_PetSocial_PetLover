@@ -26,8 +26,8 @@ public class MessageController {
 
 
     @GetMapping("/{senderId}/{recipientId}")
-    public ResponseEntity<List<Message>> getChatMessages(@PathVariable int senderId,
-                                                         @PathVariable int recipientId) {
+    public ResponseEntity<List<Message>> getChatMessages(@PathVariable Long senderId,
+                                                         @PathVariable Long recipientId) {
         List<Message> messagesFromSenderRepicient = null;
         try{
             List<Message> msgs = messageService.findChatMessagesFromSelectedUser(senderId, recipientId);

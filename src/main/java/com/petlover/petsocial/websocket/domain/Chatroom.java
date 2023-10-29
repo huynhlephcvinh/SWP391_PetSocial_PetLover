@@ -13,16 +13,16 @@ import lombok.*;
 public class Chatroom {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "chatroom_id")
     private String chatroomId;
 
     @Column(name="sender_id")
-    private int senderId;
+    private Long senderId;
 
     @Column(name="recipient_id")
-    private int recipientId;
+    private Long recipientId;
 
 //    @ManyToOne
 //    @JoinColumn(name = "exchange_id")
