@@ -11,11 +11,11 @@ import java.util.Date;
 @AllArgsConstructor
 @Data
 public class ApplyDTO {
-    private int id;
+    private Long id;
     private Date applyDate;
     private boolean status;
-    private int exchangeId;
-    private int userId;
+    private Long exchangeId;
+    private Long userId;
 
     public static ApplyDTO convertToDTO(Apply apply) {
         ApplyDTO applyDTO = new ApplyDTO();

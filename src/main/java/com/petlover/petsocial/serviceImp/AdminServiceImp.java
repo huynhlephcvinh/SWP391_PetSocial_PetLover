@@ -71,7 +71,7 @@ public class AdminServiceImp implements AdminService {
         return getListUserForAdmin;
     }
 
-    public UserForAdminDTO getBlockUser(int idUser) throws UserException {
+    public UserForAdminDTO getBlockUser(Long idUser) throws UserException {
         User user = userRepo.getById(idUser);
         if(user ==null) {
             throw new UserException("Not found User");
@@ -92,7 +92,7 @@ public class AdminServiceImp implements AdminService {
         return userForAdminDTO;
     }
 
-    public UserForAdminDTO getOffBlockUser(int idUser) throws UserException {
+    public UserForAdminDTO getOffBlockUser(Long idUser) throws UserException {
         User user = userRepo.getById(idUser);
         if(user ==null) {
             throw new UserException("Not found User");
@@ -146,11 +146,18 @@ public class AdminServiceImp implements AdminService {
 
     public int getTotalPostDisplayInMonth(int month) {
         int count = 0;
+        Calendar cal = Calendar.getInstance();
+        Date date = cal.getTime();
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+        String formattedDate = dateFormat.format(date);
+        LocalDate localDateNow = LocalDate.parse(formattedDate,DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
         List<Post> listPostDisplay = postRepository.getAllPostDisplayUserForAdmin();
         for (Post post : listPostDisplay) {
             String postDate = post.getCreate_date();
             LocalDate localDate = LocalDate.parse(postDate, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+
             if (localDate.getMonthValue() == month) {
+                if(localDate.getYear() == localDateNow.getYear())
                 count++;
             }
         }

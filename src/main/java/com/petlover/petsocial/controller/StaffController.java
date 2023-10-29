@@ -45,7 +45,7 @@ public class StaffController {
     }
 
     @PostMapping("/{idPost}/enable")
-    public ResponseEntity<?> getEnablePost(@PathVariable int idPost,@RequestHeader("Authorization") String jwt) throws UserException, PostException {
+    public ResponseEntity<?> getEnablePost(@PathVariable Long idPost,@RequestHeader("Authorization") String jwt) throws UserException, PostException {
         ResponseData responseData = new ResponseData();
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);
         User user = userRepo.getById(userDTO.getId());

@@ -34,7 +34,7 @@ public class PetTypeServiceImp implements PetTypeService {
         return listPetDTO;
     }
     @Override
-    public Pet_Type getPetType(int id) {
+    public Pet_Type getPetType(Long id) {
         return petTypeRepository.getById(id);
     }
 

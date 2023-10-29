@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class PostForAdminDTO {
-    private int id;
+    private Long id;
     private String image;
     private String content;
     private String create_date;

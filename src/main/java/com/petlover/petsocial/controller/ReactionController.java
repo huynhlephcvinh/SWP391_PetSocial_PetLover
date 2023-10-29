@@ -2,6 +2,7 @@ package com.petlover.petsocial.controller;
 
 import com.petlover.petsocial.exception.PostException;
 import com.petlover.petsocial.exception.UserException;
+import com.petlover.petsocial.model.entity.User;
 import com.petlover.petsocial.payload.request.ReactionDTO;
 import com.petlover.petsocial.payload.request.UserDTO;
 import com.petlover.petsocial.payload.response.ResponseData;
@@ -21,8 +22,9 @@ public class ReactionController {
     @Autowired
     ReactionService reactionService;
 
+
     @PostMapping("/{idPost}/like")
-    public ResponseEntity<?> reactionPost(@PathVariable int idPost, @RequestHeader("Authorization") String jwt) throws UserException, PostException {
+    public ResponseEntity<?> reactionPost(@PathVariable Long idPost, @RequestHeader("Authorization") String jwt) throws UserException, PostException {
         ResponseData responseData = new ResponseData();
             UserDTO userDTO = userService.findUserProfileByJwt(jwt);
         ReactionDTO reactionDTO = reactionService.reactionPost(idPost,userDTO);
@@ -30,5 +32,15 @@ public class ReactionController {
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
 
+    @PostMapping("/comment/{idComment}/react")
+    public ResponseEntity<?> reactComment(@PathVariable Long idComment, @RequestHeader("Authorization") String jwt) throws UserException {
+        UserDTO userDTO = userService.findUserProfileByJwt(jwt);
+        User user = userService.findById(userDTO.getId());
+        if (user != null) {
+            ReactionDTO reactionDTO = reactionService.reactComment(idComment, userDTO);
+            return new ResponseEntity<>(reactionDTO, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 
 }

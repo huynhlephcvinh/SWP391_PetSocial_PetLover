@@ -21,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/post")
 public class PostController {
     @Autowired
@@ -35,10 +34,10 @@ public class PostController {
     @Autowired
     private UserService userService;
     @GetMapping("/createpost")
-    public ResponseEntity<?> choosePetToPost(@RequestHeader("Authorization") String jwt) throws UserException {
+    public ResponseEntity<?> choosePetToPost(){
         ResponseData responseData = new ResponseData();
-        UserDTO userDTO = userService.findUserProfileByJwt(jwt);
-        List<PetToPostDTO> list = petService.getAllPetPost(userDTO);
+        List<PetToPostDTO> list = petService.getAllPetPost();
+        request.setAttribute("listYourPet",list);
         responseData.setData(list);
         return new ResponseEntity<>(responseData, HttpStatus.OK);
 
@@ -60,6 +59,7 @@ public class PostController {
     public ResponseEntity<?> getAllPost(){
         ResponseData responseData = new ResponseData();
         List<PostDTO> list = postService.getAllPost();
+        request.setAttribute("listPost",list);
         responseData.setData(list);
         return new ResponseEntity<>(responseData,HttpStatus.OK);
     }
@@ -73,8 +73,8 @@ public class PostController {
         return new ResponseEntity<>(responseData,HttpStatus.OK);
     }
 
-    @DeleteMapping ("/delete/{id}")
-    public ResponseEntity<?> deletePost(@PathVariable(value = "id") int id,@RequestHeader("Authorization") String jwt) throws UserException, PostException {
+    @PostMapping ("/delete/{id}")
+    public ResponseEntity<?> deletePost(@PathVariable(value = "id") Long id,@RequestHeader("Authorization") String jwt) throws UserException, PostException {
         ResponseData responseData = new ResponseData();
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);
         PostDTO postDTO = postService.deletePost(id, userDTO);
@@ -86,7 +86,7 @@ public class PostController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updatePost(@PathVariable(value = "id") int id, @ModelAttribute PostUpdateDTO postUpdateDTO,@RequestHeader("Authorization") String jwt) throws UserException, PostException {
+    public ResponseEntity<?> updatePost(@PathVariable(value = "id") Long id, @ModelAttribute PostUpdateDTO postUpdateDTO,@RequestHeader("Authorization") String jwt) throws UserException, PostException {
         ResponseData responseData = new ResponseData();
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);
         PostDTO postDTO = postService.updatePost(id, postUpdateDTO,userDTO);

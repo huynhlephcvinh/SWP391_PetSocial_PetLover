@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/user")
 public class UserController {
     @Autowired
@@ -53,18 +52,12 @@ public class UserController {
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
 
-    @GetMapping("/profile/{id}")
-    public ResponseEntity<?> getUserProfileById(@PathVariable(value = "id") int id) throws UserException {
+    @PostMapping("/profile/{id}")
+    public ResponseEntity<?> getUserProfileById(@PathVariable(value = "id") Long id) throws UserException {
         ResponseData responseData = new ResponseData();
         UserDTO userDTO = userService.findUserProfileById(id);
         responseData.setData(userDTO);
         return new ResponseEntity<>(responseData, HttpStatus.OK);
-    }
-
-    @GetMapping("/{id}")
-    public  ResponseEntity<?> getUserById(@PathVariable int id) throws UserException {
-        UserDTO userDTO = userService.findUserProfileById(id);
-        return ResponseEntity.ok(userDTO.getId());
     }
 
 

@@ -11,11 +11,10 @@ import java.util.Date;
 @AllArgsConstructor
 @Data
 public class ExchangeDTO {
-    private int id;
+    private Long id;
     private Date exchangeDate;
     private int paymentAmount;
     private ExStatus status;
-    private UserDTO userDTO;
-    private PetDTO petDTO;
-    private String description;
+    private Long userId;
+    private Long petId;
 }

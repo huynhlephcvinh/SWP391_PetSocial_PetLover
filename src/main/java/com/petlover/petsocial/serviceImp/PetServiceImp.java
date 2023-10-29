@@ -91,9 +91,10 @@ public class PetServiceImp implements PetService {
         }
         return listpetDTO;
     }
-    public List<PetToPostDTO> getAllPetPost(UserDTO userDTO)
+    public List<PetToPostDTO> getAllPetPost()
     {
-        List<Pet> petList= petRepository.getAllByIdUser(userDTO.getId());
+        User user = (User) session.getAttribute("user");
+        List<Pet> petList= petRepository.getAllByIdUser(user.getId());
         List<PetToPostDTO> listpetDTO = new ArrayList<>();
         for(Pet pet : petList) {
             PetToPostDTO petDTO = new PetToPostDTO();
@@ -105,13 +106,12 @@ public class PetServiceImp implements PetService {
         return listpetDTO;
     }
     @Override
-    public PetDTO deletePet(int id,UserDTO userDTO) throws PetException {
+    public PetDTO deletePet(Long id,UserDTO userDTO) throws PetException {
 
         Pet getPet = petRepository.getById(id);
         if(getPet==null) {
             return null;
         }
-
         if(getPet.getUser().getId() == userDTO.getId()) {
             getPet.setStatus(false);
         }
@@ -122,7 +122,7 @@ public class PetServiceImp implements PetService {
         return new PetDTO(getPet.getId(),getPet.getImage(), getPet.getName(),getPet.getDescription());
     }
     @Override
-    public PetDTO getOnePet(int id, UserDTO userDTO)
+    public PetDTO getOnePet(Long id, UserDTO userDTO)
     {
 
         Pet getPet = petRepository.getById(id);
@@ -133,7 +133,7 @@ public class PetServiceImp implements PetService {
 
     }
     @Override
-    public PetDTO updatePet(int id,PetUpdateDTO petUpdateDTO, UserDTO userDTO)
+    public PetDTO updatePet(Long id,PetUpdateDTO petUpdateDTO, UserDTO userDTO)
     {
 
         Pet getPet = petRepository.getById(id);

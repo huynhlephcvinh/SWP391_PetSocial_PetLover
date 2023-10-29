@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 public class UserDTO {
-    private int id;
+    private Long id;
     private String name;
     private String email;
     private String phone;

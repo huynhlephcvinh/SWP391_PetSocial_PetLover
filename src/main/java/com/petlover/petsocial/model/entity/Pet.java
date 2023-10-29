@@ -15,7 +15,7 @@ import java.util.List;
 public class Pet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     @Column(name = "name", columnDefinition = "nvarchar(255)")
     private String name;
     @Column(name = "description", columnDefinition = "nvarchar(1111)")

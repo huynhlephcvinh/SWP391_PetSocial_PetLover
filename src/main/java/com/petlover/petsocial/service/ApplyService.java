@@ -10,11 +10,10 @@ import java.util.List;
 
 public interface ApplyService {
     public Apply createApply(Exchange exchange, UserDTO userDTO, UserDTO userDTOown);
-    public Apply updateApply(UserDTO userDTO, int applyid);
+    public Apply updateApply(UserDTO userDTO, Long applyid);
     //public Apply deleteApply(UserDTO userDTO, int applyid);
-    public List<ApplyDTO> getApplyForExchange(UserDTO userDTO, int id);
+    public List<ApplyDTO> getApplyForExchange(UserDTO userDTO, Long id);
     public List<Apply> getApplyForUser(UserDTO userDTO, Exchange exchange );
-    public Apply getApplyById(int appId);
-
+    public Apply getApplyById(Long appId);
 
 }

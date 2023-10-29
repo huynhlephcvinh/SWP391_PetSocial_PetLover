@@ -5,7 +5,6 @@ import com.petlover.petsocial.model.entity.Apply;
 import com.petlover.petsocial.model.entity.Exchange;
 import com.petlover.petsocial.model.entity.User;
 import com.petlover.petsocial.payload.request.ApplyDTO;
-import com.petlover.petsocial.payload.request.CreateExchangeDTO;
 import com.petlover.petsocial.payload.request.ExchangeDTO;
 import com.petlover.petsocial.payload.request.PetDTO;
 import com.petlover.petsocial.payload.request.UserDTO;
@@ -32,26 +31,12 @@ public class ExchangeController {
     @Autowired
     private ApplyService applyService;
 
-    //Get All Exchange To Show in MarketPlace
-    @GetMapping("/getAllExchange")
-    public ResponseEntity<?> getAllExchangToShowInMarketPlacce(@RequestHeader("Authorization") String jwt){
-        System.out.println("jasjdsd");
-        List<ExchangeDTO> exchanges = exchangeService.getAllExchangeToShow();
-        System.out.println("co gi o day khong"+exchanges);
-        if (!exchanges.isEmpty()) {
-            return ResponseEntity.ok(exchanges);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No exchanges found.");
-        }
-    }
-
-
     //Create exchange
     @PostMapping("/create")
-    public ResponseEntity<?> createExchange (@RequestHeader("Authorization") String jwt, @RequestBody CreateExchangeDTO createExchangeDTO) throws UserException {
+    public ResponseEntity<?> createExchange (@RequestHeader("Authorization") String jwt, @RequestBody PetDTO petDTO, @RequestParam("paymentAmount") int paymentAmount) throws UserException {
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);
         if(userDTO!=null){
-            ExchangeDTO exchange = exchangeService.addExchange(userDTO, createExchangeDTO);
+            ExchangeDTO exchange = exchangeService.addExchange(userDTO, petDTO.getId(), paymentAmount);
             return ResponseEntity.ok(exchange);
         }else{
             return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to create exchange.");
@@ -60,7 +45,7 @@ public class ExchangeController {
 
     //Update status Exchange to Completed when have apply have status true
     @PutMapping("/{id}/completed")
-    public ResponseEntity<?> updateCompletedExchange(@RequestHeader("Authorization") String jwt, @PathVariable int id) throws UserException {
+    public ResponseEntity<?> updateCompletedExchange(@RequestHeader("Authorization") String jwt, @PathVariable Long id) throws UserException {
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);
         ExchangeDTO updatedExchange = exchangeService.updateExchange(userDTO, id);
         if (updatedExchange != null) {
@@ -71,11 +56,10 @@ public class ExchangeController {
     }
 
     //Update payment amout for exchange
-
     @PutMapping("/id/edit-cash")
-    public ResponseEntity<?> editCashExchange(@RequestHeader("Authorization") String jwt, @PathVariable int id,@RequestBody CreateExchangeDTO createExchangeDTO) throws UserException {
+    public ResponseEntity<?> editCashExchange(@RequestHeader("Authorization") String jwt, @PathVariable Long id, @RequestParam("paymentAmount") int paymentAmount) throws UserException {
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);
-        ExchangeDTO updatedExchange = exchangeService.editCashExchange(userDTO, id, createExchangeDTO);
+        ExchangeDTO updatedExchange = exchangeService.editCashExchange(userDTO, id, paymentAmount);
         if (updatedExchange != null) {
             return ResponseEntity.ok(updatedExchange);
         } else {
@@ -85,7 +69,7 @@ public class ExchangeController {
 
     //Remove exchange
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteExchange(@RequestHeader("Authorization") String jwt, @PathVariable int id) throws UserException {
+    public ResponseEntity<?> deleteExchange(@RequestHeader("Authorization") String jwt, @PathVariable Long id) throws UserException {
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);
         ExchangeDTO deExchange = exchangeService.deleteExchange(userDTO, id);
         if (deExchange != null) {
@@ -97,7 +81,7 @@ public class ExchangeController {
 
     // view exchange one
     @GetMapping("/{id}")
-    public ResponseEntity<?> getExchange(@RequestHeader("Authorization") String jwt, @PathVariable int id) throws UserException {
+    public ResponseEntity<?> getExchange(@RequestHeader("Authorization") String jwt, @PathVariable Long id) throws UserException {
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);
         ExchangeDTO exchange = exchangeService.getOneExchangeDTO(userDTO, id);
         if (exchange != null) {
@@ -108,7 +92,7 @@ public class ExchangeController {
     }
 
     @GetMapping("/{userid}/{id}")
-    public ResponseEntity<?> getExchangeWithOthers(@PathVariable int userid, @PathVariable int id) throws UserException {
+    public ResponseEntity<?> getExchangeWithOthers(@PathVariable Long userid, @PathVariable Long id) throws UserException {
         UserDTO userDTO1 = userService.findUserProfileById(userid);
         ExchangeDTO exchange = exchangeService.getOneExchangeDTO(userDTO1, id);
         if (exchange != null) {
@@ -131,7 +115,7 @@ public class ExchangeController {
     }
 
     @GetMapping("/{id}/view-applies")
-    public ResponseEntity<?> listAppliesWithExchange(@RequestHeader("Authorization") String jwt, @PathVariable int id) throws UserException {
+    public ResponseEntity<?> listAppliesWithExchange(@RequestHeader("Authorization") String jwt, @PathVariable Long id) throws UserException {
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);
         List<ApplyDTO> applyDTOS = applyService.getApplyForExchange(userDTO, id);
         if (!applyDTOS.isEmpty()) {

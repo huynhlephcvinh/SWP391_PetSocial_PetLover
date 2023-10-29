@@ -13,7 +13,7 @@ import java.util.Date;
 public class Apply {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     private Date apply_date;
     private boolean status;
 

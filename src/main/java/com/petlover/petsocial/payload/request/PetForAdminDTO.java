@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class PetForAdminDTO {
-    private int id;
+    private Long id;
     private String image;
     private String name;
     private String description;
