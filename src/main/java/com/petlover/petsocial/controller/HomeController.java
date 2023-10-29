@@ -137,7 +137,30 @@ public class HomeController {
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@RequestBody SigninDTO signinDTO) throws UserException{
         ResponseData responseData = new ResponseData();
+        //SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+        // String encrypted = Encoders.BASE64.encode(secretKey.getEncoded());
+        //System.out.println(encrypted);
+
         System.out.println(signinDTO);
+//    String token = jwtUtilHelper.generateToken(signinDTO.getUsername());
+//    System.out.println(token);
+
+//    responseData.setDescription(res.toString());
+        String userLogin = String.valueOf(userService.checkLogin(signinDTO));
+        if(userLogin.equals("Incorrect username or password")){
+            responseData.setData("Incorrect");
+        }else if(userLogin.equals("Your account has not been activated!")){
+            responseData.setData("Activated");
+        }else {
+//      responseData.setToken(token);
+//      responseData.setData(res);
+            Authentication authentication = authenticate(signinDTO.getUsername(), signinDTO.getPassword());
+            String token = jwtProvider.generateToken(authentication);
+            AuthResponse res = new AuthResponse(token, true);
+            System.out.println(token);
+            responseData.setData(token);
+
+        }
 //        if(userService.checkLogin(signinDTO)){
 //            String token = jwtUtilHelper.generateToken(signinDTO.getUsername());
 //            responseData.setData(token);
@@ -148,17 +171,8 @@ public class HomeController {
 //            responseData.setData("");
 //            responseData.setIsSuccess(false);
 //        }
-        if(userService.checkLogin(signinDTO)) {
-            Authentication authentication = authenticate(signinDTO.getUsername(), signinDTO.getPassword());
-            String token = jwtProvider.generateToken(authentication);
-            AuthResponse res = new AuthResponse(token, true);
 
-            responseData.setData(res);
-
-        }else{
-            throw new UserException("Email not enable");
-        }
-        return new ResponseEntity<>(responseData, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(responseData.getData(), HttpStatus.OK);
     }
     private Authentication authenticate( String username, String password) {
         UserDetails userDetails = customerUserDetailsServiceImp.loadUserByUsername(username);

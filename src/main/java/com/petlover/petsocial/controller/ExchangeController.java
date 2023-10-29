@@ -125,7 +125,17 @@ public class ExchangeController {
         }
     }
 
-
+    @GetMapping("/getAllExchange")
+    public ResponseEntity<?> getAllExchangToShowInMarketPlacce(@RequestHeader("Authorization") String jwt){
+        System.out.println("jasjdsd");
+        List<ExchangeDTO> exchanges = exchangeService.getAllExchangeToShow();
+        System.out.println("co gi o day khong"+exchanges);
+        if (!exchanges.isEmpty()) {
+            return ResponseEntity.ok(exchanges);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No exchanges found.");
+        }
+    }
 
 
 }

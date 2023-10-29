@@ -65,7 +65,15 @@ public class ExchangeServiceImp implements ExchangeService {
 
         }
     }
-
+    @Override
+    public List<ExchangeDTO> getAllExchangeToShow() {
+        List<ExchangeDTO> exchangeDTOList = new ArrayList<>();
+        for (Exchange exchange : exchangeRepository.getAllExchange()) {
+            ExchangeDTO exchangeDTO = convertToDTO(exchange);
+            exchangeDTOList.add(exchangeDTO);
+        }
+        return exchangeDTOList;
+    }
     @Override
     public ExchangeDTO updateExchange(UserDTO userDTO,Long id) {
         Exchange exchange = exchangeRepository.findById(id).orElse(null);
