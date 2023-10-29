@@ -152,7 +152,7 @@ public class HomeController {
 
         }
 
-        return new ResponseEntity<>(responseData, HttpStatus.CREATED);
+        return new ResponseEntity<>(responseData.getData(), HttpStatus.CREATED);
     }
 
 

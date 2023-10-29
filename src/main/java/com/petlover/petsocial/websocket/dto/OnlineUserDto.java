@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class OnlineUserDto {
     private int userId;
     private String sessionId;
-    private String username;
+    private String name;
     private Integer noOfNewMessages;
     private String status;
 

@@ -35,7 +35,10 @@ public class UserWSController {
     public ResponseEntity<List<OnlineUserDto>> getOnlineUsers(@PathVariable int currentUserId) {
         List<OnlineUserDto>usersWithStatus = new ArrayList<>();
 
-        List<OnlineUserDto>offlineUsers = MapperUtils.mapperList(userService.getAllUsers(),OnlineUserDto.class);
+
+        //List<OnlineUserDto>offlineUsers = MapperUtils.mapperList(userService.getAllUsers());
+        List<OnlineUserDto>offlineUsers = MapperUtils.mapperList(userService.getAllUsers(), OnlineUserDto.class);
+
         offlineUsers.stream().map(u->{
             u.setStatus("OFFLINE");
             return u;
@@ -53,7 +56,7 @@ public class UserWSController {
                 usersWithStatus.addAll(onls);
                 List<OnlineUserDto> finalOnls = onls;
                 offlineUsers.forEach(u->{
-                    if(finalOnls.stream().map(OnlineUserDto::getUsername).collect(Collectors.toList()).contains(u.getUsername())==false){
+                    if(finalOnls.stream().map(OnlineUserDto::getName).collect(Collectors.toList()).contains(u.getName())==false){
                         usersWithStatus.add(u);
                     }
                 });
