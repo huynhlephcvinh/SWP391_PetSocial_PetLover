@@ -66,7 +66,7 @@ public class UserServiceImp implements UserService {
     }
     @Override
     public boolean checkLogin(SigninDTO signinDTO) {
-        User user = userRepo.findByEmail(signinDTO.getUsername());
+        User user = userRepo.findByEmail(signinDTO.getEmail());
         if(!user.isEnable()){
             return false;
         }else {
