@@ -54,9 +54,6 @@ public class Post {
         commentDTO.setMedia(comment.getMedia());
         commentDTO.setUserId(comment.getUser().getId());
         commentDTO.setPostId(comment.getPost().getId());
-        if (comment.getReplyFor() != null) {
-            commentDTO.setReplyForId(comment.getReplyFor().getId());
-        }
         commentDTO.setCreatedTime(comment.getCreatedTime());
         return commentDTO;
     }

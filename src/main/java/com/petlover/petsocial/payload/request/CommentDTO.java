@@ -1,17 +1,29 @@
 package com.petlover.petsocial.payload.request;
 
 
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.LocalDateTime;
 import java.util.List;
-
+@NoArgsConstructor
 public class CommentDTO {
     private Long id;
-    private List<String> content;
+    private String content;
     private List<String> media;
     private Long userId;
     private Long postId;
-    private Long replyForId;
+    @CreationTimestamp
     private LocalDateTime createdTime;
+
+    public CommentDTO(Long id, String content, List<String> media, Long userId, Long postId, LocalDateTime createdTime) {
+        this.id = id;
+        this.content = content;
+        this.media = media;
+        this.userId = userId;
+        this.postId = postId;
+        this.createdTime = createdTime;
+    }
 
     public Long getId() {
         return id;
@@ -21,11 +33,11 @@ public class CommentDTO {
         this.id = id;
     }
 
-    public List<String> getContent() {
+    public String getContent() {
         return content;
     }
 
-    public void setContent(List<String> content) {
+    public void setContent(String content) {
         this.content = content;
     }
 
@@ -51,14 +63,6 @@ public class CommentDTO {
 
     public void setPostId(Long postId) {
         this.postId = postId;
-    }
-
-    public Long getReplyForId() {
-        return replyForId;
-    }
-
-    public void setReplyForId(Long replyForId) {
-        this.replyForId = replyForId;
     }
 
     public LocalDateTime getCreatedTime() {

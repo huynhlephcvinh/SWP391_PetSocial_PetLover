@@ -2,7 +2,9 @@ package com.petlover.petsocial.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -11,34 +13,33 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 @Table(name="Comment")
-public class Comment {
+public class Comment implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ElementCollection
-    private List<String> content;
+    private String content;
 
     @ElementCollection
+    @JsonIgnore
     private List<String> media;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "react_id")
+    @JsonIgnore
     private Reaction react;
 
     @ManyToOne
     @JoinColumn(name = "post_id")
+    @JsonIgnore
     private Post post;
 
-    @ManyToOne
-    @JoinColumn(name = "reply_for_id")
-    private Comment replyFor;
-
-    @Column(nullable = false)
+    @Column
     private LocalDateTime createdTime;
 
     public Long getId() {
@@ -49,11 +50,11 @@ public class Comment {
         this.id = id;
     }
 
-    public List<String> getContent() {
+    public String getContent() {
         return content;
     }
 
-    public void setContent(List<String> content) {
+    public void setContent(String content) {
         this.content = content;
     }
 
@@ -87,14 +88,6 @@ public class Comment {
 
     public void setPost(Post post) {
         this.post = post;
-    }
-
-    public Comment getReplyFor() {
-        return replyFor;
-    }
-
-    public void setReplyFor(Comment replyFor) {
-        this.replyFor = replyFor;
     }
 
     public LocalDateTime getCreatedTime() {

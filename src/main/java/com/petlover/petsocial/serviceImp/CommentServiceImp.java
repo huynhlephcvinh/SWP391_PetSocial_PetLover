@@ -9,10 +9,13 @@ import com.petlover.petsocial.repository.CommentRepository;
 import com.petlover.petsocial.repository.PostRepository;
 import com.petlover.petsocial.repository.UserRepository;
 import com.petlover.petsocial.service.CommentService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CommentServiceImp implements CommentService {
@@ -25,41 +28,70 @@ public class CommentServiceImp implements CommentService {
 
     @Autowired
     private PostRepository postRepository;
-    public List<Comment> getCommentsByPostId(Long postId) {
-        return commentRepository.findByPostId(postId);
+    public List<CommentDTO> getCommentsByPostId(Long postId) {
+        List<Comment> comments = commentRepository.findByPostId(postId);
+
+        // Convert to DTO
+        return comments.stream()
+                .map(c -> {
+                    CommentDTO dto = new CommentDTO();
+                    dto.setId(c.getId());
+                    dto.setContent(c.getContent());
+                    // map other fields
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
-    public Comment getCommentById(Long id) {
-        return commentRepository.findById(id).orElse(null);
+    public CommentDTO getCommentById(Long id) {
+
+        // Fetch comment entity
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Comment not found"));
+
+        // Map to DTO
+        CommentDTO dto = new CommentDTO();
+        dto.setId(comment.getId());
+        dto.setContent(comment.getContent());
+        dto.setMedia(comment.getMedia());
+        dto.setUserId(comment.getUser().getId());
+        dto.setPostId(comment.getPost().getId());
+        dto.setCreatedTime(comment.getCreatedTime());
+
+        return dto;
+
     }
 
-    public Comment createComment(Long userId, Long postId, CommentDTO commentDTO) {
-        User user = userRepository.findById(userId).orElse(null);
-        Post post = postRepository.findById(postId).orElse(null);
-        if (user != null && post != null) {
-            Comment comment = new Comment();
-            comment.setContent(commentDTO.getContent());
-            comment.setMedia(commentDTO.getMedia());
-            comment.setUser(user);
-            comment.setPost(post);
-            return commentRepository.save(comment);
-        }
-        return null;
+    public CommentDTO createComment(Long userId, Long postId, CommentDTO commentDTO) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new EntityNotFoundException("Post not found"));
+
+        Comment comment = new Comment();
+        comment.setContent(commentDTO.getContent());
+        comment.setMedia(commentDTO.getMedia());
+        comment.setUser(user);
+        comment.setPost(post);
+        comment.setCreatedTime(LocalDateTime.now());
+
+        commentRepository.save(comment);
+
+        return new CommentDTO(comment.getId(),comment.getContent(),comment.getMedia(),comment.getUser().getId(),comment.getPost().getId(),comment.getCreatedTime());
     }
 
-    public Comment updateComment(Long id, CommentDTO commentDTO) {
-        Comment comment = getCommentById(id);
-        if (comment != null) {
-            comment.setContent(commentDTO.getContent());
-            comment.setMedia(commentDTO.getMedia());
-            return commentRepository.save(comment);
-        }
-        return null;
+
+    public CommentDTO updateComment(Long id, CommentDTO commentDTO) {
+        Comment comment = commentRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Comment not found"));
+
+        comment.setContent(commentDTO.getContent());
+        comment.setMedia(commentDTO.getMedia());
+        commentRepository.save(comment);
+
+        return new CommentDTO(comment.getId(),comment.getContent(),comment.getMedia(),comment.getUser().getId(),comment.getPost().getId(),comment.getCreatedTime());
     }
 
-    public void deleteComment(Long userId, Long postId) {
-        List<Comment> comments = getCommentsByPostId(postId);
-        comments.stream()
-                .filter(comment -> comment.getUser().getId().equals(userId))
-                .forEach(comment -> commentRepository.delete(comment));
+
+    public void deleteComment(Long commentId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new RuntimeException("Comment not found"));
+        commentRepository.delete(comment);
     }
+
 }
