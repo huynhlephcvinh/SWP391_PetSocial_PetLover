@@ -29,7 +29,7 @@
     }
     .myprofileContainer {
       padding: 20px 70px;
-
+      height: 100%;
       @include mobile{
         padding: 10px;
       }
@@ -91,16 +91,7 @@
             align-items: center;
             justify-content: space-around;
 
-            .item {
-              display: flex;
-              align-items: center;
-              gap: 5px;
-              color: themed("textColorSoft");
-
-              span {
-                font-size: 12px;
-              }
-            }
+            
           }
           button {
             border: none;

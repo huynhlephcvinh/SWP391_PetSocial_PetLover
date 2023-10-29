@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 // import Modal from "react-modal";
 import Modal from "react-modal";
-import { BorderAll, BorderAllOutlined } from "@mui/icons-material";
 import axios from 'axios';
 
 Modal.setAppElement('#root');
@@ -50,7 +49,7 @@ const Pet = ({ pet }) => {
         },
 
       );
-      console.log("Ressponensklajd:  " + JSON.stringify(response.data));
+      // console.log("Ressponensklajd:  " + JSON.stringify(response.data));
     } catch (error) {
       console.error('Error: ', error);
     }
