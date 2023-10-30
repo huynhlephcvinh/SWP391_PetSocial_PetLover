@@ -13,6 +13,6 @@ public interface ReactionRepository extends JpaRepository<Reaction, Long> {
     Reaction isReactionExist(@Param("idUser") Long idUser,@Param("idPost") Long idPost);
     @Query("SELECT r FROM Reaction r WHERE r.post.id= :idPost")
      List<Reaction> findByPostId(@Param("idPost") Long idPost);
-
+     List<Reaction> findAll();
     void deleteById(Long id);
 }

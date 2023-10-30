@@ -2,10 +2,12 @@ package com.petlover.petsocial.serviceImp;
 
 import com.petlover.petsocial.exception.PostException;
 import com.petlover.petsocial.model.entity.Post;
+import com.petlover.petsocial.model.entity.Reaction;
 import com.petlover.petsocial.payload.request.PetToPostDTO;
 import com.petlover.petsocial.payload.request.PostDTO;
 import com.petlover.petsocial.payload.request.UserPostDTO;
 import com.petlover.petsocial.repository.PostRepository;
+import com.petlover.petsocial.repository.ReactionRepository;
 import com.petlover.petsocial.repository.UserRepository;
 import com.petlover.petsocial.service.CommentService;
 import com.petlover.petsocial.service.StaffService;
@@ -26,6 +28,8 @@ public class StaffServiceImp implements StaffService {
     PostRepository postRepository;
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private ReactionRepository reactionRepository;
    @Override
     public List<PostDTO> getAllPostDisable() {
         List<Post> postList = postRepository.getAllPostDisable();
@@ -50,13 +54,13 @@ public class StaffServiceImp implements StaffService {
             userPostDTO.setName(post.getUser().getName());
             userPostDTO.setAvatar(post.getUser().getAvatar());
             postDTO.setUserPostDTO(userPostDTO);
-
+            postDTO.setFieldReaction(false);
             listpostDTO.add(postDTO);
         }
         return listpostDTO;
     }
 
-    public PostDTO getEnablePost(Long  idPost) throws PostException {
+    public PostDTO getEnablePost(Long idPost) throws PostException {
        Post getPost = postRepository.getById(idPost);
        if(getPost == null){
            throw new PostException("Not found Post");
@@ -77,7 +81,9 @@ public class StaffServiceImp implements StaffService {
         userPostDTO.setName(getPost.getUser().getName());
         userPostDTO.setAvatar(getPost.getUser().getAvatar());
 
-        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),commentService.convertCommentListToDTO(getPost.getComments()),petToPostDTO,userPostDTO);
+
+
+        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),commentService.convertCommentListToDTO(getPost.getComments()),petToPostDTO,userPostDTO,false);
 
     }
 

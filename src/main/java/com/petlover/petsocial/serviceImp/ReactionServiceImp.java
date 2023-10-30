@@ -83,7 +83,7 @@ public class ReactionServiceImp implements ReactionService {
                 userPostDTO.setName(post.getUser().getName());
                 userPostDTO.setAvatar(post.getUser().getAvatar());
 
-                PostDTO postDTO2 = new PostDTO(post.getId(),post.getImage(),post.getContent(),post.getCreate_date(),post.getTotal_like(),commentService.convertCommentListToDTO(post.getComments()),petToPostDTO,userPostDTO);
+                PostDTO postDTO2 = new PostDTO(post.getId(),post.getImage(),post.getContent(),post.getCreate_date(),post.getTotal_like(),commentService.convertCommentListToDTO(post.getComments()),petToPostDTO,userPostDTO,true);
                 postDTOList.add(postDTO2);
             }
 

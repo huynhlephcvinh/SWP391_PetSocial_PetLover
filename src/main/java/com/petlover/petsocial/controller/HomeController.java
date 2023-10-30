@@ -2,14 +2,15 @@ package com.petlover.petsocial.controller;
 
 
 import com.petlover.petsocial.config.JwtProvider;
+import com.petlover.petsocial.exception.PostException;
 import com.petlover.petsocial.exception.UserException;
 import com.petlover.petsocial.exception.UserNotFoundException;
 import com.petlover.petsocial.model.entity.User;
-import com.petlover.petsocial.payload.request.SigninDTO;
-import com.petlover.petsocial.payload.request.SingupDTO;
+import com.petlover.petsocial.payload.request.*;
 import com.petlover.petsocial.payload.response.AuthResponse;
 import com.petlover.petsocial.payload.response.ResponseData;
 import com.petlover.petsocial.repository.UserRepository;
+import com.petlover.petsocial.service.PostService;
 import com.petlover.petsocial.service.UserService;
 import com.petlover.petsocial.serviceImp.CustomerUserDetailsServiceImp;
 import jakarta.mail.MessagingException;
@@ -38,6 +39,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 
@@ -56,6 +58,9 @@ public class HomeController {
     private JwtProvider jwtProvider;
     @Autowired
     private CustomerUserDetailsServiceImp customerUserDetailsServiceImp;
+    @Autowired
+    private PostService postService;
+
 
    @ModelAttribute
    public void commonUser(Principal p, Model m,@AuthenticationPrincipal OAuth2User usero2) {
@@ -195,9 +200,41 @@ public class HomeController {
         return "You can login";
     }
 
+    @GetMapping("/getAllPost")
+    public ResponseEntity<?> getAllPost(@RequestHeader("Authorization") String jwt) throws UserException {
+        ResponseData responseData = new ResponseData();
+        UserDTO userDTO = userService.findUserProfileByJwt(jwt);
+        List<PostDTO> list = postService.getAllPost(userDTO);
+        responseData.setData(list);
+        return new ResponseEntity<>(responseData,HttpStatus.OK);
+    }
 
+    @GetMapping("/getAllUser")
+    public ResponseEntity<?> getAllUser(){
+        ResponseData responseData = new ResponseData();
+        List<UserHomeDTO> list = userService.getListUser();
+        responseData.setData(list);
+        return new ResponseEntity<>(responseData,HttpStatus.OK);
+    }
+
+    @GetMapping("/searchUser")
+    public ResponseEntity<?> searchUser(@RequestParam("name") String name) throws UserException, PostException {
+        ResponseData responseData = new ResponseData();
+        List<UserHomeDTO> list = userService.getSearchListUser(name);
+        responseData.setData(list);
+        return new ResponseEntity<>(responseData,HttpStatus.OK);
+    }
+    @GetMapping("/searchPost")
+    public ResponseEntity<?> searchPost(@RequestParam("content") String content, @RequestHeader("Authorization") String jwt) throws UserException, PostException {
+        ResponseData responseData = new ResponseData();
+        UserDTO userDTO = userService.findUserProfileByJwt(jwt);
+        List<PostDTO> list = postService.sreachPost(content,userDTO);
+        responseData.setData(list);
+        return new ResponseEntity<>(responseData,HttpStatus.OK);
+
+    }
     @PostMapping("/forgot_password")
-    public String processForgotPassword(@RequestParam String email,HttpServletRequest request, Model model) {
+    public String processForgotPassword(@RequestBody String email,HttpServletRequest request) {
         String token = RandomString.make(30);
         System.out.println("Email: " + email);
         System.out.println("Token: " + token);
@@ -245,7 +282,7 @@ public class HomeController {
         mailSender.send(message);
     }
     @PostMapping("/reset_password")
-    public String processResetPassword(@Param("token") String token,@RequestParam String password) {
+    public String processResetPassword(@Param("token") String token,@RequestBody String password) {
         String gettoken = token;
         String pass =password;
 

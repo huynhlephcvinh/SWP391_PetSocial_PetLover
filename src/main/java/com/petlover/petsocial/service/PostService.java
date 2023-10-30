@@ -11,10 +11,10 @@ import java.util.List;
 
 public interface PostService {
     PostDTO insertPost(CreatPostDTO creatPostDTO, UserDTO userDTO) throws PetException;
-    List<PostDTO> getAllPost();
+    List<PostDTO> getAllPost(UserDTO userDTO);
     List<PostDTO> getAllYourPost(Long idUser);
     PostDTO deletePost(Long id, UserDTO userDTO) throws PostException;
     PostDTO updatePost(Long id, PostUpdateDTO postUpdateDTO,UserDTO userDTO);
     PostDTO findById(Long idPost) throws PostException;
-    List<PostDTO> sreachPost(String content);
+    List<PostDTO> sreachPost(String content, UserDTO userDTO);
 }

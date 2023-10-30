@@ -1,15 +1,14 @@
 package com.petlover.petsocial.serviceImp;
 
 
-import com.petlover.petsocial.model.entity.Comment;
-import com.petlover.petsocial.model.entity.Pet;
-import com.petlover.petsocial.model.entity.Post;
-import com.petlover.petsocial.model.entity.User;
+import com.petlover.petsocial.model.entity.*;
 import com.petlover.petsocial.payload.request.*;
 import com.petlover.petsocial.repository.CommentRepository;
 import com.petlover.petsocial.repository.PostRepository;
+import com.petlover.petsocial.repository.ReactionRepository;
 import com.petlover.petsocial.repository.UserRepository;
 import com.petlover.petsocial.service.CommentService;
+import com.petlover.petsocial.service.ReactionService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +29,8 @@ public class CommentServiceImp implements CommentService {
 
     @Autowired
     private PostRepository postRepository;
+    @Autowired
+    private ReactionRepository reactionRepository;
     public List<CommentDTO> getCommentsByPostId(Long postId) {
         List<Comment> comments = commentRepository.findByPostId(postId);
 
@@ -115,7 +116,7 @@ public class CommentServiceImp implements CommentService {
                     userPostDTO.setName(post.getUser().getName());
                     userPostDTO.setAvatar(post.getUser().getAvatar());
 
-                    PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), this.convertCommentListToDTO(post.getComments()), petToPostDTO, userPostDTO);
+                    PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), this.convertCommentListToDTO(post.getComments()), petToPostDTO, userPostDTO,false);
                     postDTOList.add(postDTO);
                 }
             }
@@ -136,6 +137,9 @@ public class CommentServiceImp implements CommentService {
         }
         return petDTOList;
     }
+
+
+
     public UserDTO convertUserToDTO(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());

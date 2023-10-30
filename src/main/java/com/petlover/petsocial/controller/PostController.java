@@ -53,9 +53,10 @@ public class PostController {
     }
 
     @GetMapping("/getAllPost")
-    public ResponseEntity<?> getAllPost(){
+    public ResponseEntity<?> getAllPost(@RequestHeader("Authorization") String jwt) throws UserException {
         ResponseData responseData = new ResponseData();
-        List<PostDTO> list = postService.getAllPost();
+        UserDTO userDTO = userService.findUserProfileByJwt(jwt);
+        List<PostDTO> list = postService.getAllPost(userDTO);
         request.setAttribute("listPost",list);
         responseData.setData(list);
         return new ResponseEntity<>(responseData,HttpStatus.OK);
@@ -96,9 +97,10 @@ public class PostController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<?> searchPost(@RequestParam("content") String content) throws UserException, PostException {
+    public ResponseEntity<?> searchPost(@RequestParam("content") String content, @RequestHeader("Authorization") String jwt) throws UserException, PostException {
         ResponseData responseData = new ResponseData();
-        List<PostDTO> list = postService.sreachPost(content);
+        UserDTO userDTO = userService.findUserProfileByJwt(jwt);
+        List<PostDTO> list = postService.sreachPost(content,userDTO);
         responseData.setData(list);
         return new ResponseEntity<>(responseData,HttpStatus.OK);
 
