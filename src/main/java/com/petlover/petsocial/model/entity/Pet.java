@@ -3,6 +3,7 @@ package com.petlover.petsocial.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class Pet {
     @JoinColumn(name = "user_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @JsonIgnore
     private User user;
 
     @ManyToOne
@@ -37,9 +39,11 @@ public class Pet {
     private Pet_Type pet_type;
 
     @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Post> posts;
 
     @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Exchange> exchanges;
 
 

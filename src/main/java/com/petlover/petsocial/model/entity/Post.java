@@ -1,11 +1,13 @@
 package com.petlover.petsocial.model.entity;
 
 
-import com.petlover.petsocial.payload.request.CommentDTO;
+import com.petlover.petsocial.payload.request.*;
 import jakarta.persistence.*;
 import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,7 +15,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-
 @Table(name="Post")
 public class Post {
     @Id
@@ -31,34 +32,27 @@ public class Post {
     @JoinColumn(name = "user_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @JsonIgnore
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "pet_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @JsonIgnore
     private Pet pet;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JsonIgnore
+    @ToString.Exclude
     private List<Comment> comments;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JsonIgnore
+    @ToString.Exclude
     private List<Reaction> reactions;
     @Column(name = "status")
     private boolean status;
 
-    public CommentDTO convertCommentToDTO(Comment comment) {
-        CommentDTO commentDTO = new CommentDTO();
-        commentDTO.setId(comment.getId());
-        commentDTO.setContent(comment.getContent());
-        commentDTO.setMedia(comment.getMedia());
-        commentDTO.setUserId(comment.getUser().getId());
-        commentDTO.setPostId(comment.getPost().getId());
-        commentDTO.setCreatedTime(comment.getCreatedTime());
-        return commentDTO;
-    }
 
-    public List<CommentDTO> convertCommentListToDTO(List<Comment> commentList) {
-        return commentList.stream().map(this::convertCommentToDTO).collect(Collectors.toList());
-    }
 }

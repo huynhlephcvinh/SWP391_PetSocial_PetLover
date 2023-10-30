@@ -8,6 +8,7 @@ import com.petlover.petsocial.repository.PetRepository;
 import com.petlover.petsocial.repository.PostRepository;
 import com.petlover.petsocial.repository.UserRepository;
 import com.petlover.petsocial.service.CloudinaryService;
+import com.petlover.petsocial.service.CommentService;
 import com.petlover.petsocial.service.PostService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import java.text.DateFormat;
 import java.util.*;
 
 import java.text.SimpleDateFormat;
+import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImp implements PostService {
@@ -31,6 +33,8 @@ public class PostServiceImp implements PostService {
     PostRepository postRepository;
     @Autowired
     private UserRepository userRepo;
+    @Autowired
+    private CommentService commentService;
 
     public PostDTO insertPost(CreatPostDTO creatPostDTO, UserDTO userDTO) throws PetException {
         Post newPost = new Post();
@@ -116,7 +120,7 @@ postRepository.save(newPost);
         userPostDTO.setName(newPost.getUser().getName());
         userPostDTO.setAvatar(newPost.getUser().getAvatar());
 
-            return new PostDTO(newPost.getId(),newPost.getImage(),newPost.getContent(),newPost.getCreate_date(),newPost.getTotal_like(),newPost.convertCommentListToDTO(newPost.getComments()),petToPostDTO,userPostDTO);
+            return new PostDTO(newPost.getId(),newPost.getImage(),newPost.getContent(),newPost.getCreate_date(),newPost.getTotal_like(),commentService.convertCommentListToDTO(newPost.getComments()),petToPostDTO,userPostDTO);
 
     }
 
@@ -131,7 +135,7 @@ postRepository.save(newPost);
             postDTO.setImage(post.getImage());
             postDTO.setCreate_date(post.getCreate_date());
             postDTO.setTotal_like(post.getTotal_like());
-            postDTO.setComments(post.convertCommentListToDTO(post.getComments()));
+            postDTO.setComments(commentService.convertCommentListToDTO(post.getComments()));
 
             PetToPostDTO petToPostDTO = new PetToPostDTO();
             petToPostDTO.setId(post.getPet().getId());
@@ -160,7 +164,7 @@ postRepository.save(newPost);
             postDTO.setImage(post.getImage());
             postDTO.setCreate_date(post.getCreate_date());
             postDTO.setTotal_like(post.getTotal_like());
-            postDTO.setComments(post.convertCommentListToDTO(post.getComments()));
+            postDTO.setComments(commentService.convertCommentListToDTO(post.getComments()));
 
             PetToPostDTO petToPostDTO = new PetToPostDTO();
             petToPostDTO.setId(post.getPet().getId());
@@ -188,7 +192,7 @@ postRepository.save(newPost);
             postDTO.setImage(post.getImage());
             postDTO.setCreate_date(post.getCreate_date());
             postDTO.setTotal_like(post.getTotal_like());
-            postDTO.setComments(post.convertCommentListToDTO(post.getComments()));
+            postDTO.setComments(commentService.convertCommentListToDTO(post.getComments()));
 
             PetToPostDTO petToPostDTO = new PetToPostDTO();
             petToPostDTO.setId(post.getPet().getId());
@@ -223,7 +227,7 @@ postRepository.save(newPost);
         userPostDTO.setId(getPost.getUser().getId());
         userPostDTO.setName(getPost.getUser().getName());
         userPostDTO.setAvatar(getPost.getUser().getAvatar());
-        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),getPost.convertCommentListToDTO(getPost.getComments()),petToPostDTO,userPostDTO);
+        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),commentService.convertCommentListToDTO(getPost.getComments()),petToPostDTO,userPostDTO);
     }
     public PostDTO deletePost(Long id, UserDTO userDTO)  {
 
@@ -249,7 +253,7 @@ postRepository.save(newPost);
         userPostDTO.setName(getPost.getUser().getName());
         userPostDTO.setAvatar(getPost.getUser().getAvatar());
 
-        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),getPost.convertCommentListToDTO(getPost.getComments()),petToPostDTO,userPostDTO);
+        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),commentService.convertCommentListToDTO(getPost.getComments()),petToPostDTO,userPostDTO);
     }
 
     public PostDTO updatePost(Long id, PostUpdateDTO postUpdateDTO,UserDTO userDTO)
@@ -279,7 +283,7 @@ postRepository.save(newPost);
         userPostDTO.setName(getPost.getUser().getName());
         userPostDTO.setAvatar(getPost.getUser().getAvatar());
 
-        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),getPost.convertCommentListToDTO(getPost.getComments()),petToPostDTO,userPostDTO);
+        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),commentService.convertCommentListToDTO(getPost.getComments()),petToPostDTO,userPostDTO);
 
     }
 

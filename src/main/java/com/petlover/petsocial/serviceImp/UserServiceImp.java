@@ -10,6 +10,7 @@ import com.petlover.petsocial.model.entity.User;
 import com.petlover.petsocial.payload.request.*;
 import com.petlover.petsocial.repository.UserRepository;
 import com.petlover.petsocial.service.CloudinaryService;
+import com.petlover.petsocial.service.CommentService;
 import com.petlover.petsocial.service.UserService;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpSession;
@@ -40,6 +41,8 @@ public class UserServiceImp implements UserService {
     private JwtProvider jwtProvider;
     @Autowired
     CloudinaryService cloudinaryService;
+    @Autowired
+    private CommentService commentService;
 
     @Override
     public User findById(Long id) {
@@ -208,7 +211,7 @@ public class UserServiceImp implements UserService {
                 userPostDTO.setName(post.getUser().getName());
                 userPostDTO.setAvatar(post.getUser().getAvatar());
 
-                PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), post.convertCommentListToDTO(post.getComments()), petToPostDTO, userPostDTO);
+                PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), commentService.convertCommentListToDTO(post.getComments()), petToPostDTO, userPostDTO);
                 postDTOList.add(postDTO);
             }
         }
@@ -264,7 +267,7 @@ public class UserServiceImp implements UserService {
             userPostDTO.setName(post.getUser().getName());
             userPostDTO.setAvatar(post.getUser().getAvatar());
 
-            PostDTO postDTO = new PostDTO(post.getId(),post.getImage(),post.getContent(),post.getCreate_date(),post.getTotal_like(),post.convertCommentListToDTO(post.getComments()),petToPostDTO,userPostDTO);
+            PostDTO postDTO = new PostDTO(post.getId(),post.getImage(),post.getContent(),post.getCreate_date(),post.getTotal_like(),commentService.convertCommentListToDTO(post.getComments()),petToPostDTO,userPostDTO);
             postDTOList.add(postDTO);
         }
 
@@ -299,7 +302,7 @@ public class UserServiceImp implements UserService {
                     userPostDTO.setName(post.getUser().getName());
                     userPostDTO.setAvatar(post.getUser().getAvatar());
 
-                    PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), post.convertCommentListToDTO(post.getComments()), petToPostDTO, userPostDTO);
+                    PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), commentService.convertCommentListToDTO(post.getComments()), petToPostDTO, userPostDTO);
                     postDTOList.add(postDTO);
                 }
             }

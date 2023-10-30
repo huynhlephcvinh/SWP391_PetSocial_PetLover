@@ -7,6 +7,7 @@ import com.petlover.petsocial.payload.request.PostDTO;
 import com.petlover.petsocial.payload.request.UserPostDTO;
 import com.petlover.petsocial.repository.PostRepository;
 import com.petlover.petsocial.repository.UserRepository;
+import com.petlover.petsocial.service.CommentService;
 import com.petlover.petsocial.service.StaffService;
 import com.petlover.petsocial.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ public class StaffServiceImp implements StaffService {
      UserService userService;
     @Autowired
     PostRepository postRepository;
+    @Autowired
+    private CommentService commentService;
    @Override
     public List<PostDTO> getAllPostDisable() {
         List<Post> postList = postRepository.getAllPostDisable();
@@ -34,7 +37,7 @@ public class StaffServiceImp implements StaffService {
             postDTO.setImage(post.getImage());
             postDTO.setCreate_date(post.getCreate_date());
             postDTO.setTotal_like(post.getTotal_like());
-            postDTO.setComments(post.convertCommentListToDTO(post.getComments()));
+            postDTO.setComments(commentService.convertCommentListToDTO(post.getComments()));
 
             PetToPostDTO petToPostDTO = new PetToPostDTO();
             petToPostDTO.setId(post.getPet().getId());
@@ -74,7 +77,7 @@ public class StaffServiceImp implements StaffService {
         userPostDTO.setName(getPost.getUser().getName());
         userPostDTO.setAvatar(getPost.getUser().getAvatar());
 
-        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),getPost.convertCommentListToDTO(getPost.getComments()),petToPostDTO,userPostDTO);
+        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),commentService.convertCommentListToDTO(getPost.getComments()),petToPostDTO,userPostDTO);
 
     }
 

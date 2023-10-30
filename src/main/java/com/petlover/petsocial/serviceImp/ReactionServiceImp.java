@@ -8,6 +8,7 @@ import com.petlover.petsocial.repository.CommentRepository;
 import com.petlover.petsocial.repository.PostRepository;
 import com.petlover.petsocial.repository.ReactionRepository;
 import com.petlover.petsocial.repository.UserRepository;
+import com.petlover.petsocial.service.CommentService;
 import com.petlover.petsocial.service.PostService;
 import com.petlover.petsocial.service.ReactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,8 @@ public class ReactionServiceImp implements ReactionService {
     UserRepository userRepository;
     @Autowired
     CommentRepository commentRepository;
+    @Autowired
+    private CommentService commentService;
 
    public ReactionDTO reactionPost(Long idPost, UserDTO userDTO) throws UserException, PostException {
        Reaction isReactionExist = reactionRepository.isReactionExist(userDTO.getId(),idPost);
@@ -80,7 +83,7 @@ public class ReactionServiceImp implements ReactionService {
                 userPostDTO.setName(post.getUser().getName());
                 userPostDTO.setAvatar(post.getUser().getAvatar());
 
-                PostDTO postDTO2 = new PostDTO(post.getId(),post.getImage(),post.getContent(),post.getCreate_date(),post.getTotal_like(),post.convertCommentListToDTO(post.getComments()),petToPostDTO,userPostDTO);
+                PostDTO postDTO2 = new PostDTO(post.getId(),post.getImage(),post.getContent(),post.getCreate_date(),post.getTotal_like(),commentService.convertCommentListToDTO(post.getComments()),petToPostDTO,userPostDTO);
                 postDTOList.add(postDTO2);
             }
 

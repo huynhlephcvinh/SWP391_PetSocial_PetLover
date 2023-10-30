@@ -22,79 +22,29 @@ public class Comment implements Serializable {
 
     @ElementCollection
     @JsonIgnore
+    @ToString.Exclude
     private List<String> media;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonIgnore
+    @ToString.Exclude
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "react_id")
     @JsonIgnore
+    @ToString.Exclude
     private Reaction react;
 
     @ManyToOne
     @JoinColumn(name = "post_id")
     @JsonIgnore
+    @ToString.Exclude
     private Post post;
 
     @Column
     private LocalDateTime createdTime;
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public List<String> getMedia() {
-        return media;
-    }
-
-    public void setMedia(List<String> media) {
-        this.media = media;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Reaction getReact() {
-        return react;
-    }
-
-    public void setReact(Reaction react) {
-        this.react = react;
-    }
-
-    public Post getPost() {
-        return post;
-    }
-
-    public void setPost(Post post) {
-        this.post = post;
-    }
-
-    public LocalDateTime getCreatedTime() {
-        return createdTime;
-    }
-
-    public void setCreatedTime(LocalDateTime createdTime) {
-        this.createdTime = createdTime;
-    }
 }

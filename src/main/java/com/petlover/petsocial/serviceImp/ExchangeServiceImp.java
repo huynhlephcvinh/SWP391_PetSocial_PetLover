@@ -5,6 +5,7 @@ import com.petlover.petsocial.payload.request.*;
 import com.petlover.petsocial.repository.ExchangeRepository;
 import com.petlover.petsocial.repository.PetRepository;
 import com.petlover.petsocial.repository.UserRepository;
+import com.petlover.petsocial.service.CommentService;
 import com.petlover.petsocial.service.ExchangeService;
 import com.petlover.petsocial.service.PetService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,8 @@ public class ExchangeServiceImp implements ExchangeService {
 
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    private CommentService commentService;
 
 
     @Override
@@ -251,7 +254,7 @@ public class ExchangeServiceImp implements ExchangeService {
                     userPostDTO.setName(post.getUser().getName());
                     userPostDTO.setAvatar(post.getUser().getAvatar());
 
-                    PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), post.convertCommentListToDTO(post.getComments()), petToPostDTO, userPostDTO);
+                    PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), commentService.convertCommentListToDTO(post.getComments()), petToPostDTO, userPostDTO);
                     postDTOList.add(postDTO);
                 }
             }

@@ -2,6 +2,7 @@ package com.petlover.petsocial.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 
 import java.util.Date;
 
@@ -22,6 +23,7 @@ public class Chat {
     @JoinColumn(name = "exchange_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @JsonIgnore
     private Exchange exchange;
 
 
@@ -29,5 +31,6 @@ public class Chat {
     @JoinColumn(name = "sender_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @JsonIgnore
     private User user;
 }
