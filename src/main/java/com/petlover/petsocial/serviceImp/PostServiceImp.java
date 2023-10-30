@@ -161,6 +161,8 @@ postRepository.save(newPost);
                 if(reaction.getUser().getId() == userDTO.getId()) {
                     if(reaction.getPost().getId() == post.getId()) {
                         postDTO.setFieldReaction(true);
+                    }else{
+                        postDTO.setFieldReaction(false);
                     }
 
                 }else{
@@ -234,6 +236,8 @@ postRepository.save(newPost);
                 if(reaction.getUser().getId() == idUser) {
                     if(reaction.getPost().getId() == post.getId()) {
                         postDTO.setFieldReaction(true);
+                    }else{
+                        postDTO.setFieldReaction(false);
                     }
                 }else{
                     postDTO.setFieldReaction(false);
@@ -273,6 +277,8 @@ postRepository.save(newPost);
                 if(reaction.getUser().getId() == userDTO.getId()) {
                     if(reaction.getPost().getId() == post.getId()) {
                         postDTO.setFieldReaction(true);
+                    }else{
+                        postDTO.setFieldReaction(false);
                     }
                 }else{
                     postDTO.setFieldReaction(false);
