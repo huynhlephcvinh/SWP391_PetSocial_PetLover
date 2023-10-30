@@ -159,7 +159,10 @@ postRepository.save(newPost);
             for(Reaction reaction : listReaction)
             {
                 if(reaction.getUser().getId() == userDTO.getId()) {
-                    postDTO.setFieldReaction(true);
+                    if(reaction.getPost().getId() == post.getId()) {
+                        postDTO.setFieldReaction(true);
+                    }
+
                 }else{
                     postDTO.setFieldReaction(false);
                 }
@@ -169,6 +172,38 @@ postRepository.save(newPost);
         }
         return listpostDTO;
     }
+    public List<PostDTO> getAllPostHome()
+    {
+        List<Post> postList = postRepository.getAll();
+        List<PostDTO> listpostDTO = new ArrayList<>();
+        for(Post post : postList) {
+            PostDTO postDTO = new PostDTO();
+            postDTO.setId(post.getId());
+            postDTO.setContent(post.getContent());
+            postDTO.setImage(post.getImage());
+            postDTO.setCreate_date(post.getCreate_date());
+            postDTO.setTotal_like(post.getTotal_like());
+            postDTO.setComments(commentService.convertCommentListToDTO(post.getComments()));
+
+            PetToPostDTO petToPostDTO = new PetToPostDTO();
+            petToPostDTO.setId(post.getPet().getId());
+            petToPostDTO.setName(post.getPet().getName());
+            petToPostDTO.setImage(post.getPet().getImage());
+            postDTO.setPetToPostDTO(petToPostDTO);
+
+            UserPostDTO userPostDTO = new UserPostDTO();
+            userPostDTO.setId(post.getUser().getId());
+            userPostDTO.setName(post.getUser().getName());
+            userPostDTO.setAvatar(post.getUser().getAvatar());
+            postDTO.setUserPostDTO(userPostDTO);
+
+             postDTO.setFieldReaction(false);
+
+            listpostDTO.add(postDTO);
+        }
+        return listpostDTO;
+    }
+
     public List<PostDTO> getAllYourPost(Long idUser)
     {
         List<Post> postList = postRepository.getAllYourPost(idUser);
@@ -197,7 +232,9 @@ postRepository.save(newPost);
             for(Reaction reaction : listReaction)
             {
                 if(reaction.getUser().getId() == idUser) {
-                    postDTO.setFieldReaction(true);
+                    if(reaction.getPost().getId() == post.getId()) {
+                        postDTO.setFieldReaction(true);
+                    }
                 }else{
                     postDTO.setFieldReaction(false);
                 }
@@ -234,11 +271,45 @@ postRepository.save(newPost);
             for(Reaction reaction : listReaction)
             {
                 if(reaction.getUser().getId() == userDTO.getId()) {
-                    postDTO.setFieldReaction(true);
+                    if(reaction.getPost().getId() == post.getId()) {
+                        postDTO.setFieldReaction(true);
+                    }
                 }else{
                     postDTO.setFieldReaction(false);
                 }
             }
+            listpostDTO.add(postDTO);
+        }
+        return listpostDTO;
+    }
+
+
+    public List<PostDTO> sreachPostHome(String content)
+    {
+        List<Post> postListSearch = postRepository.searchPost(content);
+        List<PostDTO> listpostDTO = new ArrayList<>();
+        for(Post post : postListSearch) {
+            PostDTO postDTO = new PostDTO();
+            postDTO.setId(post.getId());
+            postDTO.setContent(post.getContent());
+            postDTO.setImage(post.getImage());
+            postDTO.setCreate_date(post.getCreate_date());
+            postDTO.setTotal_like(post.getTotal_like());
+            postDTO.setComments(commentService.convertCommentListToDTO(post.getComments()));
+
+            PetToPostDTO petToPostDTO = new PetToPostDTO();
+            petToPostDTO.setId(post.getPet().getId());
+            petToPostDTO.setName(post.getPet().getName());
+            petToPostDTO.setImage(post.getPet().getImage());
+            postDTO.setPetToPostDTO(petToPostDTO);
+
+            UserPostDTO userPostDTO = new UserPostDTO();
+            userPostDTO.setId(post.getUser().getId());
+            userPostDTO.setName(post.getUser().getName());
+            userPostDTO.setAvatar(post.getUser().getAvatar());
+            postDTO.setUserPostDTO(userPostDTO);
+
+            postDTO.setFieldReaction(false);
             listpostDTO.add(postDTO);
         }
         return listpostDTO;
@@ -294,7 +365,9 @@ postRepository.save(newPost);
         for(Reaction reaction : listReaction)
         {
             if(reaction.getUser().getId() == userDTO.getId()) {
-                fieldReaction=true;
+                if(reaction.getPost().getId() == getPost.getId()) {
+                    fieldReaction = true;
+                }
             }
         }
 
@@ -333,7 +406,10 @@ postRepository.save(newPost);
         for(Reaction reaction : listReaction)
         {
             if(reaction.getUser().getId() == userDTO.getId()) {
-                fieldReaction=true;
+
+                if(reaction.getPost().getId() == getPost.getId()) {
+                    fieldReaction = true;
+                }
             }
         }
 

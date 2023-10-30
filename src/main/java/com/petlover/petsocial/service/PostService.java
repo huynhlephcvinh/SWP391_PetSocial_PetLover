@@ -17,4 +17,6 @@ public interface PostService {
     PostDTO updatePost(Long id, PostUpdateDTO postUpdateDTO,UserDTO userDTO);
     PostDTO findById(Long idPost) throws PostException;
     List<PostDTO> sreachPost(String content, UserDTO userDTO);
+    List<PostDTO> sreachPostHome(String content);
+    List<PostDTO> getAllPostHome();
 }

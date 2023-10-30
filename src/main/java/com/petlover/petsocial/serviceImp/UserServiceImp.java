@@ -217,7 +217,9 @@ public class UserServiceImp implements UserService {
                     List<Reaction> listReaction = reactionRepository.findAll();
                     for (Reaction reaction : listReaction) {
                         if (reaction.getUser().getId() == user.getId()) {
-                            fieldReaction = true;
+                            if(reaction.getPost().getId() == post.getId()) {
+                                fieldReaction = true;
+                            }
                         }
                     }
                     PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), commentService.convertCommentListToDTO(post.getComments()), petToPostDTO, userPostDTO, fieldReaction);
@@ -280,7 +282,9 @@ public class UserServiceImp implements UserService {
             List<Reaction> listReaction = reactionRepository.findAll();
             for (Reaction reaction : listReaction) {
                 if (reaction.getUser().getId() == user.getId()) {
-                    fieldReaction = true;
+                    if(reaction.getPost().getId() == post.getId()) {
+                        fieldReaction = true;
+                    }
                 }
             }
 
@@ -323,7 +327,9 @@ public class UserServiceImp implements UserService {
                     List<Reaction> listReaction = reactionRepository.findAll();
                     for (Reaction reaction : listReaction) {
                         if (reaction.getUser().getId() == user.getId()) {
-                            fieldReaction = true;
+                            if(reaction.getPost().getId() == post.getId()) {
+                                fieldReaction = true;
+                            }
                         }
                     }
                     PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), commentService.convertCommentListToDTO(post.getComments()), petToPostDTO, userPostDTO,fieldReaction);
