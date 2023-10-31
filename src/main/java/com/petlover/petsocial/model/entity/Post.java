@@ -27,6 +27,7 @@ public class Post {
     private boolean enable;
     private String create_date;
     private int total_like;
+    private int total_comment;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

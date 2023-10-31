@@ -254,7 +254,7 @@ public class ExchangeServiceImp implements ExchangeService {
                     userPostDTO.setName(post.getUser().getName());
                     userPostDTO.setAvatar(post.getUser().getAvatar());
 
-                    PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), commentService.convertCommentListToDTO(post.getComments()), petToPostDTO, userPostDTO,false);
+                    PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), post.getTotal_comment(), commentService.convertCommentListToDTO(post.getComments()), petToPostDTO, userPostDTO,false);
                     postDTOList.add(postDTO);
                 }
             }

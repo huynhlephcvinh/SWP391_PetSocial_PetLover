@@ -33,12 +33,6 @@ public class CommentController {
         return new ResponseEntity<>(commentDTOs, HttpStatus.OK);
     }
 
-    @GetMapping("/post/{postId}/count")
-    public ResponseEntity<?> countCommentsByPostId(@PathVariable Long postId) {
-        int count = commentService.countCommentsByPostId(postId);
-        return new ResponseEntity<>(count, HttpStatus.OK);
-    }
-
 
     @PostMapping("/user/{userId}/post/{postId}")
     public ResponseEntity<?> createComment(@PathVariable Long userId, @PathVariable Long postId, @RequestBody CommentDTO commentDTO) {

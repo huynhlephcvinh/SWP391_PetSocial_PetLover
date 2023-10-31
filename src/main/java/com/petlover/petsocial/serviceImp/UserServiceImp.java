@@ -222,7 +222,7 @@ public class UserServiceImp implements UserService {
                             }
                         }
                     }
-                    PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), commentService.convertCommentListToDTO(post.getComments()), petToPostDTO, userPostDTO, fieldReaction);
+                    PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), post.getTotal_comment(), commentService.convertCommentListToDTO(post.getComments()), petToPostDTO, userPostDTO, fieldReaction);
                     postDTOList.add(postDTO);
                 }
             }
@@ -288,7 +288,7 @@ public class UserServiceImp implements UserService {
                 }
             }
 
-            PostDTO postDTO = new PostDTO(post.getId(),post.getImage(),post.getContent(),post.getCreate_date(),post.getTotal_like(),commentService.convertCommentListToDTO(post.getComments()),petToPostDTO,userPostDTO,fieldReaction);
+            PostDTO postDTO = new PostDTO(post.getId(),post.getImage(),post.getContent(),post.getCreate_date(),post.getTotal_like(), post.getTotal_comment(), commentService.convertCommentListToDTO(post.getComments()),petToPostDTO,userPostDTO,fieldReaction);
             postDTOList.add(postDTO);
         }
 
@@ -332,7 +332,7 @@ public class UserServiceImp implements UserService {
                             }
                         }
                     }
-                    PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), commentService.convertCommentListToDTO(post.getComments()), petToPostDTO, userPostDTO,fieldReaction);
+                    PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(),post.getTotal_comment(), commentService.convertCommentListToDTO(post.getComments()), petToPostDTO, userPostDTO,fieldReaction);
                     postDTOList.add(postDTO);
                 }
             }

@@ -5,6 +5,7 @@ import com.petlover.petsocial.exception.PostException;
 import com.petlover.petsocial.exception.UserException;
 import com.petlover.petsocial.payload.request.*;
 import com.petlover.petsocial.payload.response.ResponseData;
+import com.petlover.petsocial.service.CommentService;
 import com.petlover.petsocial.service.PetService;
 import com.petlover.petsocial.service.PostService;
 import com.petlover.petsocial.service.UserService;
@@ -30,6 +31,8 @@ public class PostController {
     PostService postService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CommentService commentService;
     @GetMapping("/createpost")
     public ResponseEntity<?> choosePetToPost(){
         ResponseData responseData = new ResponseData();

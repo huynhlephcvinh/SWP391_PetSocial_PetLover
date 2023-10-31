@@ -83,7 +83,7 @@ public class StaffServiceImp implements StaffService {
 
 
 
-        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),commentService.convertCommentListToDTO(getPost.getComments()),petToPostDTO,userPostDTO,false);
+        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(), getPost.getTotal_comment(), commentService.convertCommentListToDTO(getPost.getComments()),petToPostDTO,userPostDTO,false);
 
     }
 
