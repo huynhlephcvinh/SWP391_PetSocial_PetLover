@@ -126,13 +126,13 @@ public class HomeController {
             Authentication authentication = new UsernamePasswordAuthenticationToken(userDTO.getEmail(),userDTO.getPassword());
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String token = jwtProvider.generateToken(authentication);
-            AuthResponse res = new AuthResponse(token ,true, null);
+            AuthResponse res = new AuthResponse(token ,true);
 
             responseData.setData(res);
 
         }
 
-        return new ResponseEntity<>(responseData.getData(), HttpStatus.CREATED);
+        return new ResponseEntity<>(responseData, HttpStatus.CREATED);
     }
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@RequestBody SigninDTO signinDTO) throws UserException{
@@ -146,7 +146,7 @@ public class HomeController {
 //    System.out.println(token);
 
 //    responseData.setDescription(res.toString());
-        String userLogin = userService.checkLogin(signinDTO);
+        String userLogin = String.valueOf(userService.checkLogin(signinDTO));
         if(userLogin.equals("Incorrect username or password")){
             responseData.setData("Incorrect");
         }else if(userLogin.equals("Your account has not been activated!")){
@@ -154,9 +154,9 @@ public class HomeController {
         }else {
 //      responseData.setToken(token);
 //      responseData.setData(res);
-            Authentication authentication = authenticate(signinDTO.getEmail(), signinDTO.getPassword());
+            Authentication authentication = authenticate(signinDTO.getUsername(), signinDTO.getPassword());
             String token = jwtProvider.generateToken(authentication);
-            AuthResponse res = new AuthResponse(token, true,null);
+            AuthResponse res = new AuthResponse(token, true);
             System.out.println(token);
             responseData.setData(token);
 
