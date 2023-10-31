@@ -20,11 +20,6 @@ public class Comment implements Serializable {
 
     private String content;
 
-    @ElementCollection
-    @JsonIgnore
-    @ToString.Exclude
-    private List<String> media;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonIgnore

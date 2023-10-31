@@ -14,7 +14,6 @@ import java.util.List;
 public class CommentDTO {
     private Long id;
     private String content;
-    private List<String> media;
     private UserDTO userDTO;
     private Long postId;
     @CreationTimestamp

@@ -23,4 +23,5 @@ public interface CommentService {
     UserDTO convertUserToDTO(User user);
     List<PetDTO> convertPetListToDTOs(List<Pet> petList);
     List<PostDTO> convertPostListToDTOs(List<Post> postList);
+    int countCommentsByPostId(Long postId);
 }

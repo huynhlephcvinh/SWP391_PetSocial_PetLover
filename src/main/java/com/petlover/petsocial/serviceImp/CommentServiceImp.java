@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,12 +41,12 @@ public class CommentServiceImp implements CommentService {
                     CommentDTO dto = new CommentDTO();
                     dto.setId(c.getId());
                     dto.setContent(c.getContent());
-                    dto.setMedia(c.getMedia());
                     dto.setUserDTO(this.convertUserToDTO(c.getUser()));
                     dto.setPostId(c.getPost().getId());
                     dto.setCreatedTime(c.getCreatedTime());
                     return dto;
                 })
+                .sorted(Comparator.comparing(CommentDTO::getCreatedTime).reversed())
                 .collect(Collectors.toList());
     }
     public CommentDTO getCommentById(Long id) {
@@ -58,7 +59,6 @@ public class CommentServiceImp implements CommentService {
         CommentDTO dto = new CommentDTO();
         dto.setId(comment.getId());
         dto.setContent(comment.getContent());
-        dto.setMedia(comment.getMedia());
         dto.setUserDTO(this.convertUserToDTO(comment.getUser()));
         dto.setPostId(comment.getPost().getId());
         dto.setCreatedTime(comment.getCreatedTime());
@@ -73,14 +73,13 @@ public class CommentServiceImp implements CommentService {
 
         Comment comment = new Comment();
         comment.setContent(commentDTO.getContent());
-        comment.setMedia(commentDTO.getMedia());
         comment.setUser(user);
         comment.setPost(post);
         comment.setCreatedTime(LocalDateTime.now());
 
         commentRepository.save(comment);
 
-        return new CommentDTO(comment.getId(),comment.getContent(),comment.getMedia(),this.convertUserToDTO(comment.getUser()),comment.getPost().getId(),comment.getCreatedTime());
+        return new CommentDTO(comment.getId(),comment.getContent(),this.convertUserToDTO(comment.getUser()),comment.getPost().getId(),comment.getCreatedTime());
     }
 
 
@@ -88,10 +87,9 @@ public class CommentServiceImp implements CommentService {
         Comment comment = commentRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Comment not found"));
 
         comment.setContent(commentDTO.getContent());
-        comment.setMedia(commentDTO.getMedia());
         commentRepository.save(comment);
 
-        return new CommentDTO(comment.getId(),comment.getContent(),comment.getMedia(),this.convertUserToDTO(comment.getUser()),comment.getPost().getId(),comment.getCreatedTime());
+        return new CommentDTO(comment.getId(),comment.getContent(),this.convertUserToDTO(comment.getUser()),comment.getPost().getId(),comment.getCreatedTime());
     }
 
 
@@ -116,7 +114,16 @@ public class CommentServiceImp implements CommentService {
                     userPostDTO.setName(post.getUser().getName());
                     userPostDTO.setAvatar(post.getUser().getAvatar());
 
-                    PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), this.convertCommentListToDTO(post.getComments()), petToPostDTO, userPostDTO,false);
+                    PostDTO postDTO = new PostDTO();
+                    postDTO.setId(post.getId());
+                    postDTO.setImage(post.getImage());
+                    postDTO.setContent(post.getContent());
+                    postDTO.setCreate_date(post.getCreate_date());
+                    postDTO.setTotal_like(post.getTotal_like());
+//                    postDTO.setComments(this.convertCommentListToDTO(post.getComments()));
+                    postDTO.setPetToPostDTO(petToPostDTO);
+                    postDTO.setUserPostDTO(userPostDTO);
+                    postDTO.setFieldReaction(false);
                     postDTOList.add(postDTO);
                 }
             }
@@ -152,11 +159,11 @@ public class CommentServiceImp implements CommentService {
         userDTO.setPetDTOList(this.convertPetListToDTOs(user.getPets()));
         return userDTO;
     }
+
     public CommentDTO convertCommentToDTO(Comment comment) {
         CommentDTO commentDTO = new CommentDTO();
         commentDTO.setId(comment.getId());
         commentDTO.setContent(comment.getContent());
-        commentDTO.setMedia(comment.getMedia());
         commentDTO.setUserDTO(this.convertUserToDTO(comment.getUser()));
         commentDTO.setPostId(comment.getPost().getId());
         commentDTO.setCreatedTime(comment.getCreatedTime());
@@ -168,5 +175,9 @@ public class CommentServiceImp implements CommentService {
             return new ArrayList<>(); // return an empty list if commentList is null
         }
         return commentList.stream().map(this::convertCommentToDTO).collect(Collectors.toList());
+    }
+    public int countCommentsByPostId(Long postId) {
+        List<Comment> comments = commentRepository.findByPostId(postId);
+        return comments.size();
     }
 }

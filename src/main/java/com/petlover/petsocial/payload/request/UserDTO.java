@@ -19,4 +19,5 @@ public class UserDTO {
     private List<PetDTO> petDTOList;
     private List<PostDTO> postDTOList;
 
+
 }

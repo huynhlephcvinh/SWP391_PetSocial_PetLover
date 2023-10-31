@@ -23,7 +23,6 @@ public class Chat {
     @JoinColumn(name = "exchange_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @JsonIgnore
     private Exchange exchange;
 
 
@@ -31,6 +30,5 @@ public class Chat {
     @JoinColumn(name = "sender_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @JsonIgnore
     private User user;
 }
