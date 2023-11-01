@@ -1,10 +1,7 @@
 package com.petlover.petsocial.controller;
 
 import com.petlover.petsocial.exception.UserException;
-import com.petlover.petsocial.payload.request.ApplyDTO;
-import com.petlover.petsocial.payload.request.ExchangeDTO;
-import com.petlover.petsocial.payload.request.PetDTO;
-import com.petlover.petsocial.payload.request.UserDTO;
+import com.petlover.petsocial.payload.request.*;
 import com.petlover.petsocial.service.ApplyService;
 import com.petlover.petsocial.service.ExchangeService;
 import com.petlover.petsocial.service.UserService;
@@ -30,10 +27,10 @@ public class ExchangeController {
 
     //Create exchange
     @PostMapping("/create")
-    public ResponseEntity<?> createExchange (@RequestHeader("Authorization") String jwt, @RequestBody PetDTO petDTO, @RequestParam("paymentAmount") int paymentAmount) throws UserException {
+    public ResponseEntity<?> createExchange (@RequestHeader("Authorization") String jwt, @RequestBody CreateExchangeDTO createExchangeDTO) throws UserException {
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);
         if(userDTO!=null){
-            ExchangeDTO exchange = exchangeService.addExchange(userDTO, petDTO.getId(), paymentAmount);
+            ExchangeDTO exchange = exchangeService.addExchange(userDTO, createExchangeDTO.getPetDTO().getId(), createExchangeDTO.getPaymentAmount());
             return ResponseEntity.ok(exchange);
         }else{
             return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to create exchange.");

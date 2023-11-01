@@ -22,4 +22,7 @@ public interface AdminService {
     int getTotalPetDisplay();
 
     int getTotalPostDisplayInMonth(int month);
+
+    int getTotalExchangeDisplay();
+    int getTotalExchangeInMonth(int month);
 }

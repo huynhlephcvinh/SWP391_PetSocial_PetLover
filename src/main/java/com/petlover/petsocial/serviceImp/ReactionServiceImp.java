@@ -36,7 +36,6 @@ public class ReactionServiceImp implements ReactionService {
    public ReactionDTO reactionPost(Long idPost, UserDTO userDTO) throws UserException, PostException {
        Reaction isReactionExist = reactionRepository.isReactionExist(userDTO.getId(),idPost);
        if(isReactionExist!=null) {
-
            reactionRepository.deleteById(isReactionExist.getId());
            Post post = postRepository.getById(idPost);
            int countReaction = getAllReaction(idPost).size();
@@ -45,7 +44,6 @@ public class ReactionServiceImp implements ReactionService {
            PostDTO postDTO = postService.findById(idPost);
            return new ReactionDTO(isReactionExist.getId(),userDTO.getId(),postDTO.getId());
        }
-
        Post post = postRepository.getById(idPost);
        User user = userRepository.getById(userDTO.getId());
        Reaction reaction = new Reaction();

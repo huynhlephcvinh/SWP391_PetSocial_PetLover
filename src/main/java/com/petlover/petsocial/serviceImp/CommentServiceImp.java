@@ -76,7 +76,8 @@ public class CommentServiceImp implements CommentService {
         comment.setUser(user);
         comment.setPost(post);
         comment.setCreatedTime(LocalDateTime.now());
-
+        post.setTotal_comment(post.getTotal_comment()+1);
+        postRepository.save(post);
         commentRepository.save(comment);
 
         return new CommentDTO(comment.getId(),comment.getContent(),this.convertUserToDTO(comment.getUser()),comment.getPost().getId(),comment.getCreatedTime());

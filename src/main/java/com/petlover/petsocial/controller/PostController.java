@@ -87,7 +87,7 @@ public class PostController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updatePost(@PathVariable(value = "id") Long id, @ModelAttribute PostUpdateDTO postUpdateDTO,@RequestHeader("Authorization") String jwt) throws UserException, PostException {
+    public ResponseEntity<?> updatePost(@PathVariable(value = "id") Long id, @RequestBody PostUpdateDTO postUpdateDTO,@RequestHeader("Authorization") String jwt) throws UserException, PostException {
         ResponseData responseData = new ResponseData();
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);
         PostDTO postDTO = postService.updatePost(id, postUpdateDTO,userDTO);

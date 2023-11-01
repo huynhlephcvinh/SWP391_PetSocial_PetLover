@@ -166,6 +166,7 @@ public class AdminController {
             int totalPostDelete = adminService.getTotalPostDete();
             int totalPet = adminService.getTotalPetDisplay();
             int totalPostDisplay = adminService.getTotalPostDisplay();
+            int totalExchange = adminService.getTotalExchangeDisplay();
 
             // Tạo một đối tượng JSON để chứa thông tin thống kê
             Map<String, Integer> monthlyStatistics = new HashMap<>();
@@ -173,12 +174,21 @@ public class AdminController {
                 int totalPostInMonth = adminService.getTotalPostDisplayInMonth(month);
                 monthlyStatistics.put("totalPostInMonth" + (month < 10 ? "0" : "") + month, totalPostInMonth);
             }
+            Map<String, Integer> monthlyExchangeStatistics = new HashMap<>();
+            for (int month = 1; month <= 12; month++) {
+                int totalExchangeInMonth = adminService.getTotalExchangeInMonth(month);
+                monthlyExchangeStatistics.put("totalExchangeInMonth" + (month < 10 ? "0" : "") + month, totalExchangeInMonth);
+            }
+
+
             Map<String, Object> statistics = new HashMap<>();
             statistics.put("totalUser", totalUser);
             statistics.put("totalPostDelete", totalPostDelete);
             statistics.put("totalPet", totalPet);
             statistics.put("totalPostDisplay", totalPostDisplay);
             statistics.put("monthlyStatistics", monthlyStatistics);
+            statistics.put("totalExchange", totalExchange);
+            statistics.put("monthlyExchangeStatistics", monthlyExchangeStatistics);
 
             responseData.setData(statistics);
             return new ResponseEntity<>(responseData, HttpStatus.OK);
