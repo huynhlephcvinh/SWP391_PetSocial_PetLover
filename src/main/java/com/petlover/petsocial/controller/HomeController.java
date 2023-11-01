@@ -262,7 +262,7 @@ public class HomeController {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
 
-        helper.setFrom("phucvinh710@gmail.com", "We Are Support");
+        helper.setFrom("phucvinh710@gmail.com", "Pet Social Media Support Reset Password");
         helper.setTo(recipientEmail);
 
         String subject = "Here's the link to reset your password";
@@ -281,8 +281,18 @@ public class HomeController {
 
         mailSender.send(message);
     }
+    @GetMapping("/reset_password")
+    public String showResetPasswordForm(@Param(value = "token") String token) {
+        User user = userService.getByResetPasswordToken(token);
+        if (user == null) {
+
+            return "Invalid Token";
+        }
+
+        return token;
+    }
     @PostMapping("/reset_password")
-    public String processResetPassword(@Param("token") String token,@RequestBody String password) {
+    public String processResetPassword(@RequestBody String password,@RequestBody String token) {
         String gettoken = token;
         String pass =password;
 
