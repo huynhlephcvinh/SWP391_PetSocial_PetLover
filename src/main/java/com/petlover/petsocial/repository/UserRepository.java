@@ -3,6 +3,7 @@ package com.petlover.petsocial.repository;
 import com.petlover.petsocial.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,8 +11,8 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
 
-
-    User findByEmail(String email);
+    @Query(value = "SELECT * FROM user u WHERE u.email = :email", nativeQuery = true)
+    User findByEmail(@Param("email") String email);
 
 
 
