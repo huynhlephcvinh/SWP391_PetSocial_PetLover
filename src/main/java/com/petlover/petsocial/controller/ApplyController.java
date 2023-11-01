@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/apply")
 public class ApplyController {
@@ -40,10 +42,10 @@ public class ApplyController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateStatus(@RequestHeader("Authorization") String jwt, @PathVariable Long id) throws UserException {
+    @PutMapping("/{eid}/{aid}")
+    public ResponseEntity<?> updateStatus(@RequestHeader("Authorization") String jwt, @PathVariable("eid") Long eid, @PathVariable("aid") Long id) throws UserException {
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);
-        Apply apply = applyService.updateApply(userDTO, id);
+        Apply apply = applyService.updateApply(userDTO, id, eid);
         if (apply!=null){
             ApplyDTO applyDTO = ApplyDTO.convertToDTO(apply);
             return ResponseEntity.ok(applyDTO);
@@ -51,6 +53,32 @@ public class ApplyController {
         else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Apply not found.");
         }
-
     }
+
+    @GetMapping("/view-applies")
+    public ResponseEntity<?> viewApplies(@RequestHeader("Authorization") String jwt) throws UserException {
+        UserDTO userDTO = userService.findUserProfileByJwt(jwt);
+        List<ApplyDTO> applyDTOS = applyService.getApplyForUser(userDTO);
+        if(!applyDTOS.isEmpty()){
+            return ResponseEntity.ok(applyDTOS);
+        }else{
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Do not have any applies.");
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> removeApply(@RequestHeader("Authorization") String jwt, @PathVariable("id") Long id) throws UserException {
+        UserDTO userDTO = userService.findUserProfileByJwt(jwt);
+        Apply apply = applyService.removeApply(id, userDTO);
+        if (apply!=null){
+            ApplyDTO applyDTO = ApplyDTO.convertToDTO(apply);
+            return ResponseEntity.ok(applyDTO);
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Apply not found.");
+        }
+    }
+
+
+
 }

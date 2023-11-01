@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Component
 @Data
 public class WebSocketEventListener {
-    private Set<OnlineUserDto> onlineUsrs;
+    private Set<OnlineUserDto> onlineUsrs = new HashSet<>();
 
     @Autowired
     private SimpMessageSendingOperations messagingTemplate;
@@ -42,7 +42,9 @@ public class WebSocketEventListener {
                 .get(SimpMessageHeaderAccessor.NATIVE_HEADERS);
 
         String login = nativeHeaders.get("username").get(0);
+        //System.out.println(login);
         String sessionId = stompAccessor.getSessionId();
+        //System.out.println(sessionId);
         if(this.onlineUsrs==null){
             this.onlineUsrs = new HashSet<>();
         }
@@ -58,6 +60,7 @@ public class WebSocketEventListener {
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor stompAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String sessionId = stompAccessor.getSessionId();
+        //System.out.println(sessionId);
         OnlineUserDto offlineUsr = this.onlineUsrs
                 .stream()
                 .filter((a)->a.getSessionId().equals(sessionId))

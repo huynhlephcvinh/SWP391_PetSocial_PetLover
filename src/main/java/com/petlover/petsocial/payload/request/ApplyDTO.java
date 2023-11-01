@@ -1,6 +1,7 @@
 package com.petlover.petsocial.payload.request;
 
 import com.petlover.petsocial.model.entity.Apply;
+import com.petlover.petsocial.model.entity.ApplyStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@ import java.util.Date;
 public class ApplyDTO {
     private Long id;
     private Date applyDate;
-    private boolean status;
+    private ApplyStatus status;
     private Long exchangeId;
     private Long userId;
 
@@ -21,7 +22,7 @@ public class ApplyDTO {
         ApplyDTO applyDTO = new ApplyDTO();
         applyDTO.setId(apply.getId());
         applyDTO.setApplyDate(apply.getApply_date());
-        applyDTO.setStatus(apply.isStatus());
+        applyDTO.setStatus(apply.getStatus());
 
         // Assuming you have appropriate getters in the Exchange and User entities
         applyDTO.setExchangeId(apply.getExchange().getId());

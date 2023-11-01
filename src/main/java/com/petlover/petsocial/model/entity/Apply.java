@@ -15,7 +15,7 @@ public class Apply {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Date apply_date;
-    private boolean status;
+    private ApplyStatus status;
 
     @ManyToOne
     @JoinColumn(name = "exchange_id")

@@ -1,6 +1,7 @@
 package com.petlover.petsocial.serviceImp;
 
 import com.petlover.petsocial.model.entity.Apply;
+import com.petlover.petsocial.model.entity.ApplyStatus;
 import com.petlover.petsocial.model.entity.Exchange;
 import com.petlover.petsocial.model.entity.User;
 import com.petlover.petsocial.payload.request.ApplyDTO;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ApplyServiceImp implements ApplyService {
@@ -40,7 +42,7 @@ public class ApplyServiceImp implements ApplyService {
             apply.setExchange(exchange1);
             apply.setApply_date(new Date());
             apply.setUser(user);
-            apply.setStatus(false);
+            apply.setStatus(ApplyStatus.PENDING);
             applyRepository.save(apply);
             return apply;
         }else {
@@ -49,20 +51,24 @@ public class ApplyServiceImp implements ApplyService {
     }
 
     @Override
-    public Apply updateApply(UserDTO userDTO, Long applyid) {
+    public Apply updateApply(UserDTO userDTO, Long applyid, Long exchangeid) {
         User user = userRepository.findById(userDTO.getId()).orElse(null);
-        Apply apply = applyRepository.findById(applyid).orElse(null);
-        if(apply!=null){
-            for(Apply apply1 : user.getApplies()){
-                if (!apply1.isStatus() && apply1.getId()==apply.getId()){
-                    apply.setStatus(true);
-                    applyRepository.save(apply);
+        Exchange exchange = exchangeRepository.findById(exchangeid).orElse(null);
+        if(exchange!=null && user!=null){
+            if(user.getExchanges().contains(exchange)){
+                for (Apply app : exchange.getApplies() ) {
+                    if(app.getId()==applyid){
+                        app.setStatus(ApplyStatus.COMPLETED);
+                        applyRepository.save(app);
+                    }else{
+                        app.setStatus(ApplyStatus.UNCOMPLETED);
+                        applyRepository.save(app);
+                    }
                 }
+                return applyRepository.findById(applyid).orElse(null);
             }
-            return apply;
-        }else {
-            return null;
         }
+        return null;
     }
 
 
@@ -73,9 +79,11 @@ public class ApplyServiceImp implements ApplyService {
         Exchange exchange = exchangeRepository.findById(id).orElse(null);
         List<ApplyDTO> applyDTOS = new ArrayList<>();
         if (exchange!=null && user.getExchanges().contains(exchange)){
-             for (Apply apply : exchange.getApplies()){
-                 ApplyDTO applyDTO = ApplyDTO.convertToDTO(apply);
-                 applyDTOS.add(applyDTO);
+             for (Apply app : exchange.getApplies()){
+                 if(app.getStatus()!=ApplyStatus.REMOVED){
+                     ApplyDTO applyDTO = ApplyDTO.convertToDTO(app);
+                     applyDTOS.add(applyDTO);
+                 }
              }
              return applyDTOS;
 
@@ -86,12 +94,41 @@ public class ApplyServiceImp implements ApplyService {
     }
 
     @Override
-    public List<Apply> getApplyForUser(UserDTO userDTO, Exchange exchange) {
-        return null;
+    public List<ApplyDTO> getApplyForUser(UserDTO userDTO) {
+        Optional<User> user = userRepository.findById(userDTO.getId());
+        List<ApplyDTO> appliesDTO = new ArrayList<>();
+        if(user.isPresent()){
+            List<Apply> applies = user.get().getApplies();
+            for ( Apply app: applies) {
+                if(app.getStatus()!=ApplyStatus.REMOVED){
+                    ApplyDTO applyDTO = ApplyDTO.convertToDTO(app);
+                    appliesDTO.add(applyDTO);
+                }
+
+            }
+        }
+        return appliesDTO;
     }
+
+
 
     @Override
     public Apply getApplyById(Long appId) {
         return applyRepository.findById(appId).orElse(null);
+    }
+
+    @Override
+    public Apply removeApply(Long appid, UserDTO userDTO) {
+        Optional<User> user = userRepository.findById(userDTO.getId());
+        if(user.isPresent()){
+            for (Apply apply : user.get().getApplies()){
+                if(apply.getId()==appid){
+                    apply.setStatus(ApplyStatus.REMOVED);
+                    applyRepository.save(apply);
+                }
+            }
+            return applyRepository.findById(appid).orElse(null);
+        }
+        return null;
     }
 }

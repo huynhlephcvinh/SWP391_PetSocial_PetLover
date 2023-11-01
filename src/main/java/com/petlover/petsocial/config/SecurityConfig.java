@@ -46,7 +46,7 @@ public class SecurityConfig {
    {
        http.sessionManagement()
                .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeHttpRequests(Authorize -> Authorize.requestMatchers("/","/register","/signin","/createUser","/oauth/**","/verify","/forgot_password","/reset_password"
+                .authorizeHttpRequests(Authorize -> Authorize.requestMatchers("/","/register","/signin","/createUser","/oauth/**","/verify","/forgot_password","/reset_password","/ws/**"
 
                         ).permitAll().anyRequest().authenticated()).
 //                        "api/v1/**",
