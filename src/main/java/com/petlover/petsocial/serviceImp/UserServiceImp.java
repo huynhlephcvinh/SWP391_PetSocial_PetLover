@@ -3,13 +3,12 @@ package com.petlover.petsocial.serviceImp;
 import com.petlover.petsocial.config.JwtProvider;
 import com.petlover.petsocial.exception.UserException;
 import com.petlover.petsocial.exception.UserNotFoundException;
-import com.petlover.petsocial.model.entity.AuthenticationProvider;
-import com.petlover.petsocial.model.entity.Pet;
-import com.petlover.petsocial.model.entity.Post;
-import com.petlover.petsocial.model.entity.User;
+import com.petlover.petsocial.model.entity.*;
 import com.petlover.petsocial.payload.request.*;
+import com.petlover.petsocial.repository.ReactionRepository;
 import com.petlover.petsocial.repository.UserRepository;
 import com.petlover.petsocial.service.CloudinaryService;
+import com.petlover.petsocial.service.CommentService;
 import com.petlover.petsocial.service.UserService;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpSession;
@@ -24,7 +23,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 @Service
 public class UserServiceImp implements UserService {
@@ -41,6 +39,10 @@ public class UserServiceImp implements UserService {
     private JwtProvider jwtProvider;
     @Autowired
     CloudinaryService cloudinaryService;
+    @Autowired
+    private CommentService commentService;
+    @Autowired
+    private ReactionRepository reactionRepository;
 
     @Override
     public User findById(Long id) {
@@ -76,6 +78,7 @@ public class UserServiceImp implements UserService {
             return "Login success";
         } else {
             return "Incorrect username or password";
+
         }
 
     }
@@ -202,19 +205,31 @@ public class UserServiceImp implements UserService {
         List<PostDTO> postDTOList = new ArrayList<>();
         for(Post post: user.getPosts()){
             if(post.isStatus()==true) {
-                PetToPostDTO petToPostDTO = new PetToPostDTO();
-                petToPostDTO.setId(post.getPet().getId());
-                petToPostDTO.setName(post.getPet().getName());
-                petToPostDTO.setImage(post.getPet().getImage());
+                if (post.isEnable() == true) {
+                    PetToPostDTO petToPostDTO = new PetToPostDTO();
+                    petToPostDTO.setId(post.getPet().getId());
+                    petToPostDTO.setName(post.getPet().getName());
+                    petToPostDTO.setImage(post.getPet().getImage());
 
 
-                UserPostDTO userPostDTO = new UserPostDTO();
-                userPostDTO.setId(post.getUser().getId());
-                userPostDTO.setName(post.getUser().getName());
-                userPostDTO.setAvatar(post.getUser().getAvatar());
+                    UserPostDTO userPostDTO = new UserPostDTO();
+                    userPostDTO.setId(post.getUser().getId());
+                    userPostDTO.setName(post.getUser().getName());
+                    userPostDTO.setAvatar(post.getUser().getAvatar());
 
-                PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), post.getComments(), petToPostDTO, userPostDTO);
-                postDTOList.add(postDTO);
+
+                    boolean fieldReaction = false;
+                    List<Reaction> listReaction = reactionRepository.findAll();
+                    for (Reaction reaction : listReaction) {
+                        if (reaction.getUser().getId() == user.getId()) {
+                            if(reaction.getPost().getId() == post.getId()) {
+                                fieldReaction = true;
+                            }
+                        }
+                    }
+                    PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), post.getTotal_comment(), commentService.convertCommentListToDTO(post.getComments()), petToPostDTO, userPostDTO, fieldReaction);
+                    postDTOList.add(postDTO);
+                }
             }
         }
 
@@ -226,7 +241,7 @@ public class UserServiceImp implements UserService {
             }
         }
 
-        return new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(),petDTOList,postDTOList);
+        return new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(),user.getRole(),petDTOList,postDTOList);
     }
 
     public UserDTO editprofile(Long id, UserUpdateDTO userDTO) throws UserException {
@@ -268,8 +283,17 @@ public class UserServiceImp implements UserService {
             userPostDTO.setId(post.getUser().getId());
             userPostDTO.setName(post.getUser().getName());
             userPostDTO.setAvatar(post.getUser().getAvatar());
+            boolean fieldReaction = false;
+            List<Reaction> listReaction = reactionRepository.findAll();
+            for (Reaction reaction : listReaction) {
+                if (reaction.getUser().getId() == user.getId()) {
+                    if(reaction.getPost().getId() == post.getId()) {
+                        fieldReaction = true;
+                    }
+                }
+            }
 
-            PostDTO postDTO = new PostDTO(post.getId(),post.getImage(),post.getContent(),post.getCreate_date(),post.getTotal_like(),post.getComments(),petToPostDTO,userPostDTO);
+            PostDTO postDTO = new PostDTO(post.getId(),post.getImage(),post.getContent(),post.getCreate_date(),post.getTotal_like(), post.getTotal_comment(), commentService.convertCommentListToDTO(post.getComments()),petToPostDTO,userPostDTO,fieldReaction);
             postDTOList.add(postDTO);
         }
 
@@ -279,7 +303,7 @@ public class UserServiceImp implements UserService {
             petDTOList.add(petDTO);
         }
 
-        return new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(),petDTOList,postDTOList);
+        return new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(),user.getRole(),petDTOList,postDTOList);
 
     }
 
@@ -304,7 +328,16 @@ public class UserServiceImp implements UserService {
                     userPostDTO.setName(post.getUser().getName());
                     userPostDTO.setAvatar(post.getUser().getAvatar());
 
-                    PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(), post.getComments(), petToPostDTO, userPostDTO);
+                    boolean fieldReaction = false;
+                    List<Reaction> listReaction = reactionRepository.findAll();
+                    for (Reaction reaction : listReaction) {
+                        if (reaction.getUser().getId() == user.getId()) {
+                            if(reaction.getPost().getId() == post.getId()) {
+                                fieldReaction = true;
+                            }
+                        }
+                    }
+                    PostDTO postDTO = new PostDTO(post.getId(), post.getImage(), post.getContent(), post.getCreate_date(), post.getTotal_like(),post.getTotal_comment(), commentService.convertCommentListToDTO(post.getComments()), petToPostDTO, userPostDTO,fieldReaction);
                     postDTOList.add(postDTO);
                 }
             }
@@ -318,7 +351,7 @@ public class UserServiceImp implements UserService {
             }
         }
 
-        return new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(),petDTOList,postDTOList);
+        return new UserDTO(user.getId(), user.getName(),user.getEmail(),user.getPhone(),user.getAvatar(),user.getRole(),petDTOList,postDTOList);
     }
 
     @Override

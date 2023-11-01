@@ -1,6 +1,6 @@
 package com.petlover.petsocial.payload.request;
 
-import com.petlover.petsocial.model.entity.Comment;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,8 +16,10 @@ public class PostDTO {
     private String content;
     private String create_date;
     private int total_like;
-    private List<Comment> comments;
+    private int total_comment;
+    private List<CommentDTO> comments;
     private PetToPostDTO petToPostDTO;
     private UserPostDTO userPostDTO;
+    private boolean fieldReaction;
 
 }

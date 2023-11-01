@@ -3,10 +3,9 @@ package com.petlover.petsocial.controller;
 import com.petlover.petsocial.exception.PetException;
 import com.petlover.petsocial.exception.PostException;
 import com.petlover.petsocial.exception.UserException;
-import com.petlover.petsocial.model.entity.Pet;
-import com.petlover.petsocial.model.entity.User;
 import com.petlover.petsocial.payload.request.*;
 import com.petlover.petsocial.payload.response.ResponseData;
+import com.petlover.petsocial.service.CommentService;
 import com.petlover.petsocial.service.PetService;
 import com.petlover.petsocial.service.PostService;
 import com.petlover.petsocial.service.UserService;
@@ -16,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -33,6 +31,8 @@ public class PostController {
     PostService postService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CommentService commentService;
     @GetMapping("/createpost")
     public ResponseEntity<?> choosePetToPost(){
         ResponseData responseData = new ResponseData();
@@ -56,9 +56,10 @@ public class PostController {
     }
 
     @GetMapping("/getAllPost")
-    public ResponseEntity<?> getAllPost(){
+    public ResponseEntity<?> getAllPost(@RequestHeader("Authorization") String jwt) throws UserException {
         ResponseData responseData = new ResponseData();
-        List<PostDTO> list = postService.getAllPost();
+        UserDTO userDTO = userService.findUserProfileByJwt(jwt);
+        List<PostDTO> list = postService.getAllPost(userDTO);
         request.setAttribute("listPost",list);
         responseData.setData(list);
         return new ResponseEntity<>(responseData,HttpStatus.OK);
@@ -86,7 +87,7 @@ public class PostController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updatePost(@PathVariable(value = "id") Long id, @ModelAttribute PostUpdateDTO postUpdateDTO,@RequestHeader("Authorization") String jwt) throws UserException, PostException {
+    public ResponseEntity<?> updatePost(@PathVariable(value = "id") Long id, @RequestBody PostUpdateDTO postUpdateDTO,@RequestHeader("Authorization") String jwt) throws UserException, PostException {
         ResponseData responseData = new ResponseData();
         UserDTO userDTO = userService.findUserProfileByJwt(jwt);
         PostDTO postDTO = postService.updatePost(id, postUpdateDTO,userDTO);
@@ -99,9 +100,10 @@ public class PostController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<?> searchPost(@RequestParam("content") String content) throws UserException, PostException {
+    public ResponseEntity<?> searchPost(@RequestParam("content") String content, @RequestHeader("Authorization") String jwt) throws UserException, PostException {
         ResponseData responseData = new ResponseData();
-        List<PostDTO> list = postService.sreachPost(content);
+        UserDTO userDTO = userService.findUserProfileByJwt(jwt);
+        List<PostDTO> list = postService.sreachPost(content,userDTO);
         responseData.setData(list);
         return new ResponseEntity<>(responseData,HttpStatus.OK);
 

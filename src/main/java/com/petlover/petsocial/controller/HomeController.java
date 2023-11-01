@@ -2,14 +2,15 @@ package com.petlover.petsocial.controller;
 
 
 import com.petlover.petsocial.config.JwtProvider;
+import com.petlover.petsocial.exception.PostException;
 import com.petlover.petsocial.exception.UserException;
 import com.petlover.petsocial.exception.UserNotFoundException;
 import com.petlover.petsocial.model.entity.User;
-import com.petlover.petsocial.payload.request.SigninDTO;
-import com.petlover.petsocial.payload.request.SingupDTO;
+import com.petlover.petsocial.payload.request.*;
 import com.petlover.petsocial.payload.response.AuthResponse;
 import com.petlover.petsocial.payload.response.ResponseData;
 import com.petlover.petsocial.repository.UserRepository;
+import com.petlover.petsocial.service.PostService;
 import com.petlover.petsocial.service.UserService;
 import com.petlover.petsocial.serviceImp.CustomerUserDetailsServiceImp;
 import jakarta.mail.MessagingException;
@@ -17,7 +18,7 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
-import jdk.jshell.spi.ExecutionControl;
+
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -29,18 +30,16 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.crypto.SecretKey;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 
@@ -59,6 +58,9 @@ public class HomeController {
     private JwtProvider jwtProvider;
     @Autowired
     private CustomerUserDetailsServiceImp customerUserDetailsServiceImp;
+    @Autowired
+    private PostService postService;
+
 
    @ModelAttribute
    public void commonUser(Principal p, Model m,@AuthenticationPrincipal OAuth2User usero2) {
@@ -92,16 +94,16 @@ public class HomeController {
 
     @PostMapping("/createUser")
     public ResponseEntity<?> createuser(@RequestBody SingupDTO userDTO, HttpSession session, HttpServletRequest request) throws UserException {
-       if(userDTO.getEmail().equals("")) {
+       if(userDTO.getEmail().isEmpty()) {
            throw new UserException("You have not entered your email yet");
        }
-       if(userDTO.getName().equals("")) {
+       if(userDTO.getName().isEmpty()) {
             throw new UserException("You have not entered your name yet");
         }
-       if(userDTO.getPhone().equals("")) {
+       if(userDTO.getPhone().isEmpty()) {
             throw new UserException("You have not entered your phone yet");
         }
-        if(userDTO.getPassword().equals("")) {
+        if(userDTO.getPassword().isEmpty()) {
             throw new UserException("You have not entered your password yet");
         }
         if(!userDTO.getPhone().matches("^[0-9]+$")) {
@@ -146,7 +148,7 @@ public class HomeController {
 //    System.out.println(token);
 
 //    responseData.setDescription(res.toString());
-        String userLogin = String.valueOf(userService.checkLogin(signinDTO));
+        String userLogin =  userService.checkLogin(signinDTO);
         if(userLogin.equals("Incorrect username or password")){
             responseData.setData("Incorrect");
         }else if(userLogin.equals("Your account has not been activated!")){
@@ -186,25 +188,53 @@ public class HomeController {
         return new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
     }
     @GetMapping("/verify")
-    public String verifyAccount(@Param("code") String code, Model m) {
+    public String verifyAccount(@Param("code") String code) {
         boolean f = userService.verifyAccount(code);
 
         if (f) {
-            m.addAttribute("msg", "Sucessfully your account is verified");
+            return "You can login. Sucessfully your account is verified";
         } else {
-            m.addAttribute("msg", "may be your vefication code is incorrect or already veified ");
+           return  "May be your vefication code is incorrect or already veified ";
         }
 
-        return "message";
+
     }
 
-    @GetMapping("/forgot_password")
-    public String showForgotPasswordForm(Model model) {
-        model.addAttribute("pageTitle","Forgot Password");
-        return "forgot_password_form";
+    @GetMapping("/getAllPost")
+    public ResponseEntity<?> getAllPost() throws UserException {
+        ResponseData responseData = new ResponseData();
+
+        List<PostDTO> list = postService.getAllPostHome();
+        responseData.setData(list);
+        return new ResponseEntity<>(responseData,HttpStatus.OK);
+    }
+
+    @GetMapping("/getAllUser")
+    public ResponseEntity<?> getAllUser(){
+        ResponseData responseData = new ResponseData();
+        List<UserHomeDTO> list = userService.getListUser();
+        responseData.setData(list);
+        return new ResponseEntity<>(responseData,HttpStatus.OK);
+    }
+
+    @GetMapping("/searchUser")
+    public ResponseEntity<?> searchUser(@RequestParam("name") String name) throws UserException, PostException {
+        ResponseData responseData = new ResponseData();
+        List<UserHomeDTO> list = userService.getSearchListUser(name);
+        responseData.setData(list);
+        return new ResponseEntity<>(responseData,HttpStatus.OK);
+    }
+    @GetMapping("/searchPost")
+    public ResponseEntity<?> searchPost(@RequestParam("content") String content) throws UserException, PostException {
+        ResponseData responseData = new ResponseData();
+
+        List<PostDTO> list = postService.sreachPostHome(content);
+        responseData.setData(list);
+        return new ResponseEntity<>(responseData,HttpStatus.OK);
+
     }
     @PostMapping("/forgot_password")
-    public String processForgotPassword(@RequestParam String email,HttpServletRequest request, Model model) {
+    public String processForgotPassword(@RequestBody String email,HttpServletRequest request) {
         String token = RandomString.make(30);
         System.out.println("Email: " + email);
         System.out.println("Token: " + token);
@@ -216,15 +246,15 @@ public class HomeController {
             System.out.println(url);
 //            String resetPasswordLink = Utility.getSiteURL(request) + "/reset_password?token=" + token;
             sendEmail(email, url);
-            model.addAttribute("message", "We have sent a reset password link to your email. Please check.");
+
 //
         } catch (UserNotFoundException ex) {
-            model.addAttribute("error", ex.getMessage());
+          return "Error!";
         } catch (UnsupportedEncodingException | MessagingException e) {
-            model.addAttribute("error", "Error while sending email");
+            return "Erorr when send email";
         }
 
-        return "forgot_password_form";
+        return "We have sent a reset password link to your email. Please check.";
     }
 
     public void sendEmail(String recipientEmail, String link)
@@ -251,36 +281,21 @@ public class HomeController {
 
         mailSender.send(message);
     }
-    @GetMapping("/reset_password")
-    public String showResetPasswordForm(@Param(value = "token") String token, Model model) {
-        User user = userService.getByResetPasswordToken(token);
-        model.addAttribute("token", token);
-
-        if (user == null) {
-            model.addAttribute("message", "Invalid Token");
-            return "message";
-        }
-
-        return "reset_password_form";
-    }
     @PostMapping("/reset_password")
-    public String processResetPassword(HttpServletRequest request, Model model) {
-        String token = request.getParameter("token");
-        String password = request.getParameter("password");
+    public String processResetPassword(@Param("token") String token,@RequestBody String password) {
+        String gettoken = token;
+        String pass =password;
 
-        User user = userService.getByResetPasswordToken(token);
-        model.addAttribute("title", "Reset your password");
-
+        User user = userService.getByResetPasswordToken(gettoken);
         if (user == null) {
-            model.addAttribute("message", "Invalid Token");
-            return "message";
-        } else {
-            userService.updatePassword(user, password);
 
-            model.addAttribute("message", "You have successfully changed your password.");
+            return "Invalid Token";
+        } else {
+            userService.updatePassword(user, pass);
+
         }
 
-        return "reset_password_form";
+        return "Reset password correct !";
     }
 
 

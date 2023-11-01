@@ -2,6 +2,7 @@ package com.petlover.petsocial.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 
 import java.util.Date;
 import java.util.List;
@@ -16,6 +17,7 @@ public class Exchange {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Date exchange_date;
+    private String description;
     private int payment_amount;
 
     @Enumerated(EnumType.STRING)
@@ -25,16 +27,20 @@ public class Exchange {
     @JoinColumn(name = "user_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @JsonIgnore
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "pet_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @JsonIgnore
     private Pet pet;
 
     @OneToMany(mappedBy = "exchange", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Apply> applies;
     @OneToMany(mappedBy = "exchange", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Chat> chats;
 }

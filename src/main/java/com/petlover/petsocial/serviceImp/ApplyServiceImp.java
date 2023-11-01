@@ -71,8 +71,6 @@ public class ApplyServiceImp implements ApplyService {
         return null;
     }
 
-
-
     @Override
     public List<ApplyDTO> getApplyForExchange(UserDTO userDTO, Long id) {
         User user = userRepository.findById(userDTO.getId()).orElse(null);

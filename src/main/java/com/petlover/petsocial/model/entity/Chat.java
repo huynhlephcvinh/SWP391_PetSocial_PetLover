@@ -2,6 +2,7 @@ package com.petlover.petsocial.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 
 import java.util.Date;
 

@@ -6,21 +6,22 @@ import com.petlover.petsocial.model.entity.*;
 import com.petlover.petsocial.payload.request.*;
 import com.petlover.petsocial.repository.PetRepository;
 import com.petlover.petsocial.repository.PostRepository;
+import com.petlover.petsocial.repository.ReactionRepository;
 import com.petlover.petsocial.repository.UserRepository;
 import com.petlover.petsocial.service.CloudinaryService;
+import com.petlover.petsocial.service.CommentService;
 import com.petlover.petsocial.service.PostService;
+import com.petlover.petsocial.service.ReactionService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.nio.file.Path;
+
 import java.text.DateFormat;
 import java.util.*;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
+import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImp implements PostService {
@@ -34,6 +35,10 @@ public class PostServiceImp implements PostService {
     PostRepository postRepository;
     @Autowired
     private UserRepository userRepo;
+    @Autowired
+    private CommentService commentService;
+    @Autowired
+    private ReactionRepository reactionRepository;
 
     public PostDTO insertPost(CreatPostDTO creatPostDTO, UserDTO userDTO) throws PetException {
         Post newPost = new Post();
@@ -119,11 +124,11 @@ postRepository.save(newPost);
         userPostDTO.setName(newPost.getUser().getName());
         userPostDTO.setAvatar(newPost.getUser().getAvatar());
 
-            return new PostDTO(newPost.getId(),newPost.getImage(),newPost.getContent(),newPost.getCreate_date(),newPost.getTotal_like(),newPost.getComments(),petToPostDTO,userPostDTO);
+            return new PostDTO(newPost.getId(),newPost.getImage(),newPost.getContent(),newPost.getCreate_date(),newPost.getTotal_like(), newPost.getTotal_comment(), commentService.convertCommentListToDTO(newPost.getComments()),petToPostDTO,userPostDTO,false);
 
     }
 
-    public List<PostDTO> getAllPost()
+    public List<PostDTO> getAllPost(UserDTO userDTO)
     {
         List<Post> postList = postRepository.getAll();
         List<PostDTO> listpostDTO = new ArrayList<>();
@@ -134,7 +139,8 @@ postRepository.save(newPost);
             postDTO.setImage(post.getImage());
             postDTO.setCreate_date(post.getCreate_date());
             postDTO.setTotal_like(post.getTotal_like());
-            postDTO.setComments(post.getComments());
+            postDTO.setTotal_comment(commentService.countCommentsByPostId(post.getId()));
+            postDTO.setComments(commentService.convertCommentListToDTO(post.getComments()));
 
             PetToPostDTO petToPostDTO = new PetToPostDTO();
             petToPostDTO.setId(post.getPet().getId());
@@ -148,10 +154,58 @@ postRepository.save(newPost);
             userPostDTO.setAvatar(post.getUser().getAvatar());
             postDTO.setUserPostDTO(userPostDTO);
 
+            List<Reaction> listReaction = reactionRepository.findAll();
+            for(Reaction reaction : listReaction)
+            {
+                if(reaction.getUser().getId() == userDTO.getId()) {
+                    if(reaction.getPost().getId() == post.getId()) {
+                        postDTO.setFieldReaction(true);
+                    }else{
+                        postDTO.setFieldReaction(false);
+                    }
+
+                }else{
+                    postDTO.setFieldReaction(false);
+                }
+            }
+
             listpostDTO.add(postDTO);
         }
         return listpostDTO;
     }
+    public List<PostDTO> getAllPostHome()
+    {
+        List<Post> postList = postRepository.getAll();
+        List<PostDTO> listpostDTO = new ArrayList<>();
+        for(Post post : postList) {
+            PostDTO postDTO = new PostDTO();
+            postDTO.setId(post.getId());
+            postDTO.setContent(post.getContent());
+            postDTO.setImage(post.getImage());
+            postDTO.setCreate_date(post.getCreate_date());
+            postDTO.setTotal_like(post.getTotal_like());
+            postDTO.setTotal_comment(commentService.countCommentsByPostId(post.getId()));
+            postDTO.setComments(commentService.convertCommentListToDTO(post.getComments()));
+
+            PetToPostDTO petToPostDTO = new PetToPostDTO();
+            petToPostDTO.setId(post.getPet().getId());
+            petToPostDTO.setName(post.getPet().getName());
+            petToPostDTO.setImage(post.getPet().getImage());
+            postDTO.setPetToPostDTO(petToPostDTO);
+
+            UserPostDTO userPostDTO = new UserPostDTO();
+            userPostDTO.setId(post.getUser().getId());
+            userPostDTO.setName(post.getUser().getName());
+            userPostDTO.setAvatar(post.getUser().getAvatar());
+            postDTO.setUserPostDTO(userPostDTO);
+
+             postDTO.setFieldReaction(false);
+
+            listpostDTO.add(postDTO);
+        }
+        return listpostDTO;
+    }
+
     public List<PostDTO> getAllYourPost(Long idUser)
     {
         List<Post> postList = postRepository.getAllYourPost(idUser);
@@ -163,7 +217,7 @@ postRepository.save(newPost);
             postDTO.setImage(post.getImage());
             postDTO.setCreate_date(post.getCreate_date());
             postDTO.setTotal_like(post.getTotal_like());
-            postDTO.setComments(post.getComments());
+            postDTO.setComments(commentService.convertCommentListToDTO(post.getComments()));
 
             PetToPostDTO petToPostDTO = new PetToPostDTO();
             petToPostDTO.setId(post.getPet().getId());
@@ -176,11 +230,24 @@ postRepository.save(newPost);
             userPostDTO.setName(post.getUser().getName());
             userPostDTO.setAvatar(post.getUser().getAvatar());
             postDTO.setUserPostDTO(userPostDTO);
+            List<Reaction> listReaction = reactionRepository.findAll();
+            for(Reaction reaction : listReaction)
+            {
+                if(reaction.getUser().getId() == idUser) {
+                    if(reaction.getPost().getId() == post.getId()) {
+                        postDTO.setFieldReaction(true);
+                    }else{
+                        postDTO.setFieldReaction(false);
+                    }
+                }else{
+                    postDTO.setFieldReaction(false);
+                }
+            }
             listpostDTO.add(postDTO);
         }
         return listpostDTO;
     }
-    public List<PostDTO> sreachPost(String content)
+    public List<PostDTO> sreachPost(String content,UserDTO userDTO)
     {
         List<Post> postListSearch = postRepository.searchPost(content);
         List<PostDTO> listpostDTO = new ArrayList<>();
@@ -191,7 +258,7 @@ postRepository.save(newPost);
             postDTO.setImage(post.getImage());
             postDTO.setCreate_date(post.getCreate_date());
             postDTO.setTotal_like(post.getTotal_like());
-            postDTO.setComments(post.getComments());
+            postDTO.setComments(commentService.convertCommentListToDTO(post.getComments()));
 
             PetToPostDTO petToPostDTO = new PetToPostDTO();
             petToPostDTO.setId(post.getPet().getId());
@@ -204,6 +271,51 @@ postRepository.save(newPost);
             userPostDTO.setName(post.getUser().getName());
             userPostDTO.setAvatar(post.getUser().getAvatar());
             postDTO.setUserPostDTO(userPostDTO);
+            List<Reaction> listReaction = reactionRepository.findAll();
+            for(Reaction reaction : listReaction)
+            {
+                if(reaction.getUser().getId() == userDTO.getId()) {
+                    if(reaction.getPost().getId() == post.getId()) {
+                        postDTO.setFieldReaction(true);
+                    }else{
+                        postDTO.setFieldReaction(false);
+                    }
+                }else{
+                    postDTO.setFieldReaction(false);
+                }
+            }
+            listpostDTO.add(postDTO);
+        }
+        return listpostDTO;
+    }
+
+
+    public List<PostDTO> sreachPostHome(String content)
+    {
+        List<Post> postListSearch = postRepository.searchPost(content);
+        List<PostDTO> listpostDTO = new ArrayList<>();
+        for(Post post : postListSearch) {
+            PostDTO postDTO = new PostDTO();
+            postDTO.setId(post.getId());
+            postDTO.setContent(post.getContent());
+            postDTO.setImage(post.getImage());
+            postDTO.setCreate_date(post.getCreate_date());
+            postDTO.setTotal_like(post.getTotal_like());
+            postDTO.setComments(commentService.convertCommentListToDTO(post.getComments()));
+
+            PetToPostDTO petToPostDTO = new PetToPostDTO();
+            petToPostDTO.setId(post.getPet().getId());
+            petToPostDTO.setName(post.getPet().getName());
+            petToPostDTO.setImage(post.getPet().getImage());
+            postDTO.setPetToPostDTO(petToPostDTO);
+
+            UserPostDTO userPostDTO = new UserPostDTO();
+            userPostDTO.setId(post.getUser().getId());
+            userPostDTO.setName(post.getUser().getName());
+            userPostDTO.setAvatar(post.getUser().getAvatar());
+            postDTO.setUserPostDTO(userPostDTO);
+
+            postDTO.setFieldReaction(false);
             listpostDTO.add(postDTO);
         }
         return listpostDTO;
@@ -226,7 +338,9 @@ postRepository.save(newPost);
         userPostDTO.setId(getPost.getUser().getId());
         userPostDTO.setName(getPost.getUser().getName());
         userPostDTO.setAvatar(getPost.getUser().getAvatar());
-        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),getPost.getComments(),petToPostDTO,userPostDTO);
+        boolean fieldReaction =false;
+
+        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(), getPost.getTotal_comment(), commentService.convertCommentListToDTO(getPost.getComments()),petToPostDTO,userPostDTO,fieldReaction);
     }
     public PostDTO deletePost(Long id, UserDTO userDTO)  {
 
@@ -252,43 +366,68 @@ postRepository.save(newPost);
         userPostDTO.setName(getPost.getUser().getName());
         userPostDTO.setAvatar(getPost.getUser().getAvatar());
 
-        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),getPost.getComments(),petToPostDTO,userPostDTO);
+        boolean fieldReaction =false;
+        List<Reaction> listReaction = reactionRepository.findAll();
+        for(Reaction reaction : listReaction)
+        {
+            if(reaction.getUser().getId() == userDTO.getId()) {
+                if(reaction.getPost().getId() == getPost.getId()) {
+                    fieldReaction = true;
+                }
+            }
+        }
+
+        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(), getPost.getTotal_comment(), commentService.convertCommentListToDTO(getPost.getComments()),petToPostDTO,userPostDTO,fieldReaction);
     }
 
-    public PostDTO updatePost(Long id, PostUpdateDTO postUpdateDTO,UserDTO userDTO)
-    {
+    public PostDTO updatePost(Long id, PostUpdateDTO postUpdateDTO, UserDTO userDTO) {
         Post getPost = postRepository.getById(id);
-        if(getPost == null) {
-            return null;
+        if (getPost == null) {
+            return null; // Post not found
         }
-        if(postUpdateDTO.getContent().equals("")) {
-            return null;
+
+        if (getPost.getUser().getId() == userDTO.getId()) {
+            if (postUpdateDTO.getContent() != null && !postUpdateDTO.getContent().isEmpty()) {
+                getPost.setContent(postUpdateDTO.getContent());
+                postRepository.save(getPost);
+            }
+
+            // Step 4: Construct and return the updated PostDTO
+            PetToPostDTO petToPostDTO = new PetToPostDTO();
+            petToPostDTO.setId(getPost.getPet().getId());
+            petToPostDTO.setName(getPost.getPet().getName());
+            petToPostDTO.setImage(getPost.getPet().getImage());
+
+            UserPostDTO userPostDTO = new UserPostDTO();
+            userPostDTO.setId(getPost.getUser().getId());
+            userPostDTO.setName(getPost.getUser().getName());
+            userPostDTO.setAvatar(getPost.getUser().getAvatar());
+
+            boolean fieldReaction = false;
+            List<Reaction> listReaction = reactionRepository.findAll();
+            for (Reaction reaction : listReaction) {
+                if (reaction.getUser().getId() == userDTO.getId()) {
+                    if (reaction.getPost().getId() == getPost.getId()) {
+                        fieldReaction = true;
+                    }
+                }
+            }
+
+            return new PostDTO(
+                    getPost.getId(),
+                    getPost.getImage(),
+                    getPost.getContent(),
+                    getPost.getCreate_date(),
+                    getPost.getTotal_like(),
+                    getPost.getTotal_comment(),
+                    commentService.convertCommentListToDTO(getPost.getComments()),
+                    petToPostDTO,
+                    userPostDTO,
+                    fieldReaction
+            );
+        } else {
+            return null; // User doesn't have permission to update the post
         }
-        if(getPost.getUser().getId() == userDTO.getId()) {
-            getPost.setContent(postUpdateDTO.getContent());
-        }else{
-            return null;
-        }
-        postRepository.save(getPost);
-
-        PetToPostDTO petToPostDTO = new PetToPostDTO();
-        petToPostDTO.setId(getPost.getPet().getId());
-        petToPostDTO.setName(getPost.getPet().getName());
-        petToPostDTO.setImage(getPost.getPet().getImage());
-
-
-        UserPostDTO userPostDTO = new UserPostDTO();
-        userPostDTO.setId(getPost.getUser().getId());
-        userPostDTO.setName(getPost.getUser().getName());
-        userPostDTO.setAvatar(getPost.getUser().getAvatar());
-
-        return new PostDTO(getPost.getId(),getPost.getImage(),getPost.getContent(),getPost.getCreate_date(),getPost.getTotal_like(),getPost.getComments(),petToPostDTO,userPostDTO);
-
     }
-
-
-
-
-
 
 }

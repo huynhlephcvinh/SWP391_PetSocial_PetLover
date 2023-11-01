@@ -15,6 +15,7 @@ public class ExchangeDTO {
     private Date exchangeDate;
     private int paymentAmount;
     private ExStatus status;
-    private Long userId;
-    private Long petId;
+    private UserDTO userDTO;
+    private PetDTO petDTO;
+    private String description;
 }

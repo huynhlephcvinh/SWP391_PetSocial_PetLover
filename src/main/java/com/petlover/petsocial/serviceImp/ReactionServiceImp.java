@@ -8,6 +8,7 @@ import com.petlover.petsocial.repository.CommentRepository;
 import com.petlover.petsocial.repository.PostRepository;
 import com.petlover.petsocial.repository.ReactionRepository;
 import com.petlover.petsocial.repository.UserRepository;
+import com.petlover.petsocial.service.CommentService;
 import com.petlover.petsocial.service.PostService;
 import com.petlover.petsocial.service.ReactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +30,12 @@ public class ReactionServiceImp implements ReactionService {
     UserRepository userRepository;
     @Autowired
     CommentRepository commentRepository;
+    @Autowired
+    private CommentService commentService;
 
    public ReactionDTO reactionPost(Long idPost, UserDTO userDTO) throws UserException, PostException {
        Reaction isReactionExist = reactionRepository.isReactionExist(userDTO.getId(),idPost);
        if(isReactionExist!=null) {
-
            reactionRepository.deleteById(isReactionExist.getId());
            Post post = postRepository.getById(idPost);
            int countReaction = getAllReaction(idPost).size();
@@ -42,7 +44,6 @@ public class ReactionServiceImp implements ReactionService {
            PostDTO postDTO = postService.findById(idPost);
            return new ReactionDTO(isReactionExist.getId(),userDTO.getId(),postDTO.getId());
        }
-
        Post post = postRepository.getById(idPost);
        User user = userRepository.getById(userDTO.getId());
        Reaction reaction = new Reaction();
@@ -80,7 +81,7 @@ public class ReactionServiceImp implements ReactionService {
                 userPostDTO.setName(post.getUser().getName());
                 userPostDTO.setAvatar(post.getUser().getAvatar());
 
-                PostDTO postDTO2 = new PostDTO(post.getId(),post.getImage(),post.getContent(),post.getCreate_date(),post.getTotal_like(),post.getComments(),petToPostDTO,userPostDTO);
+                PostDTO postDTO2 = new PostDTO(post.getId(),post.getImage(),post.getContent(),post.getCreate_date(),post.getTotal_like(),post.getTotal_comment(),commentService.convertCommentListToDTO(post.getComments()),petToPostDTO,userPostDTO,true);
                 postDTOList.add(postDTO2);
             }
 
@@ -90,7 +91,7 @@ public class ReactionServiceImp implements ReactionService {
                 petDTOList.add(petDTO);
             }
 
-            UserDTO userDTO = new UserDTO(reaction.getUser().getId(),reaction.getUser().getName(),reaction.getUser().getEmail(),reaction.getUser().getPhone(),reaction.getUser().getAvatar(),petDTOList,postDTOList);
+            UserDTO userDTO = new UserDTO(reaction.getUser().getId(),reaction.getUser().getName(),reaction.getUser().getEmail(),reaction.getUser().getPhone(),reaction.getUser().getAvatar(),reaction.getUser().getRole(),petDTOList,postDTOList);
             reactionDTO.setUserId(userDTO.getId());
             PostDTO postDTO1 = postService.findById(idPost);
             reactionDTO.setPostId(postDTO1.getId());

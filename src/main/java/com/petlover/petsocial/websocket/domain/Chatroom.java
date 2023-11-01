@@ -1,6 +1,6 @@
 package com.petlover.petsocial.websocket.domain;
 
-import com.petlover.petsocial.model.entity.Exchange;
+
 import jakarta.persistence.*;
 import lombok.*;
 

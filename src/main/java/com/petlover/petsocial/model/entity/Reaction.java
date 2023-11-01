@@ -2,6 +2,7 @@ package com.petlover.petsocial.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 
 @Entity
 @NoArgsConstructor
@@ -18,17 +19,20 @@ public class Reaction {
     @JoinColumn(name = "user_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @JsonIgnore
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "post_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @JsonIgnore
     private Post post;
 
     @ManyToOne
     @JoinColumn(name = "comment_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @JsonIgnore
     private Comment comment;
 }

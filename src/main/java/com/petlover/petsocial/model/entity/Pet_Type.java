@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.minidev.json.annotate.JsonIgnore;
 
 import java.util.List;
 
@@ -21,5 +22,6 @@ public class Pet_Type {
     @Column(name = "name", columnDefinition = "nvarchar(255)")
     private String name;
     @OneToMany(mappedBy = "pet_type", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Pet> pets;
 }

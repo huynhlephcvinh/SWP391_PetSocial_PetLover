@@ -1,6 +1,7 @@
 package com.petlover.petsocial.serviceImp;
 
 import com.petlover.petsocial.exception.UserException;
+import com.petlover.petsocial.model.entity.Exchange;
 import com.petlover.petsocial.model.entity.Pet;
 import com.petlover.petsocial.model.entity.Post;
 import com.petlover.petsocial.model.entity.User;
@@ -8,6 +9,7 @@ import com.petlover.petsocial.payload.request.PetForAdminDTO;
 import com.petlover.petsocial.payload.request.PostForAdminDTO;
 import com.petlover.petsocial.payload.request.UserForAdminDTO;
 import com.petlover.petsocial.payload.request.UserForAdminManager;
+import com.petlover.petsocial.repository.ExchangeRepository;
 import com.petlover.petsocial.repository.PetRepository;
 import com.petlover.petsocial.repository.PostRepository;
 import com.petlover.petsocial.repository.UserRepository;
@@ -20,7 +22,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -35,6 +36,9 @@ public class AdminServiceImp implements AdminService {
     PostRepository postRepository;
     @Autowired
     PetRepository petRepository;
+
+    @Autowired
+    ExchangeRepository exchangeRepository;
 
     @Override
     public List<UserForAdminManager> getListUserForAdmin()
@@ -158,7 +162,40 @@ public class AdminServiceImp implements AdminService {
 
             if (localDate.getMonthValue() == month) {
                 if(localDate.getYear() == localDateNow.getYear())
-                count++;
+                    count++;
+            }
+        }
+        return count;
+    }
+
+    @Override
+    public int getTotalExchangeDisplay() {
+        int size =0;
+        try {
+            List<Exchange> listExchangeDisplay = exchangeRepository.getAllExchange();
+            size = listExchangeDisplay.size();
+        }catch(Exception ex){ }
+        return size;
+    }
+
+    @Override
+    public int getTotalExchangeInMonth(int month) {
+        int count = 0;
+        Calendar cal = Calendar.getInstance();
+        Date date = cal.getTime();
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+        String formattedDate = dateFormat.format(date);
+        LocalDate localDateNow = LocalDate.parse(formattedDate,DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+        List<Exchange> listExchangeDisplay = exchangeRepository.getAllExchange();
+        for (Exchange e : listExchangeDisplay) {
+            Date exchangeDate = e.getExchange_date();
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+            String dateStr = sdf.format(exchangeDate);
+            LocalDate localDate = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+
+            if (localDate.getMonthValue() == month) {
+                if(localDate.getYear() == localDateNow.getYear())
+                    count++;
             }
         }
         return count;
