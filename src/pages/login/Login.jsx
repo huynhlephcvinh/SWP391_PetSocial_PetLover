@@ -90,6 +90,7 @@ function Login() {
             />
             <button type="submit">Login</button>
           </form>
+          <Link to="/forgot-password">Forgot Password</Link>
         </div>
       </div>
     </div>

@@ -23,6 +23,13 @@ const Pet = ({ pet }) => {
   const [editedImage, setEditedImage] = useState(pet.image);
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedImageUrl, setSelectedImageUrl] = useState(null);
+
+  const [updatedName, setUpdatedName] = useState(pet.name);
+  const [updatedDescription, setUpdatedDescription] = useState(pet.description);
+  const [updatedImage, setUpdatedImage] = useState(pet.image);
+
+  const [pets, setPets] = useState([]);
+
   const token = localStorage.getItem("token");
   const openModal = () => {
     setIsModalOpen(true);
@@ -44,12 +51,14 @@ const Pet = ({ pet }) => {
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    setSelectedFile(file);
 
     if (file) {
+      // Đọc URL của tệp hình ảnh
       const imageUrl = URL.createObjectURL(file);
+      setSelectedFile(file);
       setSelectedImageUrl(imageUrl);
     } else {
+      setSelectedFile(null);
       setSelectedImageUrl(null);
     }
   };
@@ -84,34 +93,71 @@ const Pet = ({ pet }) => {
     }
   };
 
-  const handleUpdatePet = async () => {
-    try {
-      const updatePetDTO = {
-        id: pet.id,
-        image: editedImage, // You need to set this based on your logic
-        name: editedName,
-        description: editedDescription,
-        // Add other fields as needed
-      };
+  const handleUpdatePet = () => {
+    const updatedName = editedName;
+    const updatedDescription = editedDescription;
+    const updatedImage = editedImage;
+    setUpdatedName(updatedName);
+    setUpdatedDescription(updatedDescription);
+    setUpdatedImage(updatedImage);
+    setEditMode(false);
 
-      const response = await axios.put(
-        `http://localhost:8080/pet/updatePet/${pet.id}`,
-        updatePetDTO,
-        {
+    const updatedPet = {
+      id: pet.id,
+      image: updatedImage, // Cập nhật hình ảnh nếu cần
+      name: updatedName,
+      description: updatedDescription,
+      // Thêm các trường khác tùy theo cần thiết
+    };
+
+    axios
+      .put(`http://localhost:8080/pet/updatePet/${pet.id}`, updatedPet, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          // Cập nhật dữ liệu trên giao diện nếu cần
+          // Ví dụ: setPet(updatedPet);
+
+          // Kết thúc chế độ chỉnh sửa
+          // setUpdatedName(updatedName);
+          // setUpdatedDescription(updatedDescription);
+          toggleEditMode();
+          console.log(response.data);
+        } else {
+          console.error("Update failed");
+        }
+      })
+      .catch((error) => {
+        console.error("Error updating the pet:", error);
+      });
+  };
+
+  const handleMenuDelete = () => {
+    if (window.confirm("Are you sure you want to delete this pet?")) {
+      axios
+        .get(`http://localhost:8080/pet/delete/${pet.id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
-      );
-
-      console.log("Response: " + JSON.stringify(response.data));
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error("Error: ", error);
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            // Xử lý khi xóa thành công, ví dụ chuyển người dùng đến trang khác hoặc làm mới danh sách thú cưng
+            const updatedPets = pets.filter((p) => p.id !== pet.id);
+            setPets(updatedPets);
+            console.log("Pet deleted successfully");
+          } else {
+            console.error("Delete failed");
+          }
+        })
+        .catch((error) => {
+          console.error("Error deleting the pet:", error);
+        });
     }
   };
-
-  const handleMenuDelete = () => {};
 
   return (
     <div className="pets">
@@ -142,12 +188,12 @@ const Pet = ({ pet }) => {
           <MenuItem onClick={handleMenuDelete}>Delete</MenuItem>
         </Menu>
         <div className="petcontent">
-          <img src={pet.image} alt="" />
+          <img src={selectedImageUrl || pet.image} alt="" />
           <div className="petInfo">
             {isEditMode ? (
               <div className="editFieldsContainer">
                 <div className="editField">
-                  <label htmlFor="name">Name:</label>
+                  <label htmlFor="name">Name: </label>
                   <input
                     type="text"
                     id="name"
@@ -156,7 +202,7 @@ const Pet = ({ pet }) => {
                   />
                 </div>
                 <div className="editField">
-                  <label htmlFor="description">Description:</label>
+                  <label htmlFor="description">Description: </label>
                   <input
                     type="text"
                     id="description"
@@ -165,7 +211,7 @@ const Pet = ({ pet }) => {
                   />
                 </div>
                 <div className="editField">
-                  <label htmlFor="file">File:</label>
+                  <label htmlFor="file">File: </label>
                   <input
                     type="file"
                     id="file"
@@ -175,18 +221,11 @@ const Pet = ({ pet }) => {
                 </div>
               </div>
             ) : (
-              <>
-                <div>
-                  <p>
-                    <strong>Name:</strong> {pet.name}
-                  </p>
-                </div>
-                <div>
-                  <p>
-                    <strong>Description:</strong> {pet.description}
-                  </p>
-                </div>
-              </>
+              <div className="editFieldsContainer">
+                <p>Name: {updatedName}</p>
+                <p>Description: {updatedDescription}</p>{" "}
+                {/* Sử dụng updatedContent để hiển thị nội dung */}
+              </div>
             )}
           </div>
           <Modal
@@ -341,7 +380,9 @@ const Pet = ({ pet }) => {
             </div>
           </Modal>
         </div>
-        <button onClick={openModal}>Exchange</button>
+        <button onClick={isEditMode ? handleUpdatePet : openModal}>
+          {isEditMode ? "Save" : "Exchange"}
+        </button>
       </div>
     </div>
   );
