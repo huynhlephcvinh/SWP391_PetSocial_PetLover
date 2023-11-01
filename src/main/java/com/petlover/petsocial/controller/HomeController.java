@@ -192,12 +192,12 @@ public class HomeController {
         boolean f = userService.verifyAccount(code);
 
         if (f) {
-            m.addAttribute("msg", "Sucessfully your account is verified");
+            return "You can login. Sucessfully your account is verified";
         } else {
-            m.addAttribute("msg", "may be your vefication code is incorrect or already veified ");
+           return  "May be your vefication code is incorrect or already veified ";
         }
 
-        return "You can login";
+
     }
 
     @GetMapping("/getAllPost")
