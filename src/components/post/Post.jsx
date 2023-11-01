@@ -10,79 +10,138 @@ import { useState } from "react";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import axios from "axios";
-
+import { useEffect } from "react";
 
 const Post = ({ post }) => {
+  const token = localStorage.getItem("token");
   const [commentOpen, setCommentOpen] = useState(false);
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  const [liked, setLiked] = useState(false);
+  const [tempLiked, setTempLiked] = useState(false);
+  const [tempTotalLikes, setTempTotalLikes] = useState(post.total_like);
+  const [menuAnchor, setMenuAnchor] = useState(null);
+  const [postRefresh, setPostRefresh] = useState(0);
+  const [isEditMode, setEditMode] = useState(false);
+  const [updatedContent, setUpdatedContent] = useState(post.content);
+  const [editingContent, setEditingContent] = useState(post.content); // Thêm trạng thái để lưu nội dung đang chỉnh sửa
+  const [editingImage, setEditingImage] = useState(post.image);
+  const [updatedImage, setUpdatedImage] = useState(post.image);
+  const [totalComments, setTotalComments] = useState(post.total_comment);
 
-  const calculateTimeDifference = (createDate) => {
-    const currentDate = new Date();
-    const [day, month, yearTime] = createDate.split('-');
-    const [year, time] = yearTime.split(' ');
-    const [hours, minutes] = time.split(':');
-    const postCreateDate = new Date(year, month - 1, day, hours, minutes);  
-    const timeDifference = currentDate - postCreateDate;
-  
-    let formattedDate;
-  
-    if (timeDifference < 60 * 1000) {
-      formattedDate = `${Math.floor(timeDifference / 1000)} seconds ago`;
-    } else if (timeDifference < 60 * 60 * 1000) {
-      formattedDate = `${Math.floor(timeDifference / (60 * 1000))} minutes ago`;
-    } else if (timeDifference < 24 * 60 * 60 * 1000) {
-      const hours = Math.floor(timeDifference / (60 * 60 * 1000));
-      const minutes = Math.floor((timeDifference % (60 * 60 * 1000)) / (60 * 1000));
-      formattedDate = `${hours} hours ago`;
-    } else {
-      const days = Math.floor(timeDifference / (24 * 60 * 60 * 1000));
-      formattedDate = `${days} days ago`;
-    }
-  
-    return formattedDate;
+  useEffect(() => {
+    updateTotalLikes();
+  }, []);
+
+  const updateTotalLikes = () => {
+    setTempTotalLikes(post.total_like);
+    setLiked(post.fieldReaction);
   };
 
-  const formattedDate = calculateTimeDifference(post.create_date);
-  // console.log("fomasd",formattedDate);
-
-
-
-  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-  //TEMPORARY
-  const liked = false;
-
-
-  const [menuAnchor, setMenuAnchor] = useState(null);
   const handleMenuClick = (event) => {
-    event.stopPropagation(); // Ngăn chặn sự kiện nổi bọt
+    event.stopPropagation();
     setMenuAnchor(event.currentTarget);
   };
 
   const handleMenuClose = () => {
     setMenuAnchor(null);
-  }
+  };
+
+  const handleRefresh = () => {
+    setPostRefresh((prev) => prev + 1);
+  };
+
+  const updateTotalComments = () => {
+    setTotalComments(totalComments + 1);
+  };
 
   const handleMenuDelete = () => {
-    const token = localStorage.getItem('token');
-    const response = axios.delete("http://localhost:8080/post/delete/" + post.id, {
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const response = axios.delete(
+      `http://localhost:8080/post/delete/${post.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
-    })
-    console.log(response);
-    if (response.data === "Not Found") {
-      console.log("Delete deo duoc");
-      //Lam cai message
-    } else {
-      console.log("Delete duoc roi");
-      //Lam message
-    }
-    window.location.reload();
+    );
 
-  }
+    console.log(response);
+
+    if (response.data === "Not Found") {
+      console.log("Delete chưa được");
+    } else {
+      console.log("Delete được rồi");
+    }
+
+    window.location.reload();
+  };
+
+  const toggleEditMode = () => {
+    setEditMode(!isEditMode);
+  };
+
+  // const handleSaveChanges = () => {
+  //   const updatedContent = editingContent;
+  //   const updatedImage = editingImage || post.image;
+
+  //   setUpdatedContent(updatedContent); // Cập nhật nội dung bài viết
+  //   setEditMode(false); // Thoát khỏi chế độ chỉnh sửa
+  // };
 
   const handleMenuUpdate = () => {
+    const updatedContent = editingContent;
 
-  }
+    setUpdatedContent(updatedContent); // Cập nhật nội dung bài viết
+    setEditMode(false);
+
+    const updatedPost = {
+      id: post.id,
+      content: updatedContent, // Sử dụng nội dung đang chỉnh sửa
+      // Không bao gồm cập nhật hình ảnh
+    };
+
+    axios
+      .put(`http://localhost:8080/post/update/${post.id}`, updatedPost, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          setUpdatedContent(updatedContent);
+          toggleEditMode();
+        } else {
+          console.error("Update failed");
+        }
+      })
+      .catch((error) => {
+        console.error("Error updating the post:", error);
+      });
+  };
+
+  const handleLikeClick = () => {
+    const newLiked = !liked;
+
+    axios
+      .post(`http://localhost:8080/reaction/${post.id}/like`, null, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          setLiked(newLiked);
+          setTempLiked(newLiked);
+          setTempTotalLikes(newLiked ? tempTotalLikes + 1 : tempTotalLikes - 1);
+        } else {
+          console.error(
+            `Lỗi khi thực hiện hành động ${newLiked ? "like" : "unlike"}`
+          );
+        }
+      })
+      .catch((error) => {
+        console.error("Lỗi kết nối đến máy chủ.");
+      });
+  };
 
   return (
     <div className="post">
@@ -95,40 +154,67 @@ const Post = ({ post }) => {
             </div>
             <div className="details">
               <Link
-                to={post.userPostDTO.id === currentUser.id ? '/my-profile' : `/profile/${post.userPostDTO.id}`}
+                to={
+                  post.userPostDTO.id === currentUser.id
+                    ? "/my-profile"
+                    : `/profile/${post.userPostDTO.id}`
+                }
                 style={{ textDecoration: "none", color: "inherit" }}
               >
-                <span className="name">{post.userPostDTO.name} </span> <span style={{ fontSize: 14 }}>with</span><span> {post.petToPostDTO.name}</span>
+                <span className="name">{post.userPostDTO.name} </span>{" "}
+                <span style={{ fontSize: 14 }}>with</span>
+                <span> {post.petToPostDTO.name}</span>
               </Link>
-              <span className="date">{formattedDate}</span>
+              <span className="date">{post.create_date}</span>
             </div>
           </div>
 
           <MoreHorizIcon onClick={handleMenuClick} />
-
-
         </div>
-        <div className="content">
-          <p>{post.content}</p>
-          <img src={post.image} alt="" />
-        </div>
+        {isEditMode ? ( // Kiểm tra nếu đang ở chế độ chỉnh sửa
+          <div className="content">
+            <div className="content-wrapper">
+              <input
+                className="content-text"
+                value={editingContent}
+                onChange={(e) => setEditingContent(e.target.value)}
+              />
+              <button className="save-button" onClick={handleMenuUpdate}>
+                Save
+              </button>
+            </div>
+            <img src={editingImage} alt="" />
+          </div>
+        ) : (
+          <div className="content">
+            <p>{updatedContent}</p>{" "}
+            {/* Sử dụng updatedContent để hiển thị nội dung */}
+            <img src={updatedImage} alt="" />
+          </div>
+        )}
         <div className="info">
-          <div className="item">
+          <div className="item" onClick={handleLikeClick}>
             {liked ? <FavoriteOutlinedIcon /> : <FavoriteBorderOutlinedIcon />}
-            {post.total_like} Likes
+            {tempTotalLikes} Likes
           </div>
           <div className="item" onClick={() => setCommentOpen(!commentOpen)}>
             <TextsmsOutlinedIcon />
-            12 Comments
+            {post.total_comment} Comments
           </div>
           <div className="item">
             <ShareOutlinedIcon />
             Share
           </div>
         </div>
-        {commentOpen && <Comments />}
+        {commentOpen && (
+          <Comments
+            postId={post.id}
+            onCommentAdd={updateTotalComments}
+            key={postRefresh}
+          />
+        )}
       </div>
-      {post.userPostDTO.id === currentUser.id ?
+      {post.userPostDTO.id === currentUser.id ? (
         <Menu
           anchorEl={menuAnchor}
           open={Boolean(menuAnchor)}
@@ -142,10 +228,12 @@ const Post = ({ post }) => {
             horizontal: "right",
           }}
         >
-          <MenuItem onClick={handleMenuClose}>Edit</MenuItem>
+          <MenuItem onClick={toggleEditMode}>
+            {isEditMode ? "Cancel" : "Edit"}
+          </MenuItem>
           <MenuItem onClick={handleMenuDelete}>Delete</MenuItem>
         </Menu>
-        : null}
+      ) : null}
     </div>
   );
 };

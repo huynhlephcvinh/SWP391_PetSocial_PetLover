@@ -1,4 +1,4 @@
-import { BrowserRouter,Routes,Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
 // import Waiting from "./pages/waiting/Waiting";
@@ -27,8 +27,7 @@ import { DarkModeContext } from "./context/darkModeContext";
 import { AuthContext } from "./context/authContext";
 
 function App() {
-  
-  const {currentUser} = useContext(AuthContext);
+  const { currentUser } = useContext(AuthContext);
 
   const { darkMode } = useContext(DarkModeContext);
   // if(crUser==null){
@@ -56,14 +55,14 @@ function App() {
       return <Navigate to="/login" />;
     }
     const crUser = JSON.parse(localStorage.getItem("currentUser"));
-    if(crUser.role==="ROLE_ADMIN"){
+    if (crUser.role === "ROLE_ADMIN") {
       return <Navigate to="/admin" />;
     }
 
     return children;
   };
 
-  <Route path="/profile/:userID" component={Profile}/>
+  <Route path="/profile/:userID" component={Profile} />;
 
   const router = createBrowserRouter([
     {
@@ -74,8 +73,7 @@ function App() {
         </ProtectedRoute>
       ),
       children: [
-        
-        { 
+        {
           path: "/",
           element: <Home />,
         },
@@ -88,13 +86,13 @@ function App() {
           element: <MyProfile />,
         },
         {
-          path:"/my-pets",
-          element: <MyPets/>,
+          path: "/my-pet",
+          element: <MyPets />,
         },
         {
-          path:"/market-place",
-          element:<MarketPlace/>,
-        }
+          path: "/market-place",
+          element: <MarketPlace />,
+        },
       ],
     },
     {
@@ -106,10 +104,10 @@ function App() {
       element: <Register />,
     },
     {
-      path:"/admin/*",
-      element:<Admin/>,
+      path: "/admin/*",
+      element: <Admin />,
     },
-   
+
     // {
     //   path:"/waiting",
     //   element:<Waiting/>

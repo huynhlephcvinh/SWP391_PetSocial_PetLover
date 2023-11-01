@@ -10,13 +10,8 @@
     background-color: themed("bg");
     color: themed("textColor");
 
-    @include mobile{
+    @include mobile {
       display: none;
-    }
-
-    .custom-link{
-      color: inherit;
-      text-decoration: none;
     }
 
     &::-webkit-scrollbar {
@@ -63,7 +58,17 @@
           display: flex;
           align-items: center;
           gap: 10px;
+          transition: transform 0.2s, filter 0.2s;
 
+          &:hover {
+            transform: scale(
+              1.05
+            ); // Khi di chuột vào, phóng to 105% kích thước
+            filter: brightness(1.2); // Khi di chuột vào, làm sáng lên 20%
+            background-color: #9a8d8d;
+            border-radius: 10px;
+            padding: 5px;
+          }
           img {
             width: 30px;
           }

@@ -46,8 +46,16 @@ const MyPets = () => {
   const [description, DescriptionFormComponent, setDescription] = useForm(""); // Create a form component for "description"
   const [petType, setPetType] = useState(""); // Add petType state
   const [image, setImage] = useState(null); // Add image state
+  const [selectedPet, setSelectedPet] = useState(null);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [updatedPet, setUpdatedPet] = useState(null);
+
   const handleSelectChange = (e) => {
     setPetType(e.target.value);
+  };
+
+  const handleMoreVertClick = (pet) => {
+    setSelectedPet(pet);
   };
 
   const handleSubmit = async () => {
@@ -70,6 +78,41 @@ const MyPets = () => {
       console.log("create ne:", response);
     } catch (error) {
       console.log("Error: ", error);
+    }
+  };
+  const handleDelete = async (petId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/pet/deletepet/${petId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      // Handle the response or update the pets list as needed
+      console.log("Pet deleted:", response);
+    } catch (error) {
+      console.error("Error deleting pet:", error);
+    }
+  };
+
+  const handleUpdatePet = async () => {
+    try {
+      const response = await axios.put(
+        `http://localhost:8080/pet/updatePet/${updatedPet.id}`,
+        updatedPet,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      // Handle the response or update the pets list as needed
+      console.log("Pet updated:", response);
+      setIsUpdateModalOpen(false); // Close the modal
+    } catch (error) {
+      console.error("Error updating pet:", error);
     }
   };
 
@@ -130,26 +173,17 @@ const MyPets = () => {
         <div className="uInfo">
           <div className="left"></div>
           <div className="center">
-            <span>{cruser.name}</span>
+            <span style={{ width: "300px", textAlign: "center" }}>
+              {cruser.name}
+            </span>
 
-            <div className="info">
-              <div className="item">
-                <PlaceIcon />
-                <span>USA</span>
-              </div>
-              <div className="item">
-                <LanguageIcon />
-                <span>lama.dev</span>
-              </div>
-            </div>
-            <button>Follow</button>
+            <button onClick={openModal}>Create Pet</button>
           </div>
           <div className="right">
             <EmailOutlinedIcon />
             <MoreVertIcon />
           </div>
         </div>
-        <button onClick={openModal}>Create Pet</button>
         {pets !== 0 ? (
           <Pets pets={pets} />
         ) : (

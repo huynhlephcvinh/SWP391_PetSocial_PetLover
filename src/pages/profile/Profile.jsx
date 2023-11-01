@@ -1,53 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import "./profile.scss";
+import FacebookTwoToneIcon from "@mui/icons-material/FacebookTwoTone";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
+import InstagramIcon from "@mui/icons-material/Instagram";
+import PinterestIcon from "@mui/icons-material/Pinterest";
+import TwitterIcon from "@mui/icons-material/Twitter";
 import PlaceIcon from "@mui/icons-material/Place";
 import LanguageIcon from "@mui/icons-material/Language";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import Posts from "../../components/posts/Posts"
-import { CenterFocusStrong } from '@mui/icons-material';
-import { useParams } from 'react-router-dom';
-
+import Posts from "../../components/posts/Posts";
 
 const Profile = () => {
-  const currentUser = localStorage.getItem('currentUser');
-  // const [userData, setUserData] = useState(null);
-  const [jwt, setJwt] = useState();
-  const cruser = JSON.parse(localStorage.getItem('currentUser'));
-  const [userData,setUserData]=useState("");
-  const {userID}=useParams();
-  const [posts, setPosts] = useState([]);
-  const token = localStorage.getItem('token');
-  useEffect(() => {
-    async function fetchProfile() {
-      try {
-        const response = await axios.get('http://localhost:8080/user/profile/'+userID,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        // console.log("respone ne:   "+response.data);
-           setUserData(response.data.data);
-           setPosts(response.data.data.postDTOList);
-          //  console.log("d]u ma may"+JSON.stringify(response.data.data.postDTOList));
-          //  console.log(userData.name);
-
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-      }
-    }
-
-    fetchProfile();
-  }, [token]);
-
-
-
-
-
-
+  console.log("Profile");
   return (
     <div className="profile">
       <div className="images">
@@ -57,21 +21,32 @@ const Profile = () => {
           className="cover"
         />
         <img
-          // src={userData && userData.avatar ? userData.avatar : 'https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png'}
-          src={userData.avatar}
+          src="https://images.pexels.com/photos/14028501/pexels-photo-14028501.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load"
           alt=""
           className="profilePic"
         />
-
       </div>
       <div className="profileContainer">
         <div className="uInfo">
           <div className="left">
-          
+            <a href="http://facebook.com">
+              <FacebookTwoToneIcon fontSize="large" />
+            </a>
+            <a href="http://facebook.com">
+              <InstagramIcon fontSize="large" />
+            </a>
+            <a href="http://facebook.com">
+              <TwitterIcon fontSize="large" />
+            </a>
+            <a href="http://facebook.com">
+              <LinkedInIcon fontSize="large" />
+            </a>
+            <a href="http://facebook.com">
+              <PinterestIcon fontSize="large" />
+            </a>
           </div>
           <div className="center">
-            <span>{userData.name}</span>
-            
+            <span>Jane Doe</span>
             <div className="info">
               <div className="item">
                 <PlaceIcon />
@@ -79,7 +54,7 @@ const Profile = () => {
               </div>
               <div className="item">
                 <LanguageIcon />
-                <span>lama.dev</span>
+                <span>FPTU.dev</span>
               </div>
             </div>
             <button>Follow</button>
@@ -89,11 +64,7 @@ const Profile = () => {
             <MoreVertIcon />
           </div>
         </div>
-        {posts!="" ? (
-        <Posts posts={posts}/>
-        ):(
-          <div className='noPosts'>You don't have any posts yet</div>
-        )}
+        <Posts />
       </div>
     </div>
   );

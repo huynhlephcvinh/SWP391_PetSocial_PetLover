@@ -1,6 +1,6 @@
 @import "../../style.scss";
 
-.myprofile {
+.profile {
   @include themify($themes) {
     background-color: themed("bgSoft");
 
@@ -15,7 +15,7 @@
         object-fit: cover;
       }
 
-      .myprofilePic {
+      .profilePic {
         width: 200px;
         height: 200px;
         border-radius: 50%;
@@ -27,14 +27,14 @@
         top: 200px;
       }
     }
-    .myprofileContainer {
+    .profileContainer {
       padding: 20px 70px;
-      height: 100%;
-      @include mobile{
+
+      @include mobile {
         padding: 10px;
       }
 
-      @include tablet{
+      @include tablet {
         padding: 20px;
       }
 
@@ -52,7 +52,7 @@
         justify-content: space-between;
         margin-bottom: 20px;
 
-        @include mobile{
+        @include mobile {
           flex-direction: column;
           height: 30vh;
           padding: 20px;
@@ -64,11 +64,11 @@
           display: flex;
           gap: 10px;
 
-          @include tablet{
+          @include tablet {
             flex-wrap: wrap;
           }
 
-          a{
+          a {
             color: themed("textColorSoft");
           }
         }
@@ -91,7 +91,16 @@
             align-items: center;
             justify-content: space-around;
 
-            
+            .item {
+              display: flex;
+              align-items: center;
+              gap: 5px;
+              color: themed("textColorSoft");
+
+              span {
+                font-size: 12px;
+              }
+            }
           }
           button {
             border: none;

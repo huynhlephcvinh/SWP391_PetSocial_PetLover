@@ -6,7 +6,7 @@
   justify-content: center;
 
   .card {
-    width: 50%;
+    width: 60%;
     display: flex;
     background-color: white;
     border-radius: 10px;
@@ -14,9 +14,9 @@
     overflow: hidden;
 
     .left {
-      flex: 1;
+      flex: 1.3;
       background: linear-gradient(rgba(39, 11, 96, 0.5), rgba(39, 11, 96, 0.5)),
-        url("https://images.pexels.com/photos/3228727/pexels-photo-3228727.jpeg?auto=compress&cs=tinysrgb&w=1600")
+        url("https://petdynasty.us/wp-content/uploads/2019/11/dog-cats-pet-dynasty-pleasanton.jpg")
           center;
       background-size: cover;
       padding: 50px;
@@ -29,14 +29,14 @@
         font-size: 100px;
         line-height: 100px;
       }
-      
-      p {
-      }
+
+      // p {
+      // }
 
       span {
         font-size: 14px;
       }
-      
+
       button {
         width: 50%;
         padding: 10px;
@@ -57,20 +57,20 @@
       justify-content: center;
 
       h1 {
-      color: #555;
+        color: #555;
       }
-      
+
       form {
         display: flex;
         flex-direction: column;
         gap: 30px;
-        
+
         input {
-        border: none;
-        border-bottom: 1px solid lightgray;
-        padding: 20px 10px;
+          border: none;
+          border-bottom: 1px solid lightgray;
+          padding: 20px 10px;
         }
-        
+
         button {
           width: 50%;
           padding: 10px;
