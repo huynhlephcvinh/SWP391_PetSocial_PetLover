@@ -391,10 +391,6 @@ postRepository.save(newPost);
                 getPost.setContent(postUpdateDTO.getContent());
                 postRepository.save(getPost);
             }
-            if (postUpdateDTO.getImage() != null && !postUpdateDTO.getImage().isEmpty()) {
-                getPost.setImage(postUpdateDTO.getImage());
-                postRepository.save(getPost);
-            }
 
             // Step 4: Construct and return the updated PostDTO
             PetToPostDTO petToPostDTO = new PetToPostDTO();

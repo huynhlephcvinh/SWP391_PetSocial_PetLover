@@ -9,5 +9,4 @@ import lombok.NoArgsConstructor;
 @Data
 public class PostUpdateDTO {
     private String content;
-    private String image;
 }
