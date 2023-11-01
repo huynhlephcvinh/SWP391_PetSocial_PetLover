@@ -188,7 +188,7 @@ public class HomeController {
         return new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
     }
     @GetMapping("/verify")
-    public String verifyAccount(@Param("code") String code, Model m) {
+    public String verifyAccount(@Param("code") String code) {
         boolean f = userService.verifyAccount(code);
 
         if (f) {
