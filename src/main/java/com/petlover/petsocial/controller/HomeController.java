@@ -234,27 +234,28 @@ public class HomeController {
 
     }
     @PostMapping("/forgot_password")
-    public String processForgotPassword(@RequestBody String email,HttpServletRequest request) {
+    public ResponseEntity<?> processForgotPassword(@RequestBody ForgotPasswordDTO forgotPasswordDTO,HttpServletRequest request) {
         String token = RandomString.make(30);
-        System.out.println("Email: " + email);
-        System.out.println("Token: " + token);
+
 
         try {
-            userService.updateResetPasswordToken(token, email);
+            userService.updateResetPasswordToken(token,forgotPasswordDTO.getEmail());
+            System.out.println("Email: " + forgotPasswordDTO.getEmail());
+            System.out.println("Token: " + token);
             String url = request.getRequestURL().toString();
             url = url.replace(request.getServletPath(), "")  + "/reset_password?token=" + token;
             System.out.println(url);
 //            String resetPasswordLink = Utility.getSiteURL(request) + "/reset_password?token=" + token;
-            sendEmail(email, url);
+            sendEmail(forgotPasswordDTO.getEmail(), url);
 
 //
         } catch (UserNotFoundException ex) {
-          return "Error!";
+            return new ResponseEntity<>("Error not found",HttpStatus.NOT_FOUND);
         } catch (UnsupportedEncodingException | MessagingException e) {
-            return "Erorr when send email";
+            return new ResponseEntity<>("Error",HttpStatus.NOT_FOUND);
         }
 
-        return "We have sent a reset password link to your email. Please check.";
+        return new ResponseEntity<>(token,HttpStatus.OK);
     }
 
     public void sendEmail(String recipientEmail, String link)
@@ -262,7 +263,7 @@ public class HomeController {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
 
-        helper.setFrom("phucvinh710@gmail.com", "We Are Support");
+        helper.setFrom("phucvinh710@gmail.com", "Pet Social Media Support Reset Password");
         helper.setTo(recipientEmail);
 
         String subject = "Here's the link to reset your password";
@@ -281,10 +282,20 @@ public class HomeController {
 
         mailSender.send(message);
     }
+    @GetMapping("/reset_password")
+    public String showResetPasswordForm(@Param(value = "token") String token) {
+        User user = userService.getByResetPasswordToken(token);
+        if (user == null) {
+
+            return "Invalid Token";
+        }
+
+        return token;
+    }
     @PostMapping("/reset_password")
-    public String processResetPassword(@Param("token") String token,@RequestBody String password) {
-        String gettoken = token;
-        String pass =password;
+    public String processResetPassword(@RequestBody ResetPasswordDTO resetPasswordDTO) {
+        String gettoken = resetPasswordDTO.getToken();
+        String pass =resetPasswordDTO.getPassword();
 
         User user = userService.getByResetPasswordToken(gettoken);
         if (user == null) {
