@@ -13,10 +13,11 @@ import { Avatar, Button, Fade, Menu, MenuItem } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import MessageIcon from "@mui/icons-material/Message";
 import { useNavigate } from "react-router-dom";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 
 const Navbar = () => {
   const { toggle, darkMode } = useContext(DarkModeContext);
-  const { currentUser } = useContext(AuthContext);
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
@@ -116,6 +117,12 @@ const Navbar = () => {
           <DarkModeOutlinedIcon onClick={toggle} />
         )}
         <GridViewOutlinedIcon />
+        {currentUser.role === "ROLE_STAFF" ? (
+          <Link to="/staff">
+            {" "}
+            <CheckCircleOutlineIcon />
+          </Link>
+        ) : null}
         <div className="search">
           <SearchOutlinedIcon />
           <input type="text" placeholder="Search..." />

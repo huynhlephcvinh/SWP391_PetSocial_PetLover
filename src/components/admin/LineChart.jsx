@@ -9,37 +9,40 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
   const colors = tokens(theme.palette.mode);
   const [chartData, setChartData] = useState([]);
   const token = localStorage.getItem("token");
-
   useEffect(() => {
-    if (token) {
-      axios
-        .get("http://localhost:8080/admin/statistics", {
-          headers: {
-            Authorization: `Bearer ${token}`,
+    // Gọi API để lấy dữ liệu totalStatistic và truyền token trong tiêu đề Authorization
+    axios
+      .get("http://localhost:8080/admin/statistics", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        // Xử lý dữ liệu từ server
+        const data = response.data.data;
+        console.log(data);
+
+        const chartData = [
+          {
+            id: "Total Post",
+            data: Object.keys(data.monthlyStatistics).map((key) => ({
+              x: key.substring(15),
+              y: data.monthlyStatistics[key],
+            })),
           },
-        })
-        .then((response) => {
-          const apiData = response.data.data;
-          console.log(apiData);
-          const monthlyLineData = apiData.monthlyLineChartStatistics;
-
-          const updatedChartData = Object.keys(monthlyLineData)
-            .sort(
-              (a, b) =>
-                parseInt(a.replace("totalExchangeInMonth", "")) -
-                parseInt(b.replace("totalExchangeInMonth", ""))
-            )
-            .map((key) => ({
-              month: key.replace("totalExchangeInMonth", ""),
-              lineValue: monthlyLineData[key],
-            }));
-
-          setChartData(updatedChartData);
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
-    }
+          {
+            id: "Total Exchange",
+            data: Object.keys(data.monthlyExchangeStatistics).map((key) => ({
+              x: key.substring(22),
+              y: data.monthlyExchangeStatistics[key],
+            })),
+          },
+        ];
+        setChartData(chartData);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
   }, [token]);
 
   return (
@@ -78,6 +81,7 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
           },
         },
       }}
+      colors={isDashboard ? { datum: "color" } : { scheme: "nivo" }} // added
       margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
       xScale={{ type: "point" }}
       yScale={{
@@ -88,25 +92,31 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
         reverse: false,
       }}
       yFormat=" >-.2f"
+      curve="catmullRom"
       axisTop={null}
       axisRight={null}
       axisBottom={{
-        tickSize: 5,
+        orient: "bottom",
+        tickSize: 0,
         tickPadding: 5,
         tickRotation: 0,
-        legend: "month",
+        legend: isDashboard ? undefined : "month", // added
         legendOffset: 36,
         legendPosition: "middle",
       }}
       axisLeft={{
-        tickSize: 5,
+        orient: "left",
+        tickValues: 5, // added
+        tickSize: 3,
         tickPadding: 5,
         tickRotation: 0,
-        legend: "count",
+        legend: isDashboard ? undefined : "count", // added
         legendOffset: -40,
         legendPosition: "middle",
       }}
-      pointSize={10}
+      enableGridX={false}
+      enableGridY={false}
+      pointSize={8}
       pointColor={{ theme: "background" }}
       pointBorderWidth={2}
       pointBorderColor={{ from: "serieColor" }}

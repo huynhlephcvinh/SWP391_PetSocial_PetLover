@@ -10,18 +10,22 @@ import Header from "../../../components/admin/Header";
 import LineChart from "../../../components/admin/LineChart";
 // import GeographyChart from "../../components/GeographyChart";
 import BarChart from "../../../components/admin/BarChart";
+import PieChart from "../../../components/admin/PieChart";
+
 import StatBox from "../../../components/admin/StatBox";
 import ProgressCircle from "../../../components/admin/ProgressCircle";
+import Team from "../team/Team";
 
 const Dashboard = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  // const curs = JSON.parse(localStorage.getItem("currentUser"));
 
   return (
     <Box m="20px">
       {/* HEADER */}
       <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Header title="DASHBOARD" subtitle="Welcome to your dashboard" />
+        <Header title="DASHBOARD" subtitle="Welcome back Admin" />
 
         <Box>
           <Button
@@ -127,7 +131,7 @@ const Dashboard = () => {
         {/* ROW 2 */}
         <Box
           gridColumn="span 12"
-          gridRow="span 2"
+          gridRow="span 5"
           backgroundColor={colors.primary[400]}
         >
           <Box
@@ -136,33 +140,9 @@ const Dashboard = () => {
             display="flex "
             justifyContent="space-between"
             alignItems="center"
-          >
-            <Box>
-              <Typography
-                variant="h5"
-                fontWeight="600"
-                color={colors.grey[100]}
-              >
-                Revenue Generated
-              </Typography>
-              <Typography
-                variant="h3"
-                fontWeight="bold"
-                color={colors.greenAccent[500]}
-              >
-                $59,342.32
-              </Typography>
-            </Box>
-            <Box>
-              <IconButton>
-                <DownloadOutlinedIcon
-                  sx={{ fontSize: "26px", color: colors.greenAccent[500] }}
-                />
-              </IconButton>
-            </Box>
-          </Box>
+          ></Box>
           <Box height="250px" m="-20px 0 0 0">
-            <LineChart isDashboard={true} />
+            <Team isDashboard={true} />
           </Box>
         </Box>
         {/* <Box
@@ -218,34 +198,19 @@ const Dashboard = () => {
 
         {/* ROW 3 */}
         <Box
-          gridColumn="span 4"
-          gridRow="span 2"
+          gridColumn="span 5"
+          gridRow="span 4"
           backgroundColor={colors.primary[400]}
           p="30px"
+          style={{ position: "relative" }}
         >
-          <Typography variant="h5" fontWeight="600">
-            Campaign
-          </Typography>
-          <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            mt="25px"
-          >
-            <ProgressCircle size="125" />
-            <Typography
-              variant="h5"
-              color={colors.greenAccent[500]}
-              sx={{ mt: "15px" }}
-            >
-              $48,352 revenue generated
-            </Typography>
-            <Typography>Includes extra misc expenditures and costs</Typography>
-          </Box>
+          <div style={{ width: "100%", height: "100%", position: "absolute" }}>
+            <PieChart isDashboard={true} />
+          </div>
         </Box>
         <Box
-          gridColumn="span 8"
-          gridRow="span 2"
+          gridColumn="span 7"
+          gridRow="span 4"
           backgroundColor={colors.primary[400]}
         >
           <Typography
@@ -255,7 +220,7 @@ const Dashboard = () => {
           >
             Post
           </Typography>
-          <Box height="280px" mt="-20px">
+          <Box height="500px" mt="-20px">
             <BarChart isDashboard={true} />
           </Box>
         </Box>
