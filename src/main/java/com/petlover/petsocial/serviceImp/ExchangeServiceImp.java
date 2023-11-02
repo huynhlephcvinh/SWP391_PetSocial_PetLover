@@ -231,7 +231,7 @@ public class ExchangeServiceImp implements ExchangeService {
     }
 
 
-    private ExchangeDTO convertToDTO(Exchange exchange) {
+    public ExchangeDTO convertToDTO(Exchange exchange) {
         ExchangeDTO exchangeDTO = new ExchangeDTO();
         exchangeDTO.setId(exchange.getId());
         exchangeDTO.setExchangeDate(exchange.getExchange_date());
