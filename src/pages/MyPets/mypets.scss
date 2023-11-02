@@ -15,7 +15,7 @@
         object-fit: cover;
       }
 
-      .myprofilePic {
+      .profilePic {
         width: 200px;
         height: 200px;
         border-radius: 50%;
@@ -27,14 +27,19 @@
         top: 200px;
       }
     }
-    .myprofileContainer {
+    .profileContainer {
       padding: 20px 70px;
+<<<<<<< HEAD
       height: 100%;
       @include mobile{
+=======
+
+      @include mobile {
+>>>>>>> cc57411f64ea90ab867b098b0c31c0441870af2c
         padding: 10px;
       }
 
-      @include tablet{
+      @include tablet {
         padding: 20px;
       }
 
@@ -52,7 +57,7 @@
         justify-content: space-between;
         margin-bottom: 20px;
 
-        @include mobile{
+        @include mobile {
           flex-direction: column;
           height: 30vh;
           padding: 20px;
@@ -64,11 +69,11 @@
           display: flex;
           gap: 10px;
 
-          @include tablet{
+          @include tablet {
             flex-wrap: wrap;
           }
 
-          a{
+          a {
             color: themed("textColorSoft");
           }
         }

@@ -1,30 +1,17 @@
-import Stories from "../../components/stories/Stories"
-import Posts from "../../components/posts/Posts"
-import Share from "../../components/share/Share"
-import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import Posts from "../../components/posts/Posts";
+import Share from "../../components/share/Share";
+import "./home.scss";
 import axios from "axios";
 import "./home.scss"
-import { Helmet } from "react-helmet";
 
-const Home = () => {
-  const [refreshKey, setRefreshKey] = useState(0);
+const Home = () =>{
   const [posts, setPosts] = useState([]);
   const token = localStorage.getItem('token');
-  const [refreshCmt,setRefreshCmt]=useState(0);
-  
-  const handleCommentAdded = () => {
-    setRefreshCmt(prevTotal => prevTotal + 1);
-  };
-  const handlePostCreated = () => {
-    setRefreshKey((prevKey) => prevKey + 1);
-  };
-
-
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const response = await axios.get("http://103.253.147.216:8080/post/getAllPost",
+        const response = await axios.get("http://localhost:8080/post/getAllPost",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -32,7 +19,7 @@ const Home = () => {
           }
         );
         setPosts(response.data.data);
-        console.log(response);
+        // console.log(posts);
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
@@ -41,20 +28,18 @@ const Home = () => {
     fetchPosts();
   }, [token]);
 
+  // const updatePosts = (newPost) => {
+  //   // Append the new post to the existing posts array
+  //   setPosts((prevPosts) => [newPost, ...prevPosts]);
+  // };
+
   return (
     <div className="home">
-      <Helmet>
-        <title>Home</title>
-      </Helmet>
       {/* <Stories/> */}
-      {/* <Share /> */}
-      <Share onPostCreated={handlePostCreated} key={refreshKey} />
-      {posts && (
-        <Posts posts={posts} setPosts={setPosts} onCommentAdded={handleCommentAdded}/>
-      )}
-
+      <Share />
+      <Posts posts={posts}/>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

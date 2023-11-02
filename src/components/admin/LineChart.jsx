@@ -7,43 +7,6 @@ import axios from "axios";
 const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [chartData, setChartData] = useState([]);
-  const token = localStorage.getItem("token");
-  useEffect(() => {
-    // Gọi API để lấy dữ liệu totalStatistic và truyền token trong tiêu đề Authorization
-    axios
-      .get("http://103.253.147.216:8080/admin/statistics", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        // Xử lý dữ liệu từ server
-        const data = response.data.data;
-        console.log(data);
-
-        const chartData = [
-          {
-            id: "Total Post",
-            data: Object.keys(data.monthlyStatistics).map((key) => ({
-              x: key.substring(15),
-              y: data.monthlyStatistics[key],
-            })),
-          },
-          {
-            id: "Total Exchange",
-            data: Object.keys(data.monthlyExchangeStatistics).map((key) => ({
-              x: key.substring(22),
-              y: data.monthlyExchangeStatistics[key],
-            })),
-          },
-        ];
-        setChartData(chartData);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, [token]);
 
   return (
     <ResponsiveLine

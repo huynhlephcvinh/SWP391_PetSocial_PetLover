@@ -20,8 +20,8 @@ const BarChart = ({ isDashboard = false }) => {
           },
         })
         .then((response) => {
-
-          // console.log(response.data);
+          // Xử lý dữ liệu trả về từ API
+          console.log(response.data);
           const apiData = response.data.data;
 
           const monthlyData = apiData.monthlyStatistics;
@@ -32,7 +32,7 @@ const BarChart = ({ isDashboard = false }) => {
                 parseInt(b.replace("totalPostInMonth", ""))
             )
             .map((key) => ({
-              month: key.replace("totalPostInMonth", ""), 
+              month: key.replace("totalPostInMonth", ""), // Lấy tháng từ tên key
               post: monthlyData[key],
             }));
 
