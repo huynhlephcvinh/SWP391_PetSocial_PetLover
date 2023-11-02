@@ -1,52 +1,55 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import "./myprofile.scss";
+import FacebookTwoToneIcon from "@mui/icons-material/FacebookTwoTone";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
+import InstagramIcon from "@mui/icons-material/Instagram";
+import PinterestIcon from "@mui/icons-material/Pinterest";
+import TwitterIcon from "@mui/icons-material/Twitter";
 import PlaceIcon from "@mui/icons-material/Place";
 import LanguageIcon from "@mui/icons-material/Language";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Posts from "../../components/posts/Posts";
+import Pets from "../../components/pets/Pets";
+// import { CenterFocusStrong, Pets } from '@mui/icons-material';
 
 const Profile = () => {
-  const cruser = JSON.parse(localStorage.getItem("currentUser"));
+  const currentUser = localStorage.getItem('currentUser');
+  const [userData, setUserData] = useState(null);
+  const [jwt, setJwt] = useState();
+  const cruser = JSON.parse(localStorage.getItem('currentUser'));
 
   const [pets, setPets] = useState([]);
 
   const [posts, setPosts] = useState([]);
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem('token');
 
-  useEffect(() => {
-    // Fetch pets
-    async function fetchPet() {
-      try {
-        const response1 = await axios.get(
-          "http://localhost:8080/pet/getAllPet",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+  // useEffect(() => {
+  //   // Fetch pets
+  //   async function fetchPet() {
+  //     try {
+  //       const response1 = await axios.get("http://103.253.147.216:8080/pet/getAllPet", {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
 
-        setPets(response1.data.data);
-        console.log("ListPetaaaa:", pets);
-      } catch (error) {
-        console.error(error);
-      }
-    }
+  //       setPets(response1.data.data);
+  //       console.log("ListPetaaaa:", pets);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   }
 
-    fetchPet();
-  }, [token]);
+  //   fetchPet();
+  // }, [token]);
+
 
   useEffect(() => {
     async function fetchPosts() {
       try {
-<<<<<<< HEAD
         const response = await axios.get("http://103.253.147.216:8080/post/getAllYourPost",
-=======
-        const response = await axios.get(
-          "http://localhost:8080/post/getAllYourPost",
->>>>>>> cc57411f64ea90ab867b098b0c31c0441870af2c
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -59,14 +62,15 @@ const Profile = () => {
         console.error("Error fetching posts:", error);
       }
       //
-<<<<<<< HEAD
 
-=======
->>>>>>> cc57411f64ea90ab867b098b0c31c0441870af2c
     }
 
     fetchPosts();
   }, [token]);
+
+
+
+
 
   return (
     <div className="profile">
@@ -82,20 +86,26 @@ const Profile = () => {
           alt=""
           className="profilePic"
         />
+
       </div>
       <div className="profileContainer">
         <div className="uInfo">
-<<<<<<< HEAD
           <div className="left">
 
           </div>
-=======
-          <div className="left"></div>
->>>>>>> cc57411f64ea90ab867b098b0c31c0441870af2c
           <div className="center">
-            <span style={{ width: "300px", textAlign: "center" }}>
-              {cruser.name}
-            </span>
+            <span>{cruser.name}</span>
+
+            <div className="info">
+              <div className="item">
+                <PlaceIcon />
+                <span>USA</span>
+              </div>
+              <div className="item">
+                <LanguageIcon />
+                <span>lama.dev</span>
+              </div>
+            </div>
             <button>Follow</button>
           </div>
           <div className="right">
@@ -103,11 +113,15 @@ const Profile = () => {
             <MoreVertIcon />
           </div>
         </div>
-
+        {/* {pets != "" ? (
+          <Pets pets={pets} />
+        ) : (
+          <div className='noPosts'>You don't have any pets yet</div>
+        )} */}
         {posts != "" ? (
           <Posts posts={posts} setPosts={setPosts} />
         ) : (
-          <div className="noPosts">You don't have any posts yet</div>
+          <div className='noPosts'>You don't have any posts yet</div>
         )}
       </div>
     </div>

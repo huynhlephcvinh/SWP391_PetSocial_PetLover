@@ -17,7 +17,7 @@ import Team from "./pages/adminpage/team/Team";
 import FAQ from "./pages/adminpage/faq";
 import Form from "./pages/adminpage/form";
 import PostsUser from "./pages/adminpage/postadmin";
-import PetsUser from "./pages/adminpage/petadmin";
+import PetsUser from "./pages/adminpage/invoices";
 
 function Admin() {
   const [theme, colorMode] = useMode();

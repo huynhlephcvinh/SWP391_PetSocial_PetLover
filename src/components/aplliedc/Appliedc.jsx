@@ -88,7 +88,7 @@ const Applied = ({ applied, setApplieds, applieds }) => {
               <span className="date">{formattedDate}</span>
             </div>
           </div>
-
+          
           <MoreHorizIcon onClick={handleMenuClick} />
 
 

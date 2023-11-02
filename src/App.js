@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter,Routes,Route } from "react-router-dom";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
 // import Waiting from "./pages/waiting/Waiting";
@@ -26,9 +26,11 @@ import "./style.scss";
 import { useContext } from "react";
 import { DarkModeContext } from "./context/darkModeContext";
 import { AuthContext } from "./context/authContext";
-
+import ResetPassword from "./pages/resetPassword/ResetPassword";
+import Staff from "./pages/staff/Staff";
 function App() {
-  const { currentUser } = useContext(AuthContext);
+  
+  const {currentUser} = useContext(AuthContext);
 
   const { darkMode } = useContext(DarkModeContext);
   // if(crUser==null){
@@ -56,14 +58,14 @@ function App() {
       return <Navigate to="/login" />;
     }
     const crUser = JSON.parse(localStorage.getItem("currentUser"));
-    if (crUser.role === "ROLE_ADMIN") {
+    if(crUser.role==="ROLE_ADMIN"){
       return <Navigate to="/admin" />;
     }
 
     return children;
   };
 
-  <Route path="/profile/:userID" component={Profile} />;
+  <Route path="/profile/:userID" component={Profile}/>
 
   const router = createBrowserRouter([
     {
@@ -73,8 +75,7 @@ function App() {
           <Layout />
         </ProtectedRoute>
       ),
-      children: [
-        
+      children: [    
         { 
           path: "/",
           element: <Home />,
@@ -88,12 +89,16 @@ function App() {
           element: <MyProfile />,
         },
         {
-          path: "/my-pet",
-          element: <MyPets />,
+          path:"/my-pets",
+          element: <MyPets/>,
         },
         {
           path:"/market-place",
           element:<MarketPlace/>,
+        },
+        {
+          path:"/view-apply",
+          element:<Applied/>,
         }
       ],
     },{
@@ -117,19 +122,10 @@ function App() {
       element:<ResetPassword/>
     },
     {
-      path: "/forgot-password",
-      element: <ForgotPassword />,
+      path:"/admin/*",
+      element:<Admin/>,
     },
-    {
-      path: "/reset-password",
-      element: <ResetPassword />,
-    },
-
-    {
-      path: "/admin/*",
-      element: <Admin />,
-    },
-
+   
     // {
     //   path:"/waiting",
     //   element:<Waiting/>

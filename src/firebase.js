@@ -22,10 +22,6 @@ export const signInWithGoogle = () => {
       console.log("Login Successfully", result.user);
     })
     .catch((error) => {
-<<<<<<< HEAD
-      console.log("Login Fail", error);   
-=======
       console.log("Login Fail", error);
->>>>>>> cc57411f64ea90ab867b098b0c31c0441870af2c
     });
 };

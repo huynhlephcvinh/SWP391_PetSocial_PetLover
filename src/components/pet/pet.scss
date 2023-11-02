@@ -13,6 +13,8 @@
     color: themed("textColor");
     max-width: 1000px;
 
+
+    
     .petcontainer {
       padding: 20px;
 
@@ -20,37 +22,19 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        float: right;
-      }
 
-      .petcontent {
-        align-items: center;
-
-        margin: 20px 0px;
-        max-width: 100%;
-        word-wrap: break-word;
-        display: flex;
-        // position: relative;
         .petInfo {
+          display: flex;
           gap: 20px;
-          justify-content: space-between;
-          align-items: center;
 
+   
           img {
             width: 100px;
             height: 100px;
             border-radius: 2%;
             object-fit: cover;
             // position: absolute;
-          }
 
-          .right {
-            display: flex;
-            align-items: center;
-          }
-
-          .right > svg {
-            cursor: pointer;
           }
 
           .petdetails {
@@ -61,26 +45,22 @@
               font-weight: 600;
             }
 
+
             .date {
               font-size: 12px;
             }
           }
-          .editFieldsContainer {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-
-            .editField {
-              margin-right: 20px; /* Add margin between fields for spacing */
-            }
-
-            .saveButton {
-              display: none;
-              visibility: hidden;
-            }
-          }
         }
+      }
 
+      .petcontent {
+        align-items: center;
+
+        margin: 20px 0px;
+        max-width: 100%;
+        word-wrap: break-word;
+        display: flex;
+        // position: relative;
         img {
           max-width: 300px;
           width: 100%;
@@ -89,9 +69,24 @@
           max-height: 200px;
           object-fit: cover;
           margin-right: 20px;
+          
+        }button {
+          // max-height: 100px;
+          height: 100px;
+          padding: 10px 20px;
+          font-size: 16px;
+          color: #fff;
+          background-color: #4CAF50;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
         }
-
-        .des {
+        
+        button:hover {
+          background-color: #45a049;
+        }
+        
+        .des{
           // color: aqua;
           padding-left: 10px;
           max-width: 700px;
@@ -99,25 +94,11 @@
           overflow: hidden;
           outline: none;
           border: none;
-          border-left: 2px, solid, #45a049;
-        }
+          border-left: 2px,solid,#45a049;
+  
       }
-      button {
-        // max-height: 100px;
-        height: 50px;
-        padding: 10px 20px;
-        font-size: 16px;
-        color: #fff;
-        background-color: #4caf50;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        margin-left: 600px;
       }
-
-      button:hover {
-        background-color: #45a049;
-      }
+      
     }
   }
 }

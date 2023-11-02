@@ -12,13 +12,9 @@ function Register() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+
   function isFormValid() {
-    return (
-      name.trim() !== "" &&
-      email.trim() !== "" &&
-      phone.trim() !== "" &&
-      password.trim() !== ""
-    );
+    return name.trim() !== "" && email.trim() !== "" && phone.trim() !== "" && password.trim() !== "";
   }
 
   async function register(event) {
@@ -35,14 +31,14 @@ function Register() {
         email: email,
         phone: phone,
         password: password,
-      });
+      }
+      );
 
       console.log(response.data);
 
-      if (response.data === true) {
-        setSuccess(
-          "Register success. Check your email to complete verification"
-        );
+      if (response.data === true
+        ) {
+          setSuccess("Register success. Check your email to complete verification");
       } else {
         setError("Email is already exists");
       }
@@ -55,12 +51,11 @@ function Register() {
     <div className="register">
       <div className="card">
         <div className="left">
-          <h1>DC Social</h1>
+          <h1>Lama Social.</h1>
           <p>
-            Dog Cat Lover Platform is a comprehensive online hub that connects
-            passionate pet enthusiasts, providing a seamless experience for dog
-            and cat lovers to connect, share, and explore everything related to
-            their beloved furry companions.
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero cum,
+            alias totam numquam ipsa exercitationem dignissimos, error nam,
+            consequatur.
           </p>
           <span>Do you have an account?</span>
           <Link to="/login">
@@ -70,14 +65,8 @@ function Register() {
         <div className="right">
           <h1>Register</h1>
           <form onSubmit={register}>
-            {success && (
-              <h5 style={{ color: "greenyellow", fontStyle: "italic" }}>
-                {success}
-              </h5>
-            )}
-            {error && (
-              <h5 style={{ color: "red", fontStyle: "italic" }}>{error}</h5>
-            )}
+          {success && <h5 style={{ color: 'greenyellow', fontStyle: 'italic' }}>{success}</h5>}
+          {error && <h5 style={{ color: 'red', fontStyle: 'italic' }}>{error}</h5>}
             <input
               type="text"
               placeholder="Name"
