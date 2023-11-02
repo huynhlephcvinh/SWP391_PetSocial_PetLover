@@ -10,21 +10,123 @@ import { useState } from "react";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import axios from "axios";
+import Modal from "react-modal";
+import { useEffect } from "react";
 
 
-const Post = ({ post }) => {
+const Post = ({ post, setPosts, posts, onCommentAdded }) => {
   const [commentOpen, setCommentOpen] = useState(false);
+  const [error, setError] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isOpenImage, setIsOpenImage] = useState(false);
+  const [postRefresh, setPostRefresh] = useState(0);
+  const token = localStorage.getItem("token");
+  const [refreshCmt, setRefreshCmt] = useState(0);
 
+
+
+
+  //phan like, cmt, update cua Khoa
+  const [liked, setLiked] = useState(false);
+  const [tempTotalLikes, setTempTotalLikes] = useState(post.total_like);
+  const [isEditMode, setEditMode] = useState(false);
+  const [updatedContent, setUpdatedContent] = useState(post.content);
+  const [editingContent, setEditingContent] = useState(post.content);
+  const [editingImage, setEditingImage] = useState(post.image);
+  const [updatedImage, setUpdatedImage] = useState(post.image);
+  const [totalComments, setTotalComments] = useState(post.total_comment);
+  const [tempLiked, setTempLiked] = useState(false);
+
+
+
+  const updateTotalLikes = () => {
+    setTempTotalLikes(post.total_like);
+    setLiked(post.fieldReaction);
+  };
+  const handleRefresh = () => {
+    setPostRefresh((prev) => prev + 1);
+  };
+  const updateTotalComments = () => {
+    setTotalComments(totalComments + 1);
+  };
+  const toggleEditMode = () => {
+    setEditMode(!isEditMode);
+  };
+  const handleMenuUpdate = () => {
+    const updatedContent = editingContent;
+
+    setUpdatedContent(updatedContent); // Cập nhật nội dung bài viết
+    setEditMode(false);
+
+    const updatedPost = {
+      id: post.id,
+      content: updatedContent, // Sử dụng nội dung đang chỉnh sửa
+      // Không bao gồm cập nhật hình ảnh
+    };
+
+    axios
+      .put(`http://localhost:8080/post/update/${post.id}`, updatedPost, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          setUpdatedContent(updatedContent);
+          toggleEditMode();
+        } else {
+          console.error("Update failed");
+        }
+      })
+      .catch((error) => {
+        console.error("Error updating the post:", error);
+      });
+  };
+  const handleLikeClick = () => {
+    const newLiked = !liked;
+
+    axios
+      .post(`http://localhost:8080/reaction/${post.id}/like`, null, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          setLiked(newLiked);
+          setTempLiked(newLiked);
+          setTempTotalLikes(newLiked ? tempTotalLikes + 1 : tempTotalLikes - 1);
+        } else {
+          console.error(error);
+        }
+      })
+      .catch((error) => {
+        console.error("Lỗi kết nối đến máy chủ.");
+      });
+  };
+
+  //phan like, cmt, update cua Khoa
+
+  const handleAddComment = () => {
+    onCommentAdded();
+  };
+
+
+  const openImage = () => {
+    setIsOpenImage(true);
+  }
+  const closeImage = () => {
+    setIsOpenImage(false);
+  }
   const calculateTimeDifference = (createDate) => {
     const currentDate = new Date();
     const [day, month, yearTime] = createDate.split('-');
     const [year, time] = yearTime.split(' ');
     const [hours, minutes] = time.split(':');
-    const postCreateDate = new Date(year, month - 1, day, hours, minutes);  
+    const postCreateDate = new Date(year, month - 1, day, hours, minutes);
     const timeDifference = currentDate - postCreateDate;
-  
     let formattedDate;
-  
+
     if (timeDifference < 60 * 1000) {
       formattedDate = `${Math.floor(timeDifference / 1000)} seconds ago`;
     } else if (timeDifference < 60 * 60 * 1000) {
@@ -37,23 +139,23 @@ const Post = ({ post }) => {
       const days = Math.floor(timeDifference / (24 * 60 * 60 * 1000));
       formattedDate = `${days} days ago`;
     }
-  
+
     return formattedDate;
   };
-
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
   const formattedDate = calculateTimeDifference(post.create_date);
   // console.log("fomasd",formattedDate);
 
 
 
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-  //TEMPORARY
-  const liked = false;
 
 
   const [menuAnchor, setMenuAnchor] = useState(null);
   const handleMenuClick = (event) => {
-    event.stopPropagation(); // Ngăn chặn sự kiện nổi bọt
+    event.stopPropagation();
     setMenuAnchor(event.currentTarget);
   };
 
@@ -61,26 +163,25 @@ const Post = ({ post }) => {
     setMenuAnchor(null);
   }
 
-  const handleMenuDelete = () => {
+  const handleMenuDelete = async () => {
     const token = localStorage.getItem('token');
-    const response = axios.delete("http://localhost:8080/post/delete/" + post.id, {
+    const response = await axios.delete("http://localhost:8080/post/delete/" + post.id, {
       headers: {
         Authorization: `Bearer ${token}`,
       }
     })
-    console.log(response);
+
+    setPosts(posts.filter(item => item.id !== post.id))
+    console.log(response.data);
+    handleMenuClose();
     if (response.data === "Not Found") {
-      console.log("Delete deo duoc");
-      //Lam cai message
+      setError("Failed to delete");
+      setIsModalOpen(true);
     } else {
-      console.log("Delete duoc roi");
-      //Lam message
+      setIsModalOpen(true);
+      setError("Delete success");
     }
-    window.location.reload();
-
-  }
-
-  const handleMenuUpdate = () => {
+    // window.location.reload();
 
   }
 
@@ -108,25 +209,46 @@ const Post = ({ post }) => {
 
 
         </div>
-        <div className="content">
-          <p>{post.content}</p>
-          <img src={post.image} alt="" />
-        </div>
+        {isEditMode ? ( // Kiểm tra nếu đang ở chế độ chỉnh sửa
+          <div className="content">
+            <div className="content-wrapper">
+              <input
+                className="content-text"
+                value={editingContent}
+                onChange={(e) => setEditingContent(e.target.value)}
+              />
+              <button className="save-button" onClick={handleMenuUpdate}>
+                Save
+              </button>
+            </div>
+            <img src={editingImage} alt="" />
+          </div>
+        ) : (
+          <div className="content">
+            <p>{updatedContent}</p>{" "}
+            {/* Sử dụng updatedContent để hiển thị nội dung */}
+            <img src={updatedImage} alt="" />
+          </div>
+        )}
+        {/* <div className="content">                                            goc
+          <p>{post.content}</p>                                                 goc
+          <img src={post.image} alt="" onClick={openImage} />                   goc
+        </div> */}
         <div className="info">
-          <div className="item">
+          <div className="item" onClick={handleLikeClick}>
             {liked ? <FavoriteOutlinedIcon /> : <FavoriteBorderOutlinedIcon />}
-            {post.total_like} Likes
+            {tempTotalLikes} Likes
           </div>
           <div className="item" onClick={() => setCommentOpen(!commentOpen)}>
             <TextsmsOutlinedIcon />
-            12 Comments
+            {post.total_comment} Comments
           </div>
           <div className="item">
             <ShareOutlinedIcon />
             Share
           </div>
         </div>
-        {commentOpen && <Comments />}
+        {commentOpen && <Comments postId={post.id} onCommentAdded={handleAddComment} key={postRefresh} />}
       </div>
       {post.userPostDTO.id === currentUser.id ?
         <Menu
@@ -142,11 +264,95 @@ const Post = ({ post }) => {
             horizontal: "right",
           }}
         >
-          <MenuItem onClick={handleMenuClose}>Edit</MenuItem>
+          <MenuItem onClick={toggleEditMode}>Edit</MenuItem>
           <MenuItem onClick={handleMenuDelete}>Delete</MenuItem>
         </Menu>
         : null}
+
+
+
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="Exchange Modal"
+        style={{
+          overlay: {
+            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            zIndex: 1000,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            textAlign: "center"
+          },
+          content: {
+            width: "150px",
+            height: "fit-content",
+            maxHeight: "20vh",
+            margin: "auto",
+            padding: "20px",
+            borderRadius: "10px",
+            background: "#fff",
+            fontFamily: "Arial, sans-serif",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            textAlign: "center"
+          },
+        }}
+      >
+        <style>
+          {`
+    .modal-content{
+      display: flex;
+    }
+      .modal-header {
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      .modal-body {
+        margin-bottom: 20px;
+        color: #555;
+      }
+    `}
+        </style>
+        <div>
+          <h2 className="modal-header">Message</h2>
+          <div className="modal-content">
+            {error}
+          </div>
+        </div>
+      </Modal>
+
+
+      <Modal
+        isOpen={isOpenImage}
+        onRequestClose={closeImage}
+        style={{
+          overlay: {
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+          },
+          content: {
+            width: "50%",
+            maxWidth: "none",
+            margin: "auto",
+            overflow: "hidden"
+          },
+        }}
+      >
+        <div>
+        </div>
+        <div>
+          <img src={post.image} alt="" style={{ width: "100%" }} />
+        </div>
+      </Modal>
+
+
     </div>
+
+
+
+
   );
 };
 

@@ -1,45 +1,115 @@
-import { useContext } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "./comments.scss";
-import { AuthContext } from "../../context/authContext";
 
-const Comments = () => {
-  const { currentUser } = useContext(AuthContext);
-  //Temporary
-  const comments = [
-    {
-      id: 1,
-      desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem nequeaspernatur ullam aperiam. Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem nequeaspernatur ullam aperiam",
-      name: "John Doe",
-      userId: 1,
-      profilePicture:
-        "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-    },
-    {
-      id: 2,
-      desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem nequeaspernatur ullam aperiam",
-      name: "Jane Doe",
-      userId: 2,
-      profilePicture:
-        "https://images.pexels.com/photos/1036623/pexels-photo-1036623.jpeg?auto=compress&cs=tinysrgb&w=1600",
-    },
-  ];
+const Comments = ({ postId ,onCommentAdded}) => {
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+  const token = localStorage.getItem("token");
+
+  const formatTimeDifference = (createdTime) => {
+    const currentTime = new Date();
+    const commentTime = new Date(createdTime);
+    const timeDifference = currentTime - commentTime;
+
+    if (timeDifference < 60 * 1000) {
+      return `${Math.floor(timeDifference / 1000)} seconds ago`;
+    } else if (timeDifference < 60 * 60 * 1000) {
+      return `${Math.floor(timeDifference / (60 * 1000))} minutes ago`;
+    } else if (timeDifference < 24 * 60 * 60 * 1000) {
+      const hours = Math.floor(timeDifference / (60 * 60 * 1000));
+      return `${hours} hours ago`;
+    } else {
+      const days = Math.floor(timeDifference / (24 * 60 * 60 * 1000));
+      return `${days} days ago`;
+    }
+  };
+  useEffect(() => {
+    if (postId) {
+      fetchComments();
+    }
+  }, [postId]);
+
+  const fetchComments = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/comments/post/${postId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(response.data);
+      // if (Array.isArray(response.data.data)) {
+      setComments(response.data);
+
+      console.log("xx", comments);
+      // } else {
+      // console.error("Invalid comments data received:", response.data);
+      // }
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    }
+  };
+
+  const createComment = async () => {
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/comments/user/${currentUser.id}/post/${postId}`,
+        {
+          content: newComment,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data) {
+        setComments([response.data, ...comments]);
+        setNewComment("");
+        onCommentAdded();
+      } else {
+        console.error("Invalid comment data received:", response.data);
+      }
+      //onPostRefresh();
+    } catch (error) {
+      console.error("Error creating a comment:", error);
+    }
+  };
+
   return (
     <div className="comments">
       <div className="write">
-        <img src={currentUser.profilePic} alt="" />
-        <input type="text" placeholder="write a comment" />
-        <button>Send</button>
+        <img src={currentUser.avatar} alt="" />
+        <input
+          type="text"
+          placeholder="Write a comment"
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
+        />
+        <button onClick={createComment}>Send</button>
       </div>
-      {comments.map((comment) => (
-        <div className="comment">
-          <img src={comment.profilePicture} alt="" />
-          <div className="info">
-            <span>{comment.name}</span>
-            <p>{comment.desc}</p>
+      {comments ? (
+        comments.map((comment) => (
+          // {upCmtDate=new Date(comment.createdTime)}
+          <div key={comment.id} className="comment">
+            <img src={comment.userDTO.avatar} alt="" />
+            <div className="info">
+              <span>{comment.userDTO.name}</span>
+              <p>{comment.content}</p>
+            </div>
+            <span className="date">
+              {formatTimeDifference(comment.createdTime)}
+            </span>
           </div>
-          <span className="date">1 hour ago</span>
-        </div>
-      ))}
+        ))
+      ) : (
+        <div>No comments available.</div>
+      )}
     </div>
   );
 };

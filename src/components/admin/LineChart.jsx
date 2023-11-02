@@ -1,15 +1,53 @@
 import { ResponsiveLine } from "@nivo/line";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../theme";
-import { mockLineData as data } from "../../data/mockData";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [chartData, setChartData] = useState([]);
+  const token = localStorage.getItem("token");
+  useEffect(() => {
+    // Gọi API để lấy dữ liệu totalStatistic và truyền token trong tiêu đề Authorization
+    axios
+      .get("http://localhost:8080/admin/statistics", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        // Xử lý dữ liệu từ server
+        const data = response.data.data;
+        console.log(data);
+
+        const chartData = [
+          {
+            id: "Total Post",
+            data: Object.keys(data.monthlyStatistics).map((key) => ({
+              x: key.substring(15),
+              y: data.monthlyStatistics[key],
+            })),
+          },
+          {
+            id: "Total Exchange",
+            data: Object.keys(data.monthlyExchangeStatistics).map((key) => ({
+              x: key.substring(22),
+              y: data.monthlyExchangeStatistics[key],
+            })),
+          },
+        ];
+        setChartData(chartData);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }, [token]);
 
   return (
     <ResponsiveLine
-      data={data}
+      data={chartData}
       theme={{
         axis: {
           domain: {
@@ -62,7 +100,7 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
         tickSize: 0,
         tickPadding: 5,
         tickRotation: 0,
-        legend: isDashboard ? undefined : "transportation", // added
+        legend: isDashboard ? undefined : "month", // added
         legendOffset: 36,
         legendPosition: "middle",
       }}

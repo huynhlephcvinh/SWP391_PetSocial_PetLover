@@ -4,26 +4,34 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 // import Modal from "react-modal";
 import Modal from "react-modal";
-import { BorderAll, BorderAllOutlined } from "@mui/icons-material";
 import axios from 'axios';
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 
 Modal.setAppElement('#root');
 
 
 
-const Pet = ({ pet }) => {
+const Pet = ({ pet, setPets, pets }) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMessageOpen, setIsMessageOpen] = useState(false);
   const [price, setPrice] = useState('');
   const [description, setDescription] = useState('');
   const token = localStorage.getItem('token');
+  const [error, setError] = useState('');
   const openModal = () => {
     setIsModalOpen(true);
   };
 
+  const closeMessage=()=>{
+    setIsMessageOpen(false);
+  }
   const closeModal = () => {
     setIsModalOpen(false);
   };
+
 
   const handleSubmit = async () => {
     try {
@@ -34,8 +42,8 @@ const Pet = ({ pet }) => {
           name: pet.name,
           description: pet.description
         },
-        description:description,
-        paymentAmount:price
+        description: description,
+        paymentAmount: price
       };
       const response = await axios.post(
         'http://localhost:8080/exchange/create',
@@ -44,13 +52,15 @@ const Pet = ({ pet }) => {
           headers: {
             Authorization: `Bearer ${token}`,
           }
-          // params: {
-          //   paymentAmount: price,
-          // },
         },
-
       );
-      console.log("Ressponensklajd:  " + JSON.stringify(response.data));
+      if (response.status === 200) {
+        setError("Success!");
+        closeModal();
+        setIsMessageOpen(true);
+      } else {
+        setError("Failed! Please check again");
+      }
     } catch (error) {
       console.error('Error: ', error);
     }
@@ -59,65 +69,55 @@ const Pet = ({ pet }) => {
 
 
 
+
+  const [menuAnchor, setMenuAnchor] = useState(null);
+  const handleMenuClick = (event) => {
+    event.stopPropagation();
+    setMenuAnchor(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchor(null);
+  }
+
+  const handleMenuDelete = async () => {
+    const token = localStorage.getItem('token');
+    const response = await axios.get("http://localhost:8080/pet/delete/" + pet.id, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    })
+    setPets(pets.filter(item => item.id !== pet.id))
+
+    console.log(response.data);
+    handleMenuClose();
+    if (response.data === "Not Found") {
+      setError("Failed to delete");
+      setIsMessageOpen(true);
+    } else {
+      setError("Delete success");
+      setIsMessageOpen(true);
+    }
+  }
+
   return (
     <div className="pets">
       <div className="petcontainer">
         <div className="pet">
           <div className="petInfo">
-            {/* <img  src={pet.image} alt="" /> */}
             <div className="petdetails">
-              {/* <Link */}
-              {/* // to={`/profile/${post.userPostDTO.id}`} */}
-              {/* // style={{ textDecoration: "none", color: "inherit" }} */}
-              {/* > */}
               <span className="petname">{pet.name} </span>
-              {/* </Link> */}
             </div>
+
           </div>
+          <MoreHorizIcon onClick={handleMenuClick} />
+
           {/* <MoreHorizIcon /> */}
         </div>
         <div className="petcontent">
-          <img  src={pet.image} alt="" />
+          <img src={pet.image} alt="" />
           <p className="des">{pet.description}</p>
           <button onClick={openModal}>Exchange</button>
-
-          {/* <Modal
-            isOpen={isModalOpen}
-            onRequestClose={closeModal}
-            contentLabel="Exchange Modal"
-            // style={{
-            //   overlay: {
-            //     backgroundColor: "rgba(0, 0, 0, 0.5)",
-            //     zIndex: 1000,
-            //   },
-            //   content: {
-            //     width: "600px",
-            //     height:"700px",
-            //     margin: "auto",
-            //     padding: "20px",
-            //     borderRadius: "8px",
-            //   },
-            // }}
-          >
-            <h2>Exchange Pet</h2>
-            <p>Are you sure you want to exchange {pet.name}?</p>
-            <label>Pet ID: </label>
-            <input type="text" value={pet.id} id="pet-id" readOnly/><br />
-            <label >Pet Name</label>
-            <input type="text" value={pet.name} id="pet-name" readOnly /><br/>
-            <label>Pet Description</label>
-            <input type="text" value={pet.description} id="pet-description" readOnly/>
-            
-            <div style={{ textAlign: "right" }}>
-              <button onClick={closeModal} style={{ marginRight: "10px" }}>
-                Cancel
-              </button>
-              <button onClick={closeModal}>Exchange</button>
-            </div>
-          </Modal> */}
-
-
-
           <Modal
             isOpen={isModalOpen}
             onRequestClose={closeModal}
@@ -247,6 +247,75 @@ const Pet = ({ pet }) => {
             </div>
           </Modal>
 
+          <Menu
+            anchorEl={menuAnchor}
+            open={Boolean(menuAnchor)}
+            onClose={handleMenuClose}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+          >
+            <MenuItem onClick={handleMenuClose}>Edit</MenuItem>
+            <MenuItem onClick={handleMenuDelete}>Delete</MenuItem>
+          </Menu>
+
+
+
+          <Modal
+            isOpen={isMessageOpen}
+            onRequestClose={closeMessage}
+            contentLabel="Exchange Modal"
+            style={{
+              overlay: {
+                backgroundColor: "rgba(0, 0, 0, 0.7)",
+                zIndex: 1000,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              },
+              content: {
+                width: "150px",
+                height: "fit-content",
+                maxHeight: "20vh",
+                margin: "auto",
+                padding: "20px",
+                borderRadius: "10px",
+                background: "#fff",
+                fontFamily: "Arial, sans-serif",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+              },
+            }}
+          >
+            <style>
+              {`
+    .modal-content{
+      display: flex;
+    }
+      .modal-header {
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      .modal-body {
+        margin-bottom: 20px;
+        color: #555;
+      }
+    `}
+            </style>
+            <div>
+              <h2 className="modal-header">Message</h2>
+              <div className="modal-content">
+                {error}
+              </div>
+            </div>
+          </Modal>
 
         </div>
       </div>

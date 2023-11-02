@@ -1,22 +1,23 @@
 @import "../../style.scss";
 
-.post {
+.appliedc {
   @include themify($themes) {
     // height: 192px;
     // width: 712px;
-    max-width: 900px;
+    // max-width: 600px;
     -webkit-box-shadow: 0px 0px 25px -10px rgba(0, 0, 0, 0.38);
     -moz-box-shadow: 0px 0px 25px -10px rgba(0, 0, 0, 0.38);
     box-shadow: 0px 0px 25px -10px rgba(0, 0, 0, 0.38);
     border-radius: 20px;
     background-color: themed("bg");
     color: themed("textColor");
-    max-width: 100%;
+    max-width: 80%;
+    align-items: center;
 
     .container {
       padding: 20px;
 
-
+      
 
 
       .user {
@@ -28,12 +29,11 @@
           display: flex;
           gap: 20px;
 
-          .avatar {
+          .avatar{
             width: 45px;
             height: 45px;
             position: relative;
           }
-
           img {
             width: 40px;
             height: 40px;
@@ -42,7 +42,7 @@
             position: absolute;
 
           }
-
+          
           .avtpet {
             width: 20px;
             height: 20px;
@@ -60,8 +60,7 @@
             .name {
               font-weight: 600;
             }
-
-            .pet-name {
+            .pet-name{
               font-weight: 500;
               font-size: 15px;
             }
@@ -74,12 +73,12 @@
       }
 
 
+    
 
 
-
-      .content {
+      .ccontent {
         margin: 20px 0px;
-        width: 860px;
+        width: 600px;
         word-wrap: break-word;
 
         img {
@@ -89,35 +88,6 @@
 
           object-fit: cover;
           margin-top: 20px;
-        }
-
-        .content-wrapper {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          flex-grow: 1;
-          /* Allows the input field to expand */
-
-          .save-button {
-            background-color: #1e6fc5;
-            /* Set the button's background color to green */
-            color: #fff;
-            /* Set the text color to white */
-            padding: 8px 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-bottom: 10px;
-            /* Move the button below the input field */
-          }
-        }
-
-        .content-text {
-          border: none;
-          outline: none;
-          background-color: transparent;
-          width: 100%;
-          color: themed("textColor");
         }
       }
 

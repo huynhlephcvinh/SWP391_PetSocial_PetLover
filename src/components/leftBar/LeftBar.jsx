@@ -3,9 +3,7 @@ import Friends from "../../assets/1.png";
 import Market from "../../assets/3.png";
 import Pet from "../../assets/14.png"
 import Messages from "../../assets/10.png";
-import Tutorials from "../../assets/11.png";
-import Courses from "../../assets/12.png";
-import Fund from "../../assets/13.png";
+import Applied from "../../assets/16.png"
 import { AuthContext } from "../../context/authContext";
 import { useContext } from "react";
 import { Link } from "react-router-dom";
@@ -56,15 +54,17 @@ const LeftBar = () => {
         <div className="menu">
           <span>Your shortcuts</span>
           <Link to='market-place' className="custom-link">
-          <div className="item">
-            <img src={Market} alt="" />
-            <span>Marketplace</span>
-          </div>
+            <div className="item">
+              <img src={Market} alt="" />
+              <span>Marketplace</span>
+            </div>
           </Link>
-          <div className="item">
-            <img src={Friends} alt="" />
-            <span>Friends</span>
-          </div>
+          <Link to='view-apply' className="custom-link">
+            <div className="item">
+              <img src={Applied} alt="" />
+              <span>Applied</span>
+            </div>
+          </Link>
           {/* <div className="item">
             <img src={Gaming} alt="" />
             <span>Gaming</span>

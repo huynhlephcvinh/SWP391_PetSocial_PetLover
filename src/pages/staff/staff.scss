@@ -1,9 +1,8 @@
 @import "../../style.scss";
 
-.profile {
+.staff-profile {
   @include themify($themes) {
     background-color: themed("bgSoft");
-
     .images {
       width: 100%;
       height: 300px;
@@ -15,7 +14,7 @@
         object-fit: cover;
       }
 
-      .myprofilePic {
+      .profilePic {
         width: 200px;
         height: 200px;
         border-radius: 50%;
@@ -27,14 +26,14 @@
         top: 200px;
       }
     }
-    .myprofileContainer {
+    .profileContainer {
       padding: 20px 70px;
-      height: 100%;
-      @include mobile{
+
+      @include mobile {
         padding: 10px;
       }
 
-      @include tablet{
+      @include tablet {
         padding: 20px;
       }
 
@@ -52,7 +51,7 @@
         justify-content: space-between;
         margin-bottom: 20px;
 
-        @include mobile{
+        @include mobile {
           flex-direction: column;
           height: 30vh;
           padding: 20px;
@@ -64,11 +63,11 @@
           display: flex;
           gap: 10px;
 
-          @include tablet{
+          @include tablet {
             flex-wrap: wrap;
           }
 
-          a{
+          a {
             color: themed("textColorSoft");
           }
         }
@@ -83,6 +82,7 @@
           span {
             font-size: 30px;
             font-weight: 500;
+            width: 0px;
           }
 
           .info {
@@ -91,7 +91,16 @@
             align-items: center;
             justify-content: space-around;
 
-            
+            .item {
+              display: flex;
+              align-items: center;
+              gap: 5px;
+              color: themed("textColorSoft");
+
+              span {
+                font-size: 12px;
+              }
+            }
           }
           button {
             border: none;
@@ -109,6 +118,62 @@
           align-items: center;
           justify-content: flex-end;
           gap: 10px;
+        }
+      }
+      // staff-profile.scss
+
+      .pet-approval-frame {
+        // display: flex;
+        // justify-content: space-between;
+        // flex-wrap: wrap;
+
+        .pet-approval-box {
+          flex: 0 1 calc(30% - 10px);
+          display: flex;
+          flex-direction: column; // Đặt flex-direction thành column để sắp xếp các phần tử theo chiều dọc
+          border: 1px solid #ccc;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          margin: 25px;
+          padding: 20px;
+          max-width: 400px;
+          background-color: #f8f5f7;
+          border-radius: 10px;
+
+          .avatar-container {
+            text-align: center;
+
+            .avatar {
+              float: left;
+              width: 60px; /* Đặt kích thước avatar dựa trên yêu cầu của bạn */
+              height: 60px;
+              border-radius: 50%;
+              object-fit: cover;
+              margin: 0 auto;
+              margin-bottom: 10px;
+            }
+
+            .avatar-container p {
+              float: left; /* Xóa khoảng cách bên dưới phần tử <p> */
+            }
+          }
+
+          .pet-approval-box img {
+            max-width: 100%;
+            height: auto;
+          }
+
+          .approve-button {
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 10px;
+            cursor: pointer;
+
+            &:hover {
+              background-color: #45a049;
+            }
+          }
         }
       }
     }

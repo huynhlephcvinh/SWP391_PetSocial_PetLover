@@ -1,7 +1,7 @@
 import Exchange from "../exchange/Exchange";
 import "./exchanges.scss";
 
-const Exchanges = ({exchanges}) => {
+const Exchanges = ({exchanges,setExchanges}) => {
   //Doi sua thanh status nua la  bo cmt la Ok
   // const filteredPosts = posts.filter(post => post.image != null);
   // console.log(filteredPosts);
@@ -9,7 +9,7 @@ const Exchanges = ({exchanges}) => {
   return <div className="exchanges">
     {/* {filteredPosts.map(post=>( */}
     {exchanges.map(exchange=>(
-      <Exchange exchange={exchange} key={exchange.id}/>
+      <Exchange setExchanges={setExchanges} exchange={exchange}  key={exchange.id} exchanges={exchanges}/>
     ))}
   </div>;
 };

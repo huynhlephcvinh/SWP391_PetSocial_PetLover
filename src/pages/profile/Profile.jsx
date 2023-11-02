@@ -8,6 +8,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Posts from "../../components/posts/Posts"
 import { CenterFocusStrong } from '@mui/icons-material';
 import { useParams } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 
 
 const Profile = () => {
@@ -22,14 +23,16 @@ const Profile = () => {
   useEffect(() => {
     async function fetchProfile() {
       try {
-        const response = await axios.get('http://localhost:8080/user/profile/'+userID,
+        const response = await axios.post(
+          'http://localhost:8080/user/profile/'+userID,
+          null, // body là null nếu là POST request
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        // console.log("respone ne:   "+response.data);
+        console.log("respone ne:   "+response.data.data);
            setUserData(response.data.data);
            setPosts(response.data.data.postDTOList);
           //  console.log("d]u ma may"+JSON.stringify(response.data.data.postDTOList));
@@ -50,6 +53,9 @@ const Profile = () => {
 
   return (
     <div className="profile">
+      <Helmet>
+        <title>{userData.name}</title>
+      </Helmet>
       <div className="images">
         <img
           src="https://images.pexels.com/photos/13440765/pexels-photo-13440765.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
@@ -92,7 +98,7 @@ const Profile = () => {
         {posts!="" ? (
         <Posts posts={posts}/>
         ):(
-          <div className='noPosts'>You don't have any posts yet</div>
+          <div className='noPosts'>Nothing here</div>
         )}
       </div>
     </div>

@@ -110,6 +110,8 @@ function Login() {
             />
             <button type="button" onClick={handleLogin}>Login</button>
           </form>
+          <Link to="/forgot-password">Forgot Password</Link>
+
         </div>
       </div>
     </div>

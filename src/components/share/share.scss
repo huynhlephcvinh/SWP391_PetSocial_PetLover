@@ -57,7 +57,22 @@
             align-items: center;
             gap: 10px;
             cursor: pointer;
-
+            #petSelect {
+              padding: 10px; 
+              font-size: 12px; 
+              border: 1px solid #ccc; 
+              border-radius: 4px; 
+              outline: none; 
+            }
+            
+            #petSelect:hover {
+              border-color: #666; 
+            }
+            
+            #petSelect:focus {
+              box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Đổ bóng khi focus */
+            }
+            
             img {
               height: 20px;
             }

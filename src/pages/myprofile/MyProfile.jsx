@@ -57,12 +57,12 @@ const Profile = () => {
           }
         );
         setPosts(response.data.data);
-        console.log("Post: "+posts);
+        console.log("Post: " + posts);
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
       //
-     
+
     }
 
     fetchPosts();
@@ -91,7 +91,7 @@ const Profile = () => {
       <div className="profileContainer">
         <div className="uInfo">
           <div className="left">
-          
+
           </div>
           <div className="center">
             <span>{cruser.name}</span>
@@ -119,7 +119,7 @@ const Profile = () => {
           <div className='noPosts'>You don't have any pets yet</div>
         )} */}
         {posts != "" ? (
-          <Posts posts={posts} />
+          <Posts posts={posts} setPosts={setPosts} />
         ) : (
           <div className='noPosts'>You don't have any posts yet</div>
         )}

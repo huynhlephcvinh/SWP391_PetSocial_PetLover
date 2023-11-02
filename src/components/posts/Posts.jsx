@@ -1,15 +1,14 @@
 import Post from "../post/Post";
 import "./posts.scss";
 
-const Posts = ({posts}) => {
+const Posts = ({posts, setPosts,onCommentAdded }) => {
   //Doi sua thanh status nua la  bo cmt la Ok
   // const filteredPosts = posts.filter(post => post.image != null);
   // console.log(filteredPosts);
 
   return <div className="postts">
-    {/* {filteredPosts.map(post=>( */}
     {posts.map(post=>(
-      <Post post={post} key={post.id}/>
+      <Post setPosts={setPosts} post={post} key={post.id} posts={posts} onCommentAdded={onCommentAdded}/>
     ))}
   </div>;
 };

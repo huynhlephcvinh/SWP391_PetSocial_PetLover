@@ -63,10 +63,10 @@ const Navbar = () => {
           <CheckCircleOutlineIcon />
         ) : (
           null)}
-        <div className="search">
+        {/* <div className="search">
           <SearchOutlinedIcon />
           <input type="text" placeholder="Search..." />
-        </div>
+        </div> */}
       </div>
       <div className="right">
         {/* <Link to='/profile/${currentUser.id}' className="custom-link"> */}

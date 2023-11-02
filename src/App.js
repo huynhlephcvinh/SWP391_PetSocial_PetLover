@@ -20,12 +20,14 @@ import MyPets from "./pages/MyPets/MyPets";
 import MarketPlace from "./pages/MarketPlace/MarketPlace";
 import Admin from "./Admin";
 import User from "./User";
-
+import ForgotPassword from "./pages/forgotpassword/ForgotPassword";
+import Applied from "./pages/appliedpage/Applied";
 import "./style.scss";
 import { useContext } from "react";
 import { DarkModeContext } from "./context/darkModeContext";
 import { AuthContext } from "./context/authContext";
-
+import ResetPassword from "./pages/resetPassword/ResetPassword";
+import Staff from "./pages/staff/Staff";
 function App() {
   
   const {currentUser} = useContext(AuthContext);
@@ -73,8 +75,7 @@ function App() {
           <Layout />
         </ProtectedRoute>
       ),
-      children: [
-        
+      children: [    
         { 
           path: "/",
           element: <Home />,
@@ -94,8 +95,15 @@ function App() {
         {
           path:"/market-place",
           element:<MarketPlace/>,
+        },
+        {
+          path:"/view-apply",
+          element:<Applied/>,
         }
       ],
+    },{
+      path: "/staff/*",
+      element: <Staff/>,
     },
     {
       path: "/login",
@@ -104,6 +112,14 @@ function App() {
     {
       path: "/register",
       element: <Register />,
+    },
+    {
+      path: "/forgot-password",
+      element: <ForgotPassword />,
+    },
+    {
+      path:"/reset-password",
+      element:<ResetPassword/>
     },
     {
       path:"/admin/*",
