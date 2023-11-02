@@ -16,7 +16,7 @@ function ResetPassword() {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/reset_password",
+        "http://103.253.147.216:8080/reset_password",
         {
           token: authCode,
           password: password,

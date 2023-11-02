@@ -42,7 +42,7 @@ const Exchange = ({ exchange, setExchanges, exchanges }) => {
     console.log("saidghasiuhd", exchangeDTO);
     axios
       .put(
-        `http://localhost:8080/exchange/${exchange.id}/edit-cash?paymentAmount=${updatedPaymentAmount}`,
+        `http://103.253.147.216:8080/exchange/${exchange.id}/edit-cash?paymentAmount=${updatedPaymentAmount}`,
         exchangeDTO,
         {
           headers: {
@@ -80,7 +80,7 @@ const Exchange = ({ exchange, setExchanges, exchanges }) => {
 
   const handleApply = async () => {
     try {
-      const apply = await axios.post('http://localhost:8080/apply/create', null, {
+      const apply = await axios.post('http://103.253.147.216:8080/apply/create', null, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -109,7 +109,7 @@ const Exchange = ({ exchange, setExchanges, exchanges }) => {
   }
 
   const handleMenuDelete = async () => {
-    const response = await axios.delete("http://localhost:8080/exchange/" + exchange.id, {
+    const response = await axios.delete("http://103.253.147.216:8080/exchange/" + exchange.id, {
       headers: {
         Authorization: `Bearer ${token}`,
       }

@@ -12,7 +12,7 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
   useEffect(() => {
     // Gọi API để lấy dữ liệu totalStatistic và truyền token trong tiêu đề Authorization
     axios
-      .get("http://localhost:8080/admin/statistics", {
+      .get("http://103.253.147.216:8080/admin/statistics", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

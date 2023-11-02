@@ -21,7 +21,7 @@ const MarketPlace =  () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/exchange/getAllExchange", {
+        const response = await axios.get("hhttp://103.253.147.216:8080/exchange/getAllExchange", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

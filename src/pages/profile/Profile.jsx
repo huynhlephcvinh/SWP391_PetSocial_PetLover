@@ -24,7 +24,7 @@ const Profile = () => {
     async function fetchProfile() {
       try {
         const response = await axios.post(
-          'http://localhost:8080/user/profile/'+userID,
+          'http://103.253.147.216:8080/user/profile/'+userID,
           null, // body là null nếu là POST request
           {
             headers: {

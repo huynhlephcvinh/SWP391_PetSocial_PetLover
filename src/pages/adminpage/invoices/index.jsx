@@ -16,7 +16,7 @@ const PetsUser = () => {
     if (token) {
       // Fetch a list of pets from the backend
       axios
-        .get("http://localhost:8080/admin/getAllPet", {
+        .get("http://103.253.147.216:8080/admin/getAllPet", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

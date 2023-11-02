@@ -11,7 +11,7 @@ const RightBar = () => {
 
   const getAllUsers = () => {
     axios
-      .get("http://localhost:8080/user/getAllUser", {
+      .get("http://103.253.147.216:8080/user/getAllUser", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -26,7 +26,7 @@ const RightBar = () => {
 
   const searchUsers = () => {
     axios
-      .get("http://localhost:8080/user/searchUser", {
+      .get("http://103.253.147.216:8080/user/searchUser", {
         params: {
           name: searchText,
         },

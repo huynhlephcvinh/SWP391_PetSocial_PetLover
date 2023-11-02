@@ -14,7 +14,7 @@ const BarChart = ({ isDashboard = false }) => {
   useEffect(() => {
     if (token) {
       axios
-        .get("http://localhost:8080/admin/statistics", {
+        .get("http://103.253.147.216:8080/admin/statistics", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

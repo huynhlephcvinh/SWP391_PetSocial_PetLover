@@ -49,7 +49,7 @@ const Profile = () => {
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const response = await axios.get("http://localhost:8080/post/getAllYourPost",
+        const response = await axios.get("http://103.253.147.216:8080/post/getAllYourPost",
           {
             headers: {
               Authorization: `Bearer ${token}`,

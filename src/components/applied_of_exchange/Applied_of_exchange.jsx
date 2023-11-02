@@ -15,7 +15,7 @@ const Applied_of_exchange = ({ exchange}) => {
   const fetchApplies = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/exchange/${exchange.id}/view-applies`,
+        `http://103.253.147.216:8080/exchange/${exchange.id}/view-applies`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

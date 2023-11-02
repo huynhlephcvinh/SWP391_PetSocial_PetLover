@@ -13,7 +13,7 @@ function ForgotPassword() {
     try {
       // Send a request to your backend to initiate the password reset process
       const response = await axios.post(
-        "http://localhost:8080/forgot_password",
+        "http://103.253.147.216:8080/forgot_password",
         {
           email: email,
         }

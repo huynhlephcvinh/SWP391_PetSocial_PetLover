@@ -16,7 +16,7 @@ const Posts = () => {
     if (token) {
       // Gọi API để lấy danh sách bài đăng từ phía backend
       axios
-        .get("http://localhost:8080/admin/getAllPost", {
+        .get("http://103.253.147.216:8080/admin/getAllPost", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

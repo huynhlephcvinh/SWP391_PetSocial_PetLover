@@ -34,7 +34,7 @@ const Comments = ({ postId ,onCommentAdded}) => {
   const fetchComments = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/comments/post/${postId}`,
+        `http://103.253.147.216:8080/comments/post/${postId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -57,7 +57,7 @@ const Comments = ({ postId ,onCommentAdded}) => {
   const createComment = async () => {
     try {
       const response = await axios.post(
-        `http://localhost:8080/comments/user/${currentUser.id}/post/${postId}`,
+        `http://103.253.147.216:8080/comments/user/${currentUser.id}/post/${postId}`,
         {
           content: newComment,
         },

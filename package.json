@@ -27,6 +27,7 @@
     "react": "^18.0.0",
     "react-bootstrap": "^2.9.1",
     "react-dom": "^18.0.0",
+    "react-firebase-hooks": "^5.1.1",
     "react-helmet": "^6.1.0",
     "react-modal": "^3.16.1",
     "react-pro-sidebar": "^0.7.1",

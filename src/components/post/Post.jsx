@@ -65,7 +65,7 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
     };
 
     axios
-      .put(`http://localhost:8080/post/update/${post.id}`, updatedPost, {
+      .put(`http://103.253.147.216:8080/post/update/${post.id}`, updatedPost, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -86,7 +86,7 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
     const newLiked = !liked;
 
     axios
-      .post(`http://localhost:8080/reaction/${post.id}/like`, null, {
+      .post(`http://103.253.147.216:8080/reaction/${post.id}/like`, null, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -165,7 +165,7 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
 
   const handleMenuDelete = async () => {
     const token = localStorage.getItem('token');
-    const response = await axios.delete("http://localhost:8080/post/delete/" + post.id, {
+    const response = await axios.delete("http://103.253.147.216:8080/post/delete/" + post.id, {
       headers: {
         Authorization: `Bearer ${token}`,
       }
@@ -225,7 +225,7 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
           </div>
         ) : (
           <div className="content">
-            <p>{updatedContent}</p>{" "}
+            <p onClick={openImage}>{updatedContent}</p>{" "}
             {/* Sử dụng updatedContent để hiển thị nội dung */}
             <img src={updatedImage} alt="" />
           </div>

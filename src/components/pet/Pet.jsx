@@ -46,7 +46,7 @@ const Pet = ({ pet, setPets, pets }) => {
         paymentAmount: price
       };
       const response = await axios.post(
-        'http://localhost:8080/exchange/create',
+        'http://103.253.147.216:8080/exchange/create',
         createExchangeDTO,
         {
           headers: {
@@ -82,7 +82,7 @@ const Pet = ({ pet, setPets, pets }) => {
 
   const handleMenuDelete = async () => {
     const token = localStorage.getItem('token');
-    const response = await axios.get("http://localhost:8080/pet/delete/" + pet.id, {
+    const response = await axios.get("http://103.253.147.216:8080/pet/delete/" + pet.id, {
       headers: {
         Authorization: `Bearer ${token}`,
       }

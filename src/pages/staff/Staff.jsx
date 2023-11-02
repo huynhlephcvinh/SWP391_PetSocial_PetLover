@@ -13,7 +13,7 @@ const StaffProfile = () => {
     async function fetchStaffPosts() {
       try {
         const response = await axios.get(
-          "http://localhost:8080/staff/getAllPostDisable",
+          "http://103.253.147.216:8080/staff/getAllPostDisable",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -32,7 +32,7 @@ const StaffProfile = () => {
   const handleApprovePost = (postId) => {
     // Gọi API để duyệt bài viết
     axios
-      .post(`http://localhost:8080/staff/${postId}/enable`, null, {
+      .post(`http://103.253.147.216:8080/staff/${postId}/enable`, null, {
         headers: {
           Authorization: `Bearer ${token}`, // Thay token bằng token thực tế của nhân viên
         },

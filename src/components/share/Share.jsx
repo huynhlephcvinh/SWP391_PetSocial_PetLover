@@ -43,7 +43,7 @@ const Share = ({ onPostCreated }) => {
   }
     const getPet = async () => {
       const token = localStorage.getItem('token');
-      const res = await axios.get("http://localhost:8080/pet/getAllPet", {
+      const res = await axios.get("http://103.253.147.216:8080/pet/getAllPet", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -55,7 +55,7 @@ const Share = ({ onPostCreated }) => {
 
   const handlePost = async () => {
     const token = localStorage.getItem('token');
-    const response = await axios.post("http://localhost:8080/post/createpost", creatPostDTO, {
+    const response = await axios.post("http://103.253.147.216:8080/post/createpost", creatPostDTO, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',

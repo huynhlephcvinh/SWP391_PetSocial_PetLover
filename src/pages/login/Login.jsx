@@ -3,6 +3,8 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "./login.scss";
 import { AuthContext, AuthContextProvider } from "../../context/authContext";
+import { signInWithGoogle } from "../../firebase";
+
 function Login() {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
@@ -32,7 +34,7 @@ function Login() {
     } else {
       localStorage.setItem('token', res.data);
       const token = localStorage.getItem('token');
-      const response1 = await axios.get('http://localhost:8080/user/profile', {
+      const response1 = await axios.get('http://103.253.147.216:8080/user/profile', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -91,6 +93,7 @@ function Login() {
         </div>
         <div className="right">
           <h1>Login</h1>
+          <button onClick={signInWithGoogle}>Login with google</button>
           <form
           // onSubmit={login}
           >

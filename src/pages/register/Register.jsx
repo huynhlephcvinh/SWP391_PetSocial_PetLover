@@ -26,7 +26,7 @@ function Register() {
     }
 
     try {
-      const response = await axios.post("http://localhost:8080/createUser", {
+      const response = await axios.post("http://103.253.147.216:8080/createUser", {
         name: name,
         email: email,
         phone: phone,

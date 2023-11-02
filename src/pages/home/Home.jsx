@@ -24,7 +24,7 @@ const Home = () => {
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const response = await axios.get("http://localhost:8080/post/getAllPost",
+        const response = await axios.get("http://103.253.147.216:8080/post/getAllPost",
           {
             headers: {
               Authorization: `Bearer ${token}`,

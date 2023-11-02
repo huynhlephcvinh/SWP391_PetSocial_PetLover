@@ -46,7 +46,7 @@ const MyPets = () => {
         description: description,
         idPetType: petType
       };
-      const response = await axios.post('http://localhost:8080/pet/createpet', createPetDTO, {
+      const response = await axios.post('http://103.253.147.216:8080/pet/createpet', createPetDTO, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
@@ -94,7 +94,7 @@ const MyPets = () => {
   useEffect(() => {
     const fetchPet = async () => {
       try {
-        const response1 = await axios.get("http://localhost:8080/pet/getAllPet", {
+        const response1 = await axios.get("http://103.253.147.216:8080/pet/getAllPet", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

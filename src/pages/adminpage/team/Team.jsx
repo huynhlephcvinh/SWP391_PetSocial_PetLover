@@ -19,7 +19,7 @@ const Team = () => {
     if (token) {
       // Gọi API để lấy dữ liệu từ phía backend
       axios
-        .get("http://localhost:8080/admin/getAllUser", {
+        .get("http://103.253.147.216:8080/admin/getAllUser", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

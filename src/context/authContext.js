@@ -11,7 +11,7 @@ export const AuthContextProvider = ({ children }) => {
   );
 
   const LoginAuth = (username, password) => {
-    const response = axios.post("http://localhost:8080/signin", {
+    const response = axios.post("http://103.253.147.216:8080/signin", {
       email: username,
       password: password,
     }
