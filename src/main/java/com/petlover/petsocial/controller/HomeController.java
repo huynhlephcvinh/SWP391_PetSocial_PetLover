@@ -95,50 +95,31 @@ public class HomeController {
         return "register";
     }
 
-    @PostMapping("/createUser")
-    public ResponseEntity<?> createuser(@RequestBody SingupDTO userDTO, HttpSession session, HttpServletRequest request) throws UserException {
-       if(userDTO.getEmail().isEmpty()) {
-           throw new UserException("You have not entered your email yet");
-       }
-       if(userDTO.getName().isEmpty()) {
-            throw new UserException("You have not entered your name yet");
-        }
-       if(userDTO.getPhone().isEmpty()) {
-            throw new UserException("You have not entered your phone yet");
-        }
-        if(userDTO.getPassword().isEmpty()) {
-            throw new UserException("You have not entered your password yet");
-        }
-        if(!userDTO.getPhone().matches("^[0-9]+$")) {
-            throw new UserException("You must enter number phone is digit");
-        }
-        if(userDTO.getPhone().length() <10 || userDTO.getPhone().length() >12) {
-            throw new UserException("Enter number phone again");
-        }
+  @PostMapping("/createUser")
+  public ResponseEntity<?> createuser(@RequestBody SingupDTO userDTO, HttpSession session, HttpServletRequest request) throws UserException {
+    String url = request.getRequestURL().toString();
+    http://localhost:8080/createUser
+    url = url.replace(request.getServletPath(), "");
+    System.out.println(userDTO);
+    boolean f = userService.checkEmail(userDTO.getEmail());
+    ResponseData responseData = new ResponseData();
+    if (f) {
+//            throw new UserException("Email is already used with another account");
+      responseData.setIsSuccess(false);
+    } else {
 
+      SingupDTO userDtls = userService.createUser(userDTO,url);
+      Authentication authentication = new UsernamePasswordAuthenticationToken(userDTO.getEmail(),userDTO.getPassword());
+      SecurityContextHolder.getContext().setAuthentication(authentication);
+      String token = jwtProvider.generateToken(authentication);
+      AuthResponse res = new AuthResponse(token ,true,null);
 
-        String url = request.getRequestURL().toString();
-        http://localhost:8080/createUser
-        url = url.replace(request.getServletPath(), "");
-        System.out.println(userDTO);
-        boolean f = userService.checkEmail(userDTO.getEmail());
-        ResponseData responseData = new ResponseData();
-        if (f) {
-            throw new UserException("Email is already used with another account");
-        } else {
+      responseData.setData(res);
 
-            SingupDTO userDtls = userService.createUser(userDTO,url);
-            Authentication authentication = new UsernamePasswordAuthenticationToken(userDTO.getEmail(),userDTO.getPassword());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            String token = jwtProvider.generateToken(authentication);
-            AuthResponse res = new AuthResponse(token ,true, null);
-
-            responseData.setData(res);
-
-        }
-
-        return new ResponseEntity<>(responseData, HttpStatus.CREATED);
     }
+
+    return new ResponseEntity<>(responseData.getIsSuccess(), HttpStatus.CREATED);
+  }
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@RequestBody SigninDTO signinDTO) throws UserException{
         ResponseData responseData = new ResponseData();
