@@ -21,9 +21,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 @Service
 public class UserServiceImp implements UserService {
     @Autowired
@@ -43,6 +47,8 @@ public class UserServiceImp implements UserService {
     private CommentService commentService;
     @Autowired
     private ReactionRepository reactionRepository;
+
+    private Map<String, String> paymentIdToJwtMap = new ConcurrentHashMap<>();
 
     @Override
     public User findById(Long id) {
@@ -404,6 +410,31 @@ public class UserServiceImp implements UserService {
         return userHomeDTOList;
     }
 
+    @Override
+    public User updateBalance(String jwt, BigDecimal amount) throws UserException {
+        String email = jwtProvider.getEmailFromToken(jwt);
+        User user = userRepo.findByEmail(email);
+        if(user==null) {
+            throw new UserException("user not found with email" + email);
+        }
+        BigDecimal balance = user.getBalance();
+        if (balance != null) {
+            balance = balance.add(amount);
+        } else {
+            balance = amount;
+        }
+        user.setBalance(balance);
+        userRepo.save(user);
+        return user;
+    }
 
+    @Override
+    public void storeJwtToken(String paymentId, String jwt) {
+        paymentIdToJwtMap.put(paymentId, jwt);
+    }
 
+    @Override
+    public String retrieveJwtToken(String paymentId) {
+        return paymentIdToJwtMap.get(paymentId);
+    }
 }
