@@ -13,6 +13,8 @@ import com.petlover.petsocial.service.UserService;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -423,6 +425,20 @@ public class UserServiceImp implements UserService {
         } else {
             balance = amount;
         }
+        user.setBalance(balance);
+        userRepo.save(user);
+        return user;
+    }
+
+    @Override
+    public User substractBalanceToCreateExchange(String jwt) {
+        String email = jwtProvider.getEmailFromToken(jwt);
+        User user = userRepo.findByEmail(email);
+        if(user.getBalance() == null || user.getBalance().compareTo(BigDecimal.ONE) < 0) {
+            return null;
+        }
+        BigDecimal balance = user.getBalance();
+        balance = balance.subtract(BigDecimal.ONE);
         user.setBalance(balance);
         userRepo.save(user);
         return user;

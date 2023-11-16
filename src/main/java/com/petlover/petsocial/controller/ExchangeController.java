@@ -48,6 +48,10 @@ public class ExchangeController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("Duplicated pet.");
             }else{
+                if(userService.substractBalanceToCreateExchange(jwt) == null) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body("Not enough balance.");
+                }
                 ExchangeDTO exchange = exchangeService.addExchange(userDTO, createExchangeDTO.getPetDTO().getId(), createExchangeDTO.getPaymentAmount());
                 return ResponseEntity.ok(exchange);
             }

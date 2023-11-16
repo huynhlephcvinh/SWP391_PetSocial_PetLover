@@ -39,4 +39,5 @@ public interface UserService {
     User updateBalance(String jwt, BigDecimal amount) throws UserException;
     void storeJwtToken(String paymentId, String jwt);
     String retrieveJwtToken(String paymentId);
+    User substractBalanceToCreateExchange(String jwt);
 }
