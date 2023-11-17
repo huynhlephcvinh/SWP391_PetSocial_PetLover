@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.petlover.petsocial.model.entity.AuthenticationProvider.BLOCK_USER;
+
 @Service
 public class UserServiceImp implements UserService {
     @Autowired
@@ -64,7 +66,7 @@ public class UserServiceImp implements UserService {
         user.setPhone(signupDTO.getPhone());
         //String password = bCryptPasswordEncoder.encode(signupDTO.getPassword());
         user.setPassword(passwordEncoder.encode(signupDTO.getPassword()));
-        user.setAvatar("https://pixabay.com/vi/vectors/bi%E1%BB%83u-t%C6%B0%E1%BB%A3ng-ng%C6%B0%E1%BB%9Di-s%E1%BB%AD-d%E1%BB%A5ng-ng%C6%B0%E1%BB%9Di-1633249/");
+        user.setAvatar("https://res.cloudinary.com/dyrprccxf/image/upload/v1699728147/zoaodn4jg4dalzoghhx3.jpg");
         user.setRole("ROLE_USER");
         user.setEnable(false);
         user.setVerificationCode(UUID.randomUUID().toString());
@@ -81,6 +83,8 @@ public class UserServiceImp implements UserService {
         User user = userRepo.findByEmail(signinDTO.getEmail());
         if (user == null) {
             return "Incorrect username or password";
+        } else if(user.getAuthProvider()==BLOCK_USER && !user.isEnable()){
+           return "Account block";
         } else if (!user.isEnable()) {
             return "Your account has not been activated!";
         } else if (passwordEncoder.matches(signinDTO.getPassword(), user.getPassword())) {
