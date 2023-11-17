@@ -453,4 +453,14 @@ public class UserServiceImp implements UserService {
     public String retrieveJwtToken(String paymentId) {
         return paymentIdToJwtMap.get(paymentId);
     }
+
+    @Override
+    public BigDecimal getBalance(String jwt) throws UserException {
+        String email = jwtProvider.getEmailFromToken(jwt);
+        User user = userRepo.findByEmail(email);
+        if(user==null) {
+            throw new UserException("user not found with email" + email);
+        }
+        return user.getBalance();
+    }
 }

@@ -40,4 +40,6 @@ public interface UserService {
     void storeJwtToken(String paymentId, String jwt);
     String retrieveJwtToken(String paymentId);
     User substractBalanceToCreateExchange(String jwt);
+
+    BigDecimal getBalance(String jwt) throws UserException;
 }
