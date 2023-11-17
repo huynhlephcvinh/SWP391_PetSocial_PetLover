@@ -136,7 +136,7 @@ public class HomeController {
         if(userLogin.equals("Incorrect username or password")){
             responseData.setData("Incorrect");
         }else if(userLogin.equals("Your account has not been activated!")){
-            responseData.setData("Not Activate");
+            responseData.setData("Activated");
         }else if(userLogin.equals("Account block")){
             responseData.setData("Account block");
         }else {
