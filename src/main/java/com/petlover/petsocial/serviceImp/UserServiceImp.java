@@ -83,7 +83,7 @@ public class UserServiceImp implements UserService {
         User user = userRepo.findByEmail(signinDTO.getEmail());
         if (user == null) {
             return "Incorrect username or password";
-        } else if(user.getAuthProvider()==BLOCK_USER && !user.isEnable()){
+        } else if(user.getAuthProvider()==BLOCK_USER){
            return "Account block";
         } else if (!user.isEnable()) {
             return "Your account has not been activated!";

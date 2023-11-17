@@ -75,10 +75,9 @@ public class AdminServiceImp implements AdminService {
         if(user ==null) {
             throw new UserException("Not found User");
         }
-        if(!user.isEnable()){
+        if(user.getAuthProvider() == AuthenticationProvider.BLOCK_USER){
             throw new UserException("User are blocked");
         }
-        user.setEnable(false);
         user.setAuthProvider(AuthenticationProvider.BLOCK_USER);
         userRepo.save(user);
         UserForAdminDTO userForAdminDTO = new UserForAdminDTO();
@@ -97,10 +96,9 @@ public class AdminServiceImp implements AdminService {
         if(user ==null) {
             throw new UserException("Not found User");
         }
-        if(user.isEnable()){
+        if(user.getAuthProvider() ==null){
             throw new UserException("User not block");
         }
-        user.setEnable(true);
         user.setAuthProvider(null);
         userRepo.save(user);
         UserForAdminDTO userForAdminDTO = new UserForAdminDTO();
