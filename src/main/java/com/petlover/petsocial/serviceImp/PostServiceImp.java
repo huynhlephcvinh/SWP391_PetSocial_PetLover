@@ -480,6 +480,7 @@ public class PostServiceImp implements PostService {
         if (getPost.getUser().getId() == userDTO.getId()) {
             if (postUpdateDTO.getContent() != null && !postUpdateDTO.getContent().isEmpty()) {
                 getPost.setContent(postUpdateDTO.getContent());
+                getPost.setEnable(false);
                 postRepository.save(getPost);
             }
 

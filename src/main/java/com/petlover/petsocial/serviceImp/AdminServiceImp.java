@@ -5,10 +5,7 @@ import com.petlover.petsocial.model.entity.Exchange;
 import com.petlover.petsocial.model.entity.Pet;
 import com.petlover.petsocial.model.entity.Post;
 import com.petlover.petsocial.model.entity.User;
-import com.petlover.petsocial.payload.request.PetForAdminDTO;
-import com.petlover.petsocial.payload.request.PostForAdminDTO;
-import com.petlover.petsocial.payload.request.UserForAdminDTO;
-import com.petlover.petsocial.payload.request.UserForAdminManager;
+import com.petlover.petsocial.payload.request.*;
 import com.petlover.petsocial.repository.ExchangeRepository;
 import com.petlover.petsocial.repository.PetRepository;
 import com.petlover.petsocial.repository.PostRepository;
@@ -16,16 +13,15 @@ import com.petlover.petsocial.repository.UserRepository;
 import com.petlover.petsocial.service.AdminService;
 import com.petlover.petsocial.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
 @Service
 public class AdminServiceImp implements AdminService {
     @Autowired
@@ -39,6 +35,8 @@ public class AdminServiceImp implements AdminService {
 
     @Autowired
     ExchangeRepository exchangeRepository;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Override
     public List<UserForAdminManager> getListUserForAdmin()
@@ -255,6 +253,22 @@ public class AdminServiceImp implements AdminService {
             petForAdminDTOS.add(petForAdminDTO);
         }
         return petForAdminDTOS;
+    }
+
+
+    public SingupDTO createStaff(SingupDTO signupDTO) {
+        User user = new User();
+        user.setEmail(signupDTO.getEmail());
+        user.setName(signupDTO.getName());
+        user.setPhone(signupDTO.getPhone());
+        //String password = bCryptPasswordEncoder.encode(signupDTO.getPassword());
+        user.setPassword(passwordEncoder.encode(signupDTO.getPassword()));
+        user.setAvatar("https://pixabay.com/vi/vectors/bi%E1%BB%83u-t%C6%B0%E1%BB%A3ng-ng%C6%B0%E1%BB%9Di-s%E1%BB%AD-d%E1%BB%A5ng-ng%C6%B0%E1%BB%9Di-1633249/");
+        user.setRole("ROLE_STAFF");
+        user.setEnable(true);
+        User newuser = userRepo.save(user);
+        SingupDTO newSignupDTO = new SingupDTO(newuser.getEmail(),newuser.getName(),newuser.getPassword(),newuser.getPhone());
+        return newSignupDTO;
     }
 
 
