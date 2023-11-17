@@ -1,28 +1,58 @@
-import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
+import { Box, Button, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../../theme";
 // import { mockTransactions } from "../../../data/mockData";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
-import EmailIcon from "@mui/icons-material/Email";
-import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
+import PostAddIcon from "@mui/icons-material/PostAdd";
+import PetsIcon from "@mui/icons-material/Pets";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import TrafficIcon from "@mui/icons-material/Traffic";
+import StoreIcon from "@mui/icons-material/Store";
 import Header from "../../../components/admin/Header";
-import LineChart from "../../../components/admin/LineChart";
+// import LineChart from "../../../components/admin/LineChart";
 // import GeographyChart from "../../components/GeographyChart";
 import BarChart from "../../../components/admin/BarChart";
 import PieChart from "../../../components/admin/PieChart";
 
 import StatBox from "../../../components/admin/StatBox";
-import ProgressCircle from "../../../components/admin/ProgressCircle";
+// import ProgressCircle from "../../../components/admin/ProgressCircle";
 import Team from "../team/Team";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Helmet } from "react-helmet";
 
 const Dashboard = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const token = localStorage.getItem("token");
   // const curs = JSON.parse(localStorage.getItem("currentUser"));
+  const [statistics, setStatistics] = useState({
+    totalUser: 0,
+    totalPostDisplay: 0,
+    totalPet: 0,
+    totalExchange: 0,
+  });
+
+  useEffect(() => {
+    axios
+      .get("https://petsocial.azurewebsites.net/admin/statistics", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        const fetchedStatistics = response.data.data;
+        setStatistics(fetchedStatistics);
+        console.log(fetchedStatistics);
+      })
+      .catch((error) => {
+        console.error("Lỗi khi gọi API:", error);
+      });
+  }, []);
 
   return (
     <Box m="20px">
+      <Helmet>
+        <title>Admin</title>
+      </Helmet>
       {/* HEADER */}
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title="DASHBOARD" subtitle="Welcome back Admin" />
@@ -59,48 +89,10 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title="12,361"
-            subtitle="Emails Sent"
+            title={statistics.totalUser}
+            subtitle="Total User"
             progress="0.75"
             increase="+14%"
-            icon={
-              <EmailIcon
-                sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
-              />
-            }
-          />
-        </Box>
-        <Box
-          gridColumn="span 3"
-          backgroundColor={colors.primary[400]}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <StatBox
-            title="431,225"
-            subtitle="Sales Obtained"
-            progress="0.50"
-            increase="+21%"
-            icon={
-              <PointOfSaleIcon
-                sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
-              />
-            }
-          />
-        </Box>
-        <Box
-          gridColumn="span 3"
-          backgroundColor={colors.primary[400]}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <StatBox
-            title="32,441"
-            subtitle="New Clients"
-            progress="0.30"
-            increase="+5%"
             icon={
               <PersonAddIcon
                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
@@ -116,12 +108,50 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title="1,325,134"
-            subtitle="Traffic Received"
+            title={statistics.totalPostDisplay}
+            subtitle="Total Post"
+            progress="0.50"
+            increase="+21%"
+            icon={
+              <PostAddIcon
+                sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
+              />
+            }
+          />
+        </Box>
+        <Box
+          gridColumn="span 3"
+          backgroundColor={colors.primary[400]}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <StatBox
+            title={statistics.totalPet}
+            subtitle="Total Pet"
+            progress="0.30"
+            increase="+5%"
+            icon={
+              <PetsIcon
+                sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
+              />
+            }
+          />
+        </Box>
+        <Box
+          gridColumn="span 3"
+          backgroundColor={colors.primary[400]}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <StatBox
+            title={statistics.totalExchange}
+            subtitle="Total Exchange"
             progress="0.80"
             increase="+43%"
             icon={
-              <TrafficIcon
+              <StoreIcon
                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
               />
             }
@@ -131,7 +161,7 @@ const Dashboard = () => {
         {/* ROW 2 */}
         <Box
           gridColumn="span 12"
-          gridRow="span 5"
+          gridRow="span 6"
           backgroundColor={colors.primary[400]}
         >
           <Box

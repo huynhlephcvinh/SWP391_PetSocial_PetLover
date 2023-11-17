@@ -11,23 +11,21 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import axios from "axios";
 import Modal from "react-modal";
-import { useEffect } from "react";
-
 
 const Post = ({ post, setPosts, posts, onCommentAdded }) => {
   const [commentOpen, setCommentOpen] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenImage, setIsOpenImage] = useState(false);
-  const [postRefresh, setPostRefresh] = useState(0);
+  // const [postRefresh, setPostRefresh] = useState(0);
   const token = localStorage.getItem("token");
-  const [refreshCmt, setRefreshCmt] = useState(0);
-
-
-
+  // const [refreshCmt, setRefreshCmt] = useState(0);
 
   //phan like, cmt, update cua Khoa
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(() => {
+    const localStorageLiked = localStorage.getItem(`post_${post.id}_liked`);
+    return localStorageLiked ? JSON.parse(localStorageLiked) : false;
+  });
   const [tempTotalLikes, setTempTotalLikes] = useState(post.total_like);
   const [isEditMode, setEditMode] = useState(false);
   const [updatedContent, setUpdatedContent] = useState(post.content);
@@ -37,17 +35,12 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
   const [totalComments, setTotalComments] = useState(post.total_comment);
   const [tempLiked, setTempLiked] = useState(false);
 
-
-
   const updateTotalLikes = () => {
     setTempTotalLikes(post.total_like);
     setLiked(post.fieldReaction);
   };
-  const handleRefresh = () => {
-    setPostRefresh((prev) => prev + 1);
-  };
   const updateTotalComments = () => {
-    setTotalComments(totalComments + 1);
+    setTotalComments(post.total_comment + 1);
   };
   const toggleEditMode = () => {
     setEditMode(!isEditMode);
@@ -65,11 +58,15 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
     };
 
     axios
-      .put(`http://103.253.147.216:8080/post/update/${post.id}`, updatedPost, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      .put(
+        `https://petsocial.azurewebsites.net/post/update/${post.id}`,
+        updatedPost,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
       .then((response) => {
         if (response.status === 200) {
           setUpdatedContent(updatedContent);
@@ -82,20 +79,28 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
         console.error("Error updating the post:", error);
       });
   };
+
   const handleLikeClick = () => {
     const newLiked = !liked;
-
     axios
-      .post(`http://103.253.147.216:8080/reaction/${post.id}/like`, null, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      .post(
+        `https://petsocial.azurewebsites.net/reaction/${post.id}/like`,
+        null,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
       .then((response) => {
         if (response.status === 200) {
           setLiked(newLiked);
           setTempLiked(newLiked);
           setTempTotalLikes(newLiked ? tempTotalLikes + 1 : tempTotalLikes - 1);
+          localStorage.setItem(
+            `post_${post.id}_liked`,
+            JSON.stringify(newLiked)
+          );
         } else {
           console.error(error);
         }
@@ -107,22 +112,17 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
 
   //phan like, cmt, update cua Khoa
 
-  const handleAddComment = () => {
-    onCommentAdded();
-  };
-
-
   const openImage = () => {
     setIsOpenImage(true);
-  }
+  };
   const closeImage = () => {
     setIsOpenImage(false);
-  }
+  };
   const calculateTimeDifference = (createDate) => {
     const currentDate = new Date();
-    const [day, month, yearTime] = createDate.split('-');
-    const [year, time] = yearTime.split(' ');
-    const [hours, minutes] = time.split(':');
+    const [day, month, yearTime] = createDate.split("-");
+    const [year, time] = yearTime.split(" ");
+    const [hours, minutes] = time.split(":");
     const postCreateDate = new Date(year, month - 1, day, hours, minutes);
     const timeDifference = currentDate - postCreateDate;
     let formattedDate;
@@ -133,7 +133,9 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
       formattedDate = `${Math.floor(timeDifference / (60 * 1000))} minutes ago`;
     } else if (timeDifference < 24 * 60 * 60 * 1000) {
       const hours = Math.floor(timeDifference / (60 * 60 * 1000));
-      const minutes = Math.floor((timeDifference % (60 * 60 * 1000)) / (60 * 1000));
+      const minutes = Math.floor(
+        (timeDifference % (60 * 60 * 1000)) / (60 * 1000)
+      );
       formattedDate = `${hours} hours ago`;
     } else {
       const days = Math.floor(timeDifference / (24 * 60 * 60 * 1000));
@@ -148,10 +150,7 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
   const formattedDate = calculateTimeDifference(post.create_date);
   // console.log("fomasd",formattedDate);
 
-
-
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-
 
   const [menuAnchor, setMenuAnchor] = useState(null);
   const handleMenuClick = (event) => {
@@ -161,17 +160,19 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
 
   const handleMenuClose = () => {
     setMenuAnchor(null);
-  }
+  };
 
   const handleMenuDelete = async () => {
-    const token = localStorage.getItem('token');
-    const response = await axios.delete("http://103.253.147.216:8080/post/delete/" + post.id, {
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const response = await axios.delete(
+      "https://petsocial.azurewebsites.net/post/delete/" + post.id,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
-    })
+    );
 
-    setPosts(posts.filter(item => item.id !== post.id))
+    setPosts(posts.filter((item) => item.id !== post.id));
     console.log(response.data);
     handleMenuClose();
     if (response.data === "Not Found") {
@@ -181,9 +182,9 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
       setIsModalOpen(true);
       setError("Delete success");
     }
-    // window.location.reload();
 
-  }
+    // window.location.reload();
+  };
 
   return (
     <div className="post">
@@ -192,22 +193,40 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
           <div className="userInfo">
             <div className="avatar">
               <img className="avtuser" src={post.userPostDTO.avatar} alt="" />
-              <img className="avtpet" src={post.petToPostDTO.image} alt="" />
+              {post.petToPostDTO && (
+                <img className="avtpet" src={post.petToPostDTO.image} alt="" />
+              )}
             </div>
             <div className="details">
               <Link
-                to={post.userPostDTO.id === currentUser.id ? '/my-profile' : `/profile/${post.userPostDTO.id}`}
+                to={
+                  post.userPostDTO.id === currentUser.id
+                    ? "/my-profile"
+                    : `/profile/${post.userPostDTO.id}`
+                }
                 style={{ textDecoration: "none", color: "inherit" }}
               >
-                <span className="name">{post.userPostDTO.name} </span> <span style={{ fontSize: 14 }}>with</span><span> {post.petToPostDTO.name}</span>
+                <span className="name">{post.userPostDTO.name} </span>{" "}
+                {post.petToPostDTO && (
+                  <>
+                    <span style={{ fontSize: 14 }}>with</span>
+                    <span style={{ fontStyle: "italic", fontWeight: "bold" }}>
+                      {post.petToPostDTO.name}
+                    </span>
+                  </>
+                )}
               </Link>
-              <span className="date">{formattedDate}</span>
+              <br />
+              <span
+                className="date"
+                style={{ color: "grey", fontSize: "14px" }}
+              >
+                {formattedDate}
+              </span>
             </div>
           </div>
 
           <MoreHorizIcon onClick={handleMenuClick} />
-
-
         </div>
         {isEditMode ? ( // Kiểm tra nếu đang ở chế độ chỉnh sửa
           <div className="content">
@@ -221,36 +240,42 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
                 Save
               </button>
             </div>
-            <img src={editingImage} alt="" />
+            {editingImage && (
+              <img src={editingImage} onClick={openImage} alt="" />
+            )}
           </div>
         ) : (
           <div className="content">
             <p>{updatedContent}</p>{" "}
             {/* Sử dụng updatedContent để hiển thị nội dung */}
-            <img src={updatedImage} alt="" />
+            {updatedImage && (
+              <img src={updatedImage} onClick={openImage} alt="" />
+            )}
           </div>
         )}
         {/* <div className="content">                                            goc
           <p>{post.content}</p>                                                 goc
           <img src={post.image} alt="" onClick={openImage} />                   goc
         </div> */}
-        <div className="info">
+        <div className="infoo">
           <div className="item" onClick={handleLikeClick}>
             {liked ? <FavoriteOutlinedIcon /> : <FavoriteBorderOutlinedIcon />}
             {tempTotalLikes} Likes
           </div>
           <div className="item" onClick={() => setCommentOpen(!commentOpen)}>
             <TextsmsOutlinedIcon />
-            {post.total_comment} Comments
+            {totalComments} Comments
           </div>
-          <div className="item">
+          {/* <div className="item">
             <ShareOutlinedIcon />
             Share
-          </div>
+          </div> */}
         </div>
-        {commentOpen && <Comments postId={post.id} onCommentAdded={handleAddComment} key={postRefresh} />}
+        {commentOpen && (
+          <Comments postId={post.id} onCommentAdd={updateTotalComments} />
+        )}
       </div>
-      {post.userPostDTO.id === currentUser.id ?
+      {post.userPostDTO.id === currentUser.id ? (
         <Menu
           anchorEl={menuAnchor}
           open={Boolean(menuAnchor)}
@@ -267,9 +292,7 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
           <MenuItem onClick={toggleEditMode}>Edit</MenuItem>
           <MenuItem onClick={handleMenuDelete}>Delete</MenuItem>
         </Menu>
-        : null}
-
-
+      ) : null}
 
       <Modal
         isOpen={isModalOpen}
@@ -282,7 +305,7 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            textAlign: "center"
+            textAlign: "center",
           },
           content: {
             width: "150px",
@@ -296,7 +319,7 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
-            textAlign: "center"
+            textAlign: "center",
           },
         }}
       >
@@ -318,12 +341,9 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
         </style>
         <div>
           <h2 className="modal-header">Message</h2>
-          <div className="modal-content">
-            {error}
-          </div>
+          <div className="modal-content">{error}</div>
         </div>
       </Modal>
-
 
       <Modal
         isOpen={isOpenImage}
@@ -334,25 +354,23 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
           },
           content: {
             width: "50%",
-            maxWidth: "none",
+            height: "fit-content",
+            maxWidth: "65vh",
             margin: "auto",
-            overflow: "hidden"
+            overflow: "hidden",
           },
         }}
       >
+        <div></div>
         <div>
-        </div>
-        <div>
-          <img src={post.image} alt="" style={{ width: "100%" }} />
+          <img
+            src={post.image}
+            alt=""
+            style={{ width: "100%", maxHeight: "80vh" }}
+          />
         </div>
       </Modal>
-
-
     </div>
-
-
-
-
   );
 };
 

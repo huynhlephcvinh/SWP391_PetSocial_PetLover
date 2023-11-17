@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./rightBar.scss";
+import { useNavigate } from "react-router-dom";
 
 const RightBar = () => {
   const [users, setUsers] = useState([]);
@@ -8,10 +9,11 @@ const RightBar = () => {
   const [isChatBoxVisible, setChatBoxVisible] = useState(false); // Thêm trạng thái chat box
   const [selectedUser, setSelectedUser] = useState(null); // Thêm trạng thái người dùng đang được chọn
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
   const getAllUsers = () => {
     axios
-      .get("http://103.253.147.216:8080/user/getAllUser", {
+      .get("https://petsocial.azurewebsites.net/user/getAllUser", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -26,7 +28,7 @@ const RightBar = () => {
 
   const searchUsers = () => {
     axios
-      .get("http://103.253.147.216:8080/user/searchUser", {
+      .get("https://petsocial.azurewebsites.net/user/searchUser", {
         params: {
           name: searchText,
         },
@@ -50,9 +52,10 @@ const RightBar = () => {
   // Hàm xử lý khi người dùng click vào một user
   const handleUserClick = (user) => {
     // Đặt trạng thái để hiển thị khung chat box
-    setChatBoxVisible(true);
     // Lưu thông tin user đang chọn vào trạng thái
-    setSelectedUser(user);
+    // localStorage.setItem("selectedUser", JSON.stringify(user));
+
+    navigate(`/profile/${user.id}`);
   };
   useEffect(() => {
     getAllUsers();
@@ -78,17 +81,20 @@ const RightBar = () => {
                 users.map((user) => (
                   <li key={user.id}>
                     <div
-                      className={`user ${selectedUser === user ? "active" : ""
-                        }`}
+                      className={`user ${
+                        selectedUser === user ? "active" : ""
+                      }`}
                       onClick={() => handleUserClick(user)}
                     >
                       <div className="avatar-frame">
                         {user.avatar ? (
-                          <img src={user.avatar} alt={`${user.name}'s avatar`} />
+                          <img
+                            src={user.avatar}
+                            alt={`${user.name}'s avatar`}
+                          />
                         ) : (
                           "\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0"
                         )}
-
 
                         {user.isOnline && <div className="online-dot" />}
                       </div>
@@ -98,6 +104,11 @@ const RightBar = () => {
                 ))}
             </ul>
           </div>
+          {/* <div className="chatOnline">
+            <div className="chatOnlineWrapper">
+              <ChatOnline setSelectedUser={handleUserClick} />
+            </div>
+          </div> */}
         </div>
       </div>
     </div>

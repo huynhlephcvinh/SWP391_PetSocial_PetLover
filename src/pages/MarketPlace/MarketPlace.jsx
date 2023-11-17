@@ -1,50 +1,72 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import "./marketplace.scss";
-import PlaceIcon from "@mui/icons-material/Place";
-import LanguageIcon from "@mui/icons-material/Language";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import Exchanges from '../../components/exchanges/Exchanges';
-import { Helmet } from 'react-helmet';
-// import { CenterFocusStrong, Pets } from '@mui/icons-material';
+import Exchanges from "../../components/exchanges/Exchanges";
+import { Helmet } from "react-helmet";
+import SlideSwitch from "../../components/slideswitch/SlideSwitch";
 
-const MarketPlace =  () => {
-  const currentUser = localStorage.getItem('currentUser');
-  const [userData, setUserData] = useState(null);
-  const [jwt, setJwt] = useState();
-  const cruser = JSON.parse(localStorage.getItem('currentUser'));
+const MarketPlace = () => {
+  const currentUser = localStorage.getItem("currentUser");
+  const cruser = JSON.parse(localStorage.getItem("currentUser"));
 
   const [exchanges, setExchanges] = useState([]);
+  const [view, setView] = useState(false);
 
-  const [posts, setPosts] = useState([]);
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
+
+  const handleToggle = () => {
+    setView(!view);
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://103.253.147.216:8080/exchange/getAllExchange", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        setExchanges([]);
+        let response;
+        if (!view) {
+          response = await axios.get(
+            "https://petsocial.azurewebsites.net/exchange/getAllExchange",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+        } else {
+          setExchanges([]);
+          response = await axios.get(
+            "https://petsocial.azurewebsites.net/exchange/view-exchange",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+        }
+
         console.log(response.data);
         setExchanges(response.data);
       } catch (error) {
-        console.log('Error: ', error);
+        console.log("Error: ", error);
       }
     };
 
     fetchData();
-  }, [token]);
+  }, [view]);
   return (
     <div className="marketplace">
       <Helmet>
         <title>Market Place</title>
       </Helmet>
       <div className="marketplaceContainer">
+        <SlideSwitch isChecked={view} onCheckedChange={handleToggle} />
         {exchanges != "" ? (
-          <Exchanges exchanges={exchanges} setExchanges={setExchanges} />
+          <Exchanges
+            exchanges={exchanges}
+            setExchanges={setExchanges}
+            view={view}
+          />
         ) : (
-          <div className='noPosts'>Nothing here</div>
+          <div className="noPosts">Nothing here</div>
         )}
       </div>
     </div>

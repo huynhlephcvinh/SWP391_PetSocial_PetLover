@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import "./mypets.scss";
 import PlaceIcon from "@mui/icons-material/Place";
 import LanguageIcon from "@mui/icons-material/Language";
@@ -8,23 +8,24 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Pets from "../../components/pets/Pets";
 import Modal from "react-modal";
 import Image from "../../assets/img.png";
+import { Helmet } from "react-helmet";
 
 // import { CenterFocusStrong, Pets } from '@mui/icons-material';
 
 const MyPets = () => {
-  const cruser = JSON.parse(localStorage.getItem('currentUser'));
-  const [isMessageOpen,setIsMessageOpen]=useState(false);
+  const cruser = JSON.parse(localStorage.getItem("currentUser"));
+  const [isMessageOpen, setIsMessageOpen] = useState(false);
 
   const [pets, setPets] = useState([]);
-  const [petCreate,setPetCreate] = useState('');
-  const token = localStorage.getItem('token');
+  const [petCreate, setPetCreate] = useState("");
+  const token = localStorage.getItem("token");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [petType, setPetType] = useState('');
-  const [image, setImage] = useState('');
-  const [imageView, setImageView] = useState('');
-  const [error, setError] = useState('');
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [petType, setPetType] = useState("");
+  const [image, setImage] = useState("");
+  const [imageView, setImageView] = useState("");
+  const [error, setError] = useState("");
 
   const handleSelectChange = (e) => {
     setPetType(e.target.value);
@@ -44,39 +45,57 @@ const MyPets = () => {
         file: image,
         name: name,
         description: description,
-        idPetType: petType
+        idPetType: petType,
       };
-      const response = await axios.post('http://103.253.147.216:8080/pet/createpet', createPetDTO, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data',
+      console.log(createPetDTO.file.size);
+
+      if (createPetDTO.file.size > 5242880) {
+        console.log(createPetDTO.file.size);
+        setError("Too big size image", createPetDTO.file.size);
+        openMessage();
+        return;
+      } else if (
+        createPetDTO.name.trim() == "" ||
+        createPetDTO.description.trim() == "" ||
+        createPetDTO.idPetType.trim() == "" ||
+        createPetDTO.file == ""
+      ) {
+        setError("Please fill in all form");
+        openMessage();
+        return;
+      }
+      const response = await axios.post(
+        `https://petsocial.azurewebsites.net/pet/createpet`,
+        createPetDTO,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
         }
-      });
+      );
       setPetCreate(response.data);
       setError("Add Success");
-      closeModal();
       openMessage();
-    } catch (error) {
-      setError("Error! Please check your fields!");
-    }
+      closeModal();
+    } catch (error) {}
   };
 
-  const openMessage=()=>{
+  const openMessage = () => {
     setIsMessageOpen(true);
-  }
-  const closeMessage=()=>{
+  };
+  const closeMessage = () => {
     setIsMessageOpen(false);
-
-  }
+  };
 
   const openModal = () => {
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
-    setImage('');
-    setDescription('');
-    setName('');
+    setImage("");
+    setDescription("");
+    setName("");
     setIsModalOpen(false);
   };
 
@@ -87,62 +106,48 @@ const MyPets = () => {
       setImageView({
         name: file.name,
         url: URL.createObjectURL(file),
-      })
+      });
     }
   };
 
   useEffect(() => {
     const fetchPet = async () => {
       try {
-        const response1 = await axios.get("http://103.253.147.216:8080/pet/getAllPet", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response1 = await axios.get(
+          "https://petsocial.azurewebsites.net/pet/getAllPet",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setPets(response1.data.data);
       } catch (error) {
         console.error(error);
       }
-    }
+    };
 
     fetchPet();
   }, [petCreate]);
 
-
-
   return (
     <div className="profile">
+      <Helmet>
+        <title>Pet</title>
+      </Helmet>
       <div className="images">
         <img
           src="https://images.pexels.com/photos/13440765/pexels-photo-13440765.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
           alt=""
           className="cover"
         />
-        <img
-          src={cruser.avatar}
-          alt=""
-          className="profilePic"
-        />
-
+        <img src={cruser.avatar} alt="" className="profilePic" />
       </div>
       <div className="profileContainer">
         <div className="uInfo">
-          <div className="left">
-
-          </div>
+          <div className="left"></div>
           <div className="center">
             <span>{cruser.name}</span>
-
-            <div className="info">
-              <div className="item">
-                <PlaceIcon />
-                <span>USA</span>
-              </div>
-              <div className="item">
-                <LanguageIcon />
-                <span>lama.dev</span>
-              </div>
-            </div>
             <button onClick={openModal}>Create Pet</button>
           </div>
           <div className="right">
@@ -154,10 +159,9 @@ const MyPets = () => {
         {pets != "" ? (
           <Pets pets={pets} setPets={setPets} />
         ) : (
-          <div className='noPosts'>You don't have any pets yet</div>
+          <div className="noPosts">You don't have any pets yet</div>
         )}
       </div>
-
 
       <Modal
         isOpen={isModalOpen}
@@ -243,12 +247,6 @@ const MyPets = () => {
         text-align: center;
       }
       
-
-
-
-      
-
-      
       .modal-button {
         padding: 8px 16px;
         margin-right: 10px;
@@ -274,7 +272,7 @@ const MyPets = () => {
           <h2 className="modal-header">Add Pet</h2>
           <div className="modal-content">
             <br />
-            <div className='textModal'>
+            <div className="textModal">
               {/* <label>Pet Name</label> */}
               <h4>Pet Image</h4>
               <input
@@ -297,53 +295,72 @@ const MyPets = () => {
                       <p>{image.name}</p>
                     </>
                   ) : (
-                    <img style={{ marginTop: "10px", height: "30px" }} src={Image} alt="" />
+                    <img
+                      style={{ marginTop: "10px", height: "30px" }}
+                      src={Image}
+                      alt=""
+                    />
                   )}
                 </div>
               </label>
               <br />
               <h4>Pet Name</h4>
-              <input className="modal-input" type="text" id="pet-name" value={name} onChange={(e) => setName(e.target.value)} />
+              <input
+                className="modal-input"
+                type="text"
+                id="pet-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
 
               <h4>Description</h4>
-              <textarea className="modal-textarea" type="text" value={description} onChange={(e) => setDescription(e.target.value)} id="description" />
+              <textarea
+                className="modal-textarea"
+                type="text"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                id="description"
+              />
               <h4>Pet Type</h4>
-              <select className='modal-select' id="petType" value={petType} onChange={handleSelectChange}>
+              <select
+                className="modal-select"
+                id="petType"
+                value={petType}
+                onChange={handleSelectChange}
+              >
                 <option value="">-- Choose --</option>
                 <option value="1">Dog</option>
                 <option value="2">Cat</option>
               </select>
             </div>
-            <div className='imgModal'>
+            <div className="imgModal">
               {image ? (
                 <>
                   {/* , marginTop: "20px", marginLeft: "30px" */}
-                  <img style={{ borderRadius: "5%", maxWidth: "370px", maxHeight: "360px" }} src={imageView.url} alt="" />
+                  <img
+                    style={{
+                      borderRadius: "5%",
+                      maxWidth: "370px",
+                      maxHeight: "360px",
+                    }}
+                    src={imageView.url}
+                    alt=""
+                  />
                 </>
-              ) : (
-                null
-              )}
+              ) : null}
             </div>
           </div>
         </div>
 
         <div style={{ textAlign: "right" }}>
-
-          <button
-            className="modal-button cancel"
-            onClick={closeModal}
-          >
+          <button className="modal-button cancel" onClick={closeModal}>
             Cancel
           </button>
-          <button
-            className="modal-button exchange"
-            onClick={handleSubmit}
-          >
+          <button className="modal-button exchange" onClick={handleSubmit}>
             Create
           </button>
         </div>
       </Modal>
-
 
       <Modal
         isOpen={isMessageOpen}
@@ -390,9 +407,7 @@ const MyPets = () => {
         </style>
         <div>
           <h2 className="modal-header">Message</h2>
-          <div className="modal-content">
-            {error}
-          </div>
+          <div className="modal-content">{error}</div>
         </div>
       </Modal>
     </div>

@@ -133,14 +133,14 @@
           flex-direction: column; // Đặt flex-direction thành column để sắp xếp các phần tử theo chiều dọc
           border: 1px solid #ccc;
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-          margin: 25px;
+          margin: 20px auto;
           padding: 20px;
           max-width: 400px;
           background-color: #f8f5f7;
           border-radius: 10px;
 
           .avatar-container {
-            text-align: center;
+            // text-align: center;
 
             .avatar {
               float: left;
@@ -154,6 +154,7 @@
 
             .avatar-container p {
               float: left; /* Xóa khoảng cách bên dưới phần tử <p> */
+              margin-left: 10px;
             }
           }
 
@@ -172,6 +173,18 @@
 
             &:hover {
               background-color: #45a049;
+            }
+          }
+          .reject-button {
+            background-color: rgb(250, 73, 73);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 10px;
+            cursor: pointer;
+
+            &:hover {
+              background-color: rgb(238, 113, 113);
             }
           }
         }

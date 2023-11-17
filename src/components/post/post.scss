@@ -2,22 +2,15 @@
 
 .post {
   @include themify($themes) {
-    // height: 192px;
-    // width: 712px;
+    max-width: 100%;
     max-width: 900px;
-    -webkit-box-shadow: 0px 0px 25px -10px rgba(0, 0, 0, 0.38);
-    -moz-box-shadow: 0px 0px 25px -10px rgba(0, 0, 0, 0.38);
-    box-shadow: 0px 0px 25px -10px rgba(0, 0, 0, 0.38);
     border-radius: 20px;
     background-color: themed("bg");
     color: themed("textColor");
-    max-width: 100%;
+    box-shadow: 0 0 25px -10px rgba(0, 0, 0, 0.38);
 
     .container {
       padding: 20px;
-
-
-
 
       .user {
         display: flex;
@@ -32,83 +25,70 @@
             width: 45px;
             height: 45px;
             position: relative;
-          }
 
-          img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            position: absolute;
-
-          }
-
-          .avtpet {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            object-fit: cover;
-            position: absolute;
-            right: 0;
-            bottom: 0;
-          }
-
-          .details {
-            display: flex;
-            flex-direction: column;
-
-            .name {
-              font-weight: 600;
+            img {
+              width: 40px;
+              height: 40px;
+              border-radius: 50%;
+              object-fit: cover;
+              position: absolute;
             }
 
-            .pet-name {
-              font-weight: 500;
-              font-size: 15px;
+            .avtpet {
+              width: 20px;
+              height: 20px;
+              border-radius: 50%;
+              object-fit: cover;
+              position: absolute;
+              right: 0;
+              bottom: 0;
             }
 
-            .date {
-              font-size: 12px;
+            .details {
+              display: flex;
+              flex-direction: column;
+
+              .name {
+                font-weight: 600;
+              }
+              .pet-name {
+                font-weight: 500;
+                font-size: 15px;
+              }
+
+              .date {
+                font-size: 10px;
+              }
             }
           }
         }
       }
 
-
-
-
-
       .content {
-        margin: 20px 0px;
-        width: 860px;
+        margin: 20px 0;
+        width: 100%;
         word-wrap: break-word;
 
         img {
-          max-height: 400px;
-          max-width: 400px;
-          width: 40%;
-
+          width: 100%;
+          max-height: 500px;
           object-fit: cover;
           margin-top: 20px;
         }
-
         .content-wrapper {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          flex-grow: 1;
-          /* Allows the input field to expand */
+          flex-grow: 1; /* Allows the input field to expand */
 
           .save-button {
-            background-color: #1e6fc5;
-            /* Set the button's background color to green */
-            color: #fff;
-            /* Set the text color to white */
+            background-color: #1e6fc5; /* Set the button's background color to green */
+            color: #fff; /* Set the text color to white */
             padding: 8px 16px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin-bottom: 10px;
-            /* Move the button below the input field */
+            margin-bottom: 10px; /* Move the button below the input field */
           }
         }
 
@@ -121,10 +101,9 @@
         }
       }
 
-      .info {
+      .infoo {
         display: flex;
-        align-items: center;
-        gap: 250px;
+        justify-content: space-around;
 
         .item {
           display: flex;

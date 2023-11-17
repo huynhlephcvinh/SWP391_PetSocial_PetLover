@@ -14,15 +14,16 @@ const BarChart = ({ isDashboard = false }) => {
   useEffect(() => {
     if (token) {
       axios
-        .get("http://103.253.147.216:8080/admin/statistics", {
+        .get("https://petsocial.azurewebsites.net/admin/statistics", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         })
         .then((response) => {
-
-          // console.log(response.data);
+          // Xử lý dữ liệu trả về từ API
+          console.log(response.data);
           const apiData = response.data.data;
+          const monthlyExchangeData = apiData.monthlyExchangeStatistics;
 
           const monthlyData = apiData.monthlyStatistics;
           const updatedChartData = Object.keys(monthlyData)
@@ -32,8 +33,12 @@ const BarChart = ({ isDashboard = false }) => {
                 parseInt(b.replace("totalPostInMonth", ""))
             )
             .map((key) => ({
-              month: key.replace("totalPostInMonth", ""), 
+              month: key.replace("totalPostInMonth", ""), // Lấy tháng từ tên key
               post: monthlyData[key],
+              exchange:
+                monthlyExchangeData[
+                  key.replace("totalPostInMonth", "totalExchangeInMonth")
+                ],
             }));
 
           setChartData(updatedChartData);
@@ -76,7 +81,7 @@ const BarChart = ({ isDashboard = false }) => {
           },
         },
       }}
-      keys={["post"]}
+      keys={["post", "exchange"]}
       indexBy="month"
       margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
       padding={0.3}

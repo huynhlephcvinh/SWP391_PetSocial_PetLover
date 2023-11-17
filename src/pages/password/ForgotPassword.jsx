@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import "./forgotpassword.scss";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet";
 function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -17,7 +18,7 @@ function ForgotPassword() {
     try {
       // Send a request to your backend to initiate the password reset process
       const response = await axios.post(
-        "http://localhost:8080/forgot_password",
+        "https://petsocial.azurewebsites.net/forgot_password",
         {
           email: email,
         }
@@ -35,6 +36,9 @@ function ForgotPassword() {
 
   return (
     <div className="forgot-password-container">
+      <Helmet>
+        <title>Forgot Password</title>
+      </Helmet>
       <div className="forgot-password">
         <h2 className="title">Forgot Password</h2>
         <form className="form-pass" onSubmit={handleForgotPassword}>

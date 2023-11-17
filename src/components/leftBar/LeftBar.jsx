@@ -1,15 +1,13 @@
 import "./leftBar.scss";
 import Friends from "../../assets/1.png";
 import Market from "../../assets/3.png";
-import Pet from "../../assets/14.png"
+import Pet from "../../assets/14.png";
 import Messages from "../../assets/10.png";
-import Applied from "../../assets/16.png"
+import Applied from "../../assets/16.png";
 import { AuthContext } from "../../context/authContext";
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
-
-
 
 const LeftBar = () => {
   // const { currentUser } = useContext(AuthContext);
@@ -19,15 +17,13 @@ const LeftBar = () => {
       <div className="container">
         <div className="menu">
           {/* <Link to='/profile/${currentUser.id}' className="custom-link"> */}
-          <Link to='/my-profile' className="custom-link">
+          <Link to="/my-profile" className="custom-link">
             <div className="user">
-              <img
-                src={currentUser.avatar}
-                alt=""
-              />
+              <img src={currentUser.avatar} alt="" />
               <span>{currentUser.name}</span>
-            </div></Link>
-          <Link to='my-pets' className="custom-link">
+            </div>
+          </Link>
+          <Link to="my-pets" className="custom-link">
             <div className="item">
               <img src={Pet} alt="" />
               <span>Pets</span>
@@ -53,13 +49,13 @@ const LeftBar = () => {
         <hr />
         <div className="menu">
           <span>Your shortcuts</span>
-          <Link to='market-place' className="custom-link">
+          <Link to="market-place" className="custom-link">
             <div className="item">
               <img src={Market} alt="" />
               <span>Marketplace</span>
             </div>
           </Link>
-          <Link to='view-apply' className="custom-link">
+          <Link to="view-apply" className="custom-link">
             <div className="item">
               <img src={Applied} alt="" />
               <span>Applied</span>
@@ -77,10 +73,12 @@ const LeftBar = () => {
             <img src={Videos} alt="" />
             <span>Videos</span>
           </div> */}
-          <div className="item">
-            <img src={Messages} alt="" />
-            <span>Messages</span>
-          </div>
+          <Link to="/chat" className="custom-link">
+            <div className="item">
+              <img src={Messages} alt="" />
+              <span>Messages</span>
+            </div>
+          </Link>
         </div>
         <hr />
         {/* <div className="menu">

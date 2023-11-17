@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "./register.scss";
+import { Helmet } from "react-helmet";
 
 function Register() {
   const [name, setName] = useState("");
@@ -12,9 +13,13 @@ function Register() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-
   function isFormValid() {
-    return name.trim() !== "" && email.trim() !== "" && phone.trim() !== "" && password.trim() !== "";
+    return (
+      name.trim() !== "" &&
+      email.trim() !== "" &&
+      phone.trim() !== "" &&
+      password.trim() !== ""
+    );
   }
 
   async function register(event) {
@@ -26,19 +31,22 @@ function Register() {
     }
 
     try {
-      const response = await axios.post("http://103.253.147.216:8080/createUser", {
-        name: name,
-        email: email,
-        phone: phone,
-        password: password,
-      }
+      const response = await axios.post(
+        "https://petsocial.azurewebsites.net/createUser",
+        {
+          email: email,
+          name: name,
+          phone: phone,
+          password: password,
+        }
       );
 
       console.log(response.data);
 
-      if (response.data === true
-        ) {
-          setSuccess("Register success. Check your email to complete verification");
+      if (response.data === true) {
+        setSuccess(
+          "Register success. Check your email to complete verification"
+        );
       } else {
         setError("Email is already exists");
       }
@@ -49,13 +57,17 @@ function Register() {
 
   return (
     <div className="register">
+      <Helmet>
+        <title>Register</title>
+      </Helmet>
       <div className="card">
         <div className="left">
-          <h1>Lama Social.</h1>
+          <h1>DC Social</h1>
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero cum,
-            alias totam numquam ipsa exercitationem dignissimos, error nam,
-            consequatur.
+            Dog Cat Lover Platform is a comprehensive online hub that connects
+            passionate pet enthusiasts, providing a seamless experience for dog
+            and cat lovers to connect, share, and explore everything related to
+            their beloved furry companions.
           </p>
           <span>Do you have an account?</span>
           <Link to="/login">
@@ -65,8 +77,14 @@ function Register() {
         <div className="right">
           <h1>Register</h1>
           <form onSubmit={register}>
-          {success && <h5 style={{ color: 'greenyellow', fontStyle: 'italic' }}>{success}</h5>}
-          {error && <h5 style={{ color: 'red', fontStyle: 'italic' }}>{error}</h5>}
+            {success && (
+              <h5 style={{ color: "greenyellow", fontStyle: "italic" }}>
+                {success}
+              </h5>
+            )}
+            {error && (
+              <h5 style={{ color: "red", fontStyle: "italic" }}>{error}</h5>
+            )}
             <input
               type="text"
               placeholder="Name"

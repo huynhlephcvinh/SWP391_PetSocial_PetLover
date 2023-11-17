@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Box, Typography, useTheme } from "@mui/material";
+import { Box, Button, Typography, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../../theme";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
 import Header from "../../../components/admin/Header";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 
 const Team = () => {
   const theme = useTheme();
@@ -19,7 +20,7 @@ const Team = () => {
     if (token) {
       // Gọi API để lấy dữ liệu từ phía backend
       axios
-        .get("http://103.253.147.216:8080/admin/getAllUser", {
+        .get("https://petsocial.azurewebsites.net/admin/getAllUser", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -57,13 +58,13 @@ const Team = () => {
     {
       field: "name",
       headerName: "Name",
-      flex: 1,
+      flex: 0.8,
       cellClassName: "name-column--cell",
     },
     {
       field: "phone",
       headerName: "Phone Number",
-      flex: 1,
+      flex: 0.6,
     },
     {
       field: "email",
@@ -77,7 +78,7 @@ const Team = () => {
     {
       field: "accessLevel",
       headerName: "Access Level",
-      flex: 1,
+      flex: 0.7,
       renderCell: ({ row: { accessLevel } }) => {
         return (
           <Box
@@ -95,7 +96,7 @@ const Team = () => {
             }
             borderRadius="4px"
           >
-            {accessLevel === "ROLE_ADMIN" && <AdminPanelSettingsOutlinedIcon />}
+            {/* {accessLevel === "ROLE_ADMIN" && <AdminPanelSettingsOutlinedIcon />} */}
             {accessLevel === "ROLE_STAFF" && <SecurityOutlinedIcon />}
             {accessLevel === "ROLE_USER" && <LockOpenOutlinedIcon />}
             <Typography color={colors.grey[100]} sx={{ ml: "5px" }}>
@@ -109,7 +110,7 @@ const Team = () => {
 
   return (
     <Box m="20px">
-      <Header title="TEAM" subtitle="Managing the Team Members" />
+      <Header title="USER" subtitle="Managing the Users" />
       <Box
         m="40px 0 0 0"
         height="75vh"

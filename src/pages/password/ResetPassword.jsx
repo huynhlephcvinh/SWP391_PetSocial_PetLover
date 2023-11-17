@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom"; // Assuming you use React Router
 import "./resetpassword.scss";
+import { Helmet } from "react-helmet";
 
 function ResetPassword() {
   const { token } = useParams();
@@ -17,7 +18,7 @@ function ResetPassword() {
     try {
       // Send a request to your backend to reset the password
       const response = await axios.post(
-        "http://localhost:8080/reset_password",
+        "https://petsocial.azurewebsites.net/reset_password",
         {
           token: authCode,
           password: password,
@@ -41,6 +42,9 @@ function ResetPassword() {
 
   return (
     <div className="reset-password-container">
+      <Helmet>
+        <title>Reset Password</title>
+      </Helmet>
       <div className="reset-password">
         <h2 className="title">Reset Password</h2>
         <form className="form-reset" onSubmit={handleResetPassword}>

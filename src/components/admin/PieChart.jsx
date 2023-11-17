@@ -14,7 +14,7 @@ const PieChart = () => {
   useEffect(() => {
     if (token) {
       axios
-        .get("http://103.253.147.216:8080/admin/statistics", {
+        .get("https://petsocial.azurewebsites.net/admin/statistics", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -98,9 +98,9 @@ const PieChart = () => {
         arcLinkLabelsTextColor={colors.grey[100]}
         arcLinkLabelsThickness={2}
         arcLinkLabelsColor={{ from: "color" }}
-        enableArcLabels={false}
+        enableArcLabels={true}
         arcLabelsRadiusOffset={0.4}
-        arcLabelsSkipAngle={7}
+        arcLabelsSkipAngle={10}
         arcLabelsTextColor={{
           from: "color",
           modifiers: [["darker", 2]],

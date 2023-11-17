@@ -16,7 +16,7 @@ const Posts = () => {
     if (token) {
       // Gọi API để lấy danh sách bài đăng từ phía backend
       axios
-        .get("http://103.253.147.216:8080/admin/getAllPost", {
+        .get("https://petsocial.azurewebsites.net/admin/getAllPost", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -32,6 +32,7 @@ const Posts = () => {
                 content: post.content,
                 date: formatDate(post.create_date),
                 image: post.image,
+                enable: post.enable,
                 like: post.total_like,
                 comment: post.total_comment,
               }))
@@ -79,6 +80,10 @@ const Posts = () => {
       field: "image",
       headerName: "Image",
       flex: 1,
+    },
+    {
+      field: "enable",
+      headerName: "Enable",
     },
     {
       field: "like",
