@@ -96,7 +96,7 @@ public class HomeController {
     }
 
   @PostMapping("/createUser")
-  public ResponseEntity<?> createuser(@RequestBody SingupDTO userDTO, HttpSession session, HttpServletRequest request) throws UserException {
+  public ResponseEntity<?> createuser(@RequestBody SingupDTO userDTO, HttpServletRequest request) throws UserException {
     String url = request.getRequestURL().toString();
     http://localhost:8080/createUser
     url = url.replace(request.getServletPath(), "");
