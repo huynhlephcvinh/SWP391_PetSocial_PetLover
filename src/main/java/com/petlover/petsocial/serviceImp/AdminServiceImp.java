@@ -49,6 +49,11 @@ public class AdminServiceImp implements AdminService {
             userForAdminDTO.setEmail(user.getEmail());
             userForAdminDTO.setPhone(user.getPhone());
             userForAdminDTO.setRole(user.getRole());
+            if(user.getAuthProvider()!=null) {
+                userForAdminDTO.setAuthProvider(user.getAuthProvider());
+            }else{
+                userForAdminDTO.setAuthProvider(AuthenticationProvider.NOT_BLOCK_USER);
+            }
             int countpet=0;
             for(int i=0;i<user.getPets().size();i++) {
                 if(user.getPets().get(i).isStatus()==true) {
