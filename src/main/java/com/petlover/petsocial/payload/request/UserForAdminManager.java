@@ -1,5 +1,6 @@
 package com.petlover.petsocial.payload.request;
 
+import com.petlover.petsocial.model.entity.AuthenticationProvider;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,7 @@ public class UserForAdminManager {
     private String avatar;
     private String role;
     private boolean enable;
+    private AuthenticationProvider authProvider;
     private int totalPet;
     private int totalPost;
 }

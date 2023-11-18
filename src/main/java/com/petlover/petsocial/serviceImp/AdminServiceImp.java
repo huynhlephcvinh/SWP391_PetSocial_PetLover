@@ -1,10 +1,7 @@
 package com.petlover.petsocial.serviceImp;
 
 import com.petlover.petsocial.exception.UserException;
-import com.petlover.petsocial.model.entity.Exchange;
-import com.petlover.petsocial.model.entity.Pet;
-import com.petlover.petsocial.model.entity.Post;
-import com.petlover.petsocial.model.entity.User;
+import com.petlover.petsocial.model.entity.*;
 import com.petlover.petsocial.payload.request.*;
 import com.petlover.petsocial.repository.ExchangeRepository;
 import com.petlover.petsocial.repository.PetRepository;
@@ -52,6 +49,11 @@ public class AdminServiceImp implements AdminService {
             userForAdminDTO.setEmail(user.getEmail());
             userForAdminDTO.setPhone(user.getPhone());
             userForAdminDTO.setRole(user.getRole());
+            if(user.getAuthProvider()!=null) {
+                userForAdminDTO.setAuthProvider(user.getAuthProvider());
+            }else{
+                userForAdminDTO.setAuthProvider(AuthenticationProvider.NOT_BLOCK_USER);
+            }
             int countpet=0;
             for(int i=0;i<user.getPets().size();i++) {
                 if(user.getPets().get(i).isStatus()==true) {
@@ -78,10 +80,10 @@ public class AdminServiceImp implements AdminService {
         if(user ==null) {
             throw new UserException("Not found User");
         }
-        if(user.isEnable()==false){
+        if(user.getAuthProvider() == AuthenticationProvider.BLOCK_USER){
             throw new UserException("User are blocked");
         }
-        user.setEnable(false);
+        user.setAuthProvider(AuthenticationProvider.BLOCK_USER);
         userRepo.save(user);
         UserForAdminDTO userForAdminDTO = new UserForAdminDTO();
         userForAdminDTO.setId(user.getId());
@@ -99,10 +101,10 @@ public class AdminServiceImp implements AdminService {
         if(user ==null) {
             throw new UserException("Not found User");
         }
-        if(user.isEnable()==true){
+        if(user.getAuthProvider() ==null){
             throw new UserException("User not block");
         }
-        user.setEnable(true);
+        user.setAuthProvider(null);
         userRepo.save(user);
         UserForAdminDTO userForAdminDTO = new UserForAdminDTO();
         userForAdminDTO.setId(user.getId());
@@ -263,7 +265,7 @@ public class AdminServiceImp implements AdminService {
         user.setPhone(signupDTO.getPhone());
         //String password = bCryptPasswordEncoder.encode(signupDTO.getPassword());
         user.setPassword(passwordEncoder.encode(signupDTO.getPassword()));
-        user.setAvatar("https://pixabay.com/vi/vectors/bi%E1%BB%83u-t%C6%B0%E1%BB%A3ng-ng%C6%B0%E1%BB%9Di-s%E1%BB%AD-d%E1%BB%A5ng-ng%C6%B0%E1%BB%9Di-1633249/");
+        user.setAvatar("https://res.cloudinary.com/dyrprccxf/image/upload/v1699728147/zoaodn4jg4dalzoghhx3.jpg");
         user.setRole("ROLE_STAFF");
         user.setEnable(true);
         User newuser = userRepo.save(user);
