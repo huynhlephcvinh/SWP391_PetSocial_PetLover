@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -15,6 +17,7 @@ public class UserForAdminManager {
     private String phone;
     private String avatar;
     private String role;
+    private BigDecimal balance;
     private boolean enable;
     private AuthenticationProvider authProvider;
     private int totalPet;

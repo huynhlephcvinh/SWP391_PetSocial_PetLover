@@ -22,6 +22,6 @@ public interface AdminService {
 
     int getTotalExchangeDisplay();
     int getTotalExchangeInMonth(int month);
-
+    double getTotalBalance();
     SingupDTO createStaff(SingupDTO signupDTO);
 }

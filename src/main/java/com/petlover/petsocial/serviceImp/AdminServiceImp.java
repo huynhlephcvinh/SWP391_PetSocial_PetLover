@@ -47,6 +47,7 @@ public class AdminServiceImp implements AdminService {
             userForAdminDTO.setAvatar(user.getAvatar());
             userForAdminDTO.setEnable(user.isEnable());
             userForAdminDTO.setEmail(user.getEmail());
+            userForAdminDTO.setBalance(user.getBalance());
             userForAdminDTO.setPhone(user.getPhone());
             userForAdminDTO.setRole(user.getRole());
             if(user.getAuthProvider()!=null) {
@@ -199,6 +200,12 @@ public class AdminServiceImp implements AdminService {
             }
         }
         return count;
+    }
+
+    @Override
+    public double getTotalBalance() {
+        Double totalBalance = userRepo.getTotalBalance();
+        return totalBalance != null ? totalBalance : 0.0;
     }
 
     public List<UserForAdminDTO> searchUser(String name) {

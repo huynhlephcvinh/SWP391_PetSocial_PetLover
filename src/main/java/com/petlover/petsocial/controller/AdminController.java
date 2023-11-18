@@ -175,6 +175,7 @@ public class AdminController {
             int totalPet = adminService.getTotalPetDisplay();
             int totalPostDisplay = adminService.getTotalPostDisplay();
             int totalExchange = adminService.getTotalExchangeDisplay();
+            double balance = adminService.getTotalBalance();
 
             // Tạo một đối tượng JSON để chứa thông tin thống kê
             Map<String, Integer> monthlyStatistics = new HashMap<>();
@@ -197,6 +198,7 @@ public class AdminController {
             statistics.put("monthlyStatistics", monthlyStatistics);
             statistics.put("totalExchange", totalExchange);
             statistics.put("monthlyExchangeStatistics", monthlyExchangeStatistics);
+            statistics.put("totalBalance", balance);
 
             responseData.setData(statistics);
             return new ResponseEntity<>(responseData, HttpStatus.OK);
