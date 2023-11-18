@@ -8,6 +8,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +34,8 @@ public class PaypalController {
     @Autowired
     PaypalService service;
 
+    @Value("${baseurl}")
+    private String baseurl;
 
     @PostMapping("/pay")
     public ResponseEntity<?> payment(@RequestHeader("Authorization") String jwt, @RequestBody OrderDTO order, HttpServletResponse response) {
@@ -64,7 +67,7 @@ public class PaypalController {
     }
 
     @GetMapping("/success")
-    public RedirectView successPay(@RequestParam("paymentId") String paymentId,
+    public ResponseEntity<?> successPay(@RequestParam("paymentId") String paymentId,
                                    @RequestParam("PayerID") String payerId,
                                    HttpServletRequest request) {
         try {
@@ -75,9 +78,9 @@ public class PaypalController {
             // Update the user's balance
             BigDecimal amount = new BigDecimal(payment.getTransactions().get(0).getAmount().getTotal());
             userService.updateBalance(jwt, amount);
-            return new RedirectView("http://localhost:8080/payment?success=true");
+            return ResponseEntity.ok("Payment executed successfully.");
         } catch (PayPalRESTException | UserException e) {
-            return new RedirectView("http://localhost:8080/payment?success=false");
+            return ResponseEntity.ok("Payment executed failed for some reason.");
         }
     }
 }
