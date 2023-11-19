@@ -56,12 +56,7 @@ public class PostServiceImp implements PostService {
                         String image = cloudinaryService.uploadFile(creatPostDTO.getFile());
                         newPost.setImage(image);
                     }catch (Exception e){}
-                    if(creatPostDTO.getContent().equals("")) {
-                        return null;
-                    }
-                    if(creatPostDTO.getContent()==null) {
-                        return null;
-                    }
+
 
                     newPost.setContent(creatPostDTO.getContent());
                     User user = userRepo.getById(userDTO.getId());
@@ -97,12 +92,7 @@ public class PostServiceImp implements PostService {
                         String image = cloudinaryService.uploadFile(creatPostDTO.getFile());
                         newPost.setImage(image);
                     }catch (Exception e){}
-                    if(creatPostDTO.getContent().equals("")) {
-                        return null;
-                    }
-                    if(creatPostDTO.getContent()==null) {
-                        return null;
-                    }
+
 
                     newPost.setContent(creatPostDTO.getContent());
                     User user = userRepo.getById(userDTO.getId());
