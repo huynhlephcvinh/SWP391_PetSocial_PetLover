@@ -21,9 +21,15 @@ public class NotificationWebController {
     private NotificationService notificationService;
 
     @GetMapping("/{recId}")
-    public ResponseEntity<List<Notification>> getNotification (@PathVariable Long recId){
+    public ResponseEntity<List<Notification>> getAndSeenNotification (@PathVariable Long recId){
         List<Notification> notificationList = notificationService.findNotificationOfUser(recId);
         notificationService.updateStatus(notificationList);
+        return new ResponseEntity<List<Notification>>(notificationList, HttpStatus.OK);
+    }
+    @GetMapping("/noti/{recId}")
+    public ResponseEntity<List<Notification>> getAllNotification (@PathVariable Long recId){
+        List<Notification> notificationList = notificationService.findNotificationOfUser(recId);
+//        notificationService.updateStatus(notificationList);
         return new ResponseEntity<List<Notification>>(notificationList, HttpStatus.OK);
     }
 }
