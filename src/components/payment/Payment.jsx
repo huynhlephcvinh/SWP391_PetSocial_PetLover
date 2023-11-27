@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import axios from "axios";
 import {
   Button,
@@ -11,14 +11,20 @@ import { useState } from "react";
 import { Helmet } from "react-helmet";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Payment = () => {
-  const [price, setPrice] = useState(0);
+  const [money, setMoney] = useState(0);
   const [content, setContent] = useState("");
   const token = localStorage.getItem("token");
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const paymentId = "";
+  const payerId = "";
 
   const handlePriceChange = (event) => {
-    setPrice(event.target.value);
+    setMoney(event.target.value);
   };
 
   const handleContentChange = (event) => {
@@ -27,12 +33,16 @@ const Payment = () => {
 
   const handlePayment = () => {
     const data = {
-      price: price,
+      price: money,
       description: content,
     };
 
     axios
-      .post(`https://petsocial.azurewebsites.net/paypal/pay`, data)
+      .post(`http://localhost:8080/paypal/pay`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((response) => {
         const approvalUrl = response.data;
 
@@ -70,10 +80,10 @@ const Payment = () => {
             Payment
           </Typography>
           <TextField
-            label="Price"
+            label="Money"
             type="number"
             fullWidth
-            value={price}
+            value={money}
             onChange={handlePriceChange}
           />
           <TextField

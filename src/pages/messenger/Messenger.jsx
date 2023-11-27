@@ -1,7 +1,5 @@
 import "./messenger.scss";
 import "../../components/navbar/navbar.scss";
-import styled from "../../components/navbar/navbar.scss";
-import Navbar from "../../components/navbar/Navbar";
 import Conversation from "../../components/conversations/Conversation";
 import Message from "../../components/message/Message";
 import ChatOnline from "../../components/chatOnline/ChatOnline";
@@ -31,7 +29,7 @@ import Snackbar from "@mui/material/Snackbar";
 import Grow from "@mui/material/Grow";
 
 export default function Messenger() {
-  const serverUrl = "https://petsocial.azurewebsites.net/ws";
+  const serverUrl = "http://localhost:8080/ws";
   const [conversations, setConversations] = useState([]);
   //const [currentChat, setCurrentChat] = useState(null);
   const [searchText, setSearchText] = useState("");
@@ -146,7 +144,7 @@ export default function Messenger() {
   const getChatMessages = async (senderId, recipientId) => {
     try {
       const response = await axios.get(
-        `https://petsocial.azurewebsites.net/ws/messages/${senderId}/${recipientId}`
+        `http://localhost:8080/ws/messages/${senderId}/${recipientId}`
       );
       if (response.status === 200) {
         const messages = response.data;
@@ -198,7 +196,7 @@ export default function Messenger() {
 
   const getAllUsers = () => {
     axios
-      .get("https://petsocial.azurewebsites.net/user/getAllUser", {
+      .get("http://localhost:8080/user/getAllUser", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -213,7 +211,7 @@ export default function Messenger() {
 
   const searchUsers = () => {
     axios
-      .get("https://petsocial.azurewebsites.net/user/searchUser", {
+      .get("http://localhost:8080/user/searchUser", {
         params: {
           name: searchText,
         },

@@ -18,7 +18,7 @@ function ForgotPassword() {
     try {
       // Send a request to your backend to initiate the password reset process
       const response = await axios.post(
-        "https://petsocial.azurewebsites.net/forgot_password",
+        "http://localhost:8080/forgot_password",
         {
           email: email,
         }

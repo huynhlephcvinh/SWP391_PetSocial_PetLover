@@ -20,6 +20,8 @@ const Profile = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [pets, setPets] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [error, setError] = useState("");
+  const [isMessageOpen, setIsMessageOpen] = useState(false);
 
   const [posts, setPosts] = useState([]);
   const token = localStorage.getItem("token");
@@ -27,8 +29,11 @@ const Profile = () => {
   const handlePhoneChange = (e) => {
     setPhone(e.target.value || "");
   };
+  const openMessage = () => {
+    setIsMessageOpen(true);
+  };
   const closeMessage = () => {
-    setIsModalOpen(false);
+    setIsMessageOpen(false);
   };
   const closeModal = () => {
     setImage("");
@@ -38,6 +43,7 @@ const Profile = () => {
   };
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+    console.log(file);
     if (file) {
       setImage(file);
       setImageView({
@@ -57,7 +63,7 @@ const Profile = () => {
         data.file = image;
       }
       const response = await axios.put(
-        `https://petsocial.azurewebsites.net/user/update`,
+        `http://localhost:8080/user/update`,
         data,
         {
           headers: {
@@ -79,8 +85,14 @@ const Profile = () => {
       setName(response.data.name);
       setPhone(response.data.phone);
       setImage(response.data.file);
+      setError("Update Success");
+      openMessage();
+      closeModal();
     } catch (error) {
       console.error("Error updating profile:", error);
+      setError("Update Fail");
+      openMessage();
+      closeModal();
     }
   };
 
@@ -108,7 +120,7 @@ const Profile = () => {
     async function fetchPet() {
       try {
         const response1 = await axios.get(
-          `https://petsocial.azurewebsites.net/pet/getAllPet`,
+          `http://localhost:8080/pet/getAllPet`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -130,7 +142,7 @@ const Profile = () => {
     async function fetchPosts() {
       try {
         const response = await axios.get(
-          `https://petsocial.azurewebsites.net/post/getAllYourPost`,
+          `http://localhost:8080/post/getAllYourPost`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -399,6 +411,55 @@ const Profile = () => {
           >
             Update
           </button>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={isMessageOpen}
+        onRequestClose={closeMessage}
+        contentLabel="Exchange Modal"
+        style={{
+          overlay: {
+            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            zIndex: 1000,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          },
+          content: {
+            width: "150px",
+            height: "fit-content",
+            maxHeight: "20vh",
+            margin: "auto",
+            padding: "20px",
+            borderRadius: "10px",
+            background: "#fff",
+            fontFamily: "Arial, sans-serif",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          },
+        }}
+      >
+        <style>
+          {`
+    .modal-content{
+      display: flex;
+    }
+      .modal-header {
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      .modal-body {
+        margin-bottom: 20px;
+        color: #555;
+      }
+    `}
+        </style>
+        <div>
+          <h2 className="modal-header">Message</h2>
+          <div className="modal-content">{error}</div>
         </div>
       </Modal>
     </div>

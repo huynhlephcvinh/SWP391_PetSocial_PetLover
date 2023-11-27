@@ -18,7 +18,7 @@ function ResetPassword() {
     try {
       // Send a request to your backend to reset the password
       const response = await axios.post(
-        "https://petsocial.azurewebsites.net/reset_password",
+        "http://localhost:8080/reset_password",
         {
           token: authCode,
           password: password,

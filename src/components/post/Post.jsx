@@ -2,17 +2,22 @@ import "./post.scss";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
 import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
 import TextsmsOutlinedIcon from "@mui/icons-material/TextsmsOutlined";
-import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
+// import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Link } from "react-router-dom";
 import Comments from "../comments/Comments";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import axios from "axios";
 import Modal from "react-modal";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { sendNotification } from "../../socket";
+import { format } from "timeago.js";
 
-const Post = ({ post, setPosts, posts, onCommentAdded }) => {
+const Post = ({ post, setPosts, posts }) => {
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   const [commentOpen, setCommentOpen] = useState(false);
   const [error, setError] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,9 +28,14 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
 
   //phan like, cmt, update cua Khoa
   const [liked, setLiked] = useState(() => {
-    const localStorageLiked = localStorage.getItem(`post_${post.id}_liked`);
-    return localStorageLiked ? JSON.parse(localStorageLiked) : false;
+    const localStorageLiked = localStorage.getItem(
+      `post_${post.id}_liked_by_${currentUser.id}`
+    );
+    return localStorageLiked
+      ? JSON.parse(localStorageLiked)
+      : post.fieldReaction;
   });
+  // const [liked, setLiked] = useState(post.fieldReaction);
   const [tempTotalLikes, setTempTotalLikes] = useState(post.total_like);
   const [isEditMode, setEditMode] = useState(false);
   const [updatedContent, setUpdatedContent] = useState(post.content);
@@ -34,6 +44,36 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
   const [updatedImage, setUpdatedImage] = useState(post.image);
   const [totalComments, setTotalComments] = useState(post.total_comment);
   const [tempLiked, setTempLiked] = useState(false);
+  const [viewer, setViewer] = useState([]);
+  const [toReLike, setToReLike] = useState(true);
+  const [likeList, setLikeList] = useState([]);
+  const [isPostExist, setIsPostExist] = useState(false);
+  const [showLikedUsers, setShowLikedUsers] = useState(false);
+
+  //bat like
+  const isPostLiked = (postId, postList) => {
+    return postList.some((post) => post.id === postId);
+  };
+  useEffect(() => {
+    const getListLiked = async () => {
+      try {
+        const response2 = await axios.get(
+          "http://localhost:8080/post/getAllYourPostReaction",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setLikeList(response2.data.data);
+        setIsPostExist(isPostLiked(post.id, response2.data.data));
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+
+    getListLiked();
+  }, [toReLike]);
 
   const updateTotalLikes = () => {
     setTempTotalLikes(post.total_like);
@@ -54,25 +94,29 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
     const updatedPost = {
       id: post.id,
       content: updatedContent, // Sử dụng nội dung đang chỉnh sửa
-      // Không bao gồm cập nhật hình ảnh
+      //enable: 0, // Không bao gồm cập nhật hình ảnh
     };
 
     axios
-      .put(
-        `https://petsocial.azurewebsites.net/post/update/${post.id}`,
-        updatedPost,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
+      .put(`http://localhost:8080/post/update/${post.id}`, updatedPost, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((response) => {
         if (response.status === 200) {
-          setUpdatedContent(updatedContent);
+          // setUpdatedContent(updatedContent);
+          setError(
+            "Post updated successfully! Your post is waiting for approval"
+          );
+          setIsModalOpen(true);
+
           toggleEditMode();
         } else {
           console.error("Update failed");
+
+          setError("Error");
+          setIsModalOpen(true);
         }
       })
       .catch((error) => {
@@ -83,24 +127,35 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
   const handleLikeClick = () => {
     const newLiked = !liked;
     axios
-      .post(
-        `https://petsocial.azurewebsites.net/reaction/${post.id}/like`,
-        null,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
+      .post(`http://localhost:8080/reaction/${post.id}/like`, null, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((response) => {
         if (response.status === 200) {
+          setToReLike(!toReLike); //thêm phần này bắt like
           setLiked(newLiked);
           setTempLiked(newLiked);
-          setTempTotalLikes(newLiked ? tempTotalLikes + 1 : tempTotalLikes - 1);
-          localStorage.setItem(
-            `post_${post.id}_liked`,
-            JSON.stringify(newLiked)
+          setTempTotalLikes(
+            !isPostExist ? tempTotalLikes + 1 : tempTotalLikes - 1
           );
+          // localStorage.setItem(
+          //   `post_${post.id}_liked_by_${currentUser.id}`,
+          //   JSON.stringify(newLiked)
+          // );
+          if (!isPostExist) {
+            sendNotification(
+              `${currentUser.name} liked your post!`,
+              post.userPostDTO.id,
+              post.userPostDTO.name
+            );
+            // toast.info(
+            //   `${currentUser.name} liked ${post.userPostDTO.name}'s post.`
+            // );
+          }
+
+          //sendNotification();
         } else {
           console.error(error);
         }
@@ -111,6 +166,26 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
   };
 
   //phan like, cmt, update cua Khoa
+
+  const handleViewer = () => {
+    axios
+      .get(`http://localhost:8080/reaction/${post.id}/viewUser`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          const likedUsers = response.data.data;
+          setViewer(likedUsers);
+          setShowLikedUsers(true);
+          console.log("Liked Users:", likedUsers);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching liked users:", error);
+      });
+  };
 
   const openImage = () => {
     setIsOpenImage(true);
@@ -124,33 +199,38 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
     const [year, time] = yearTime.split(" ");
     const [hours, minutes] = time.split(":");
     const postCreateDate = new Date(year, month - 1, day, hours, minutes);
-    const timeDifference = currentDate - postCreateDate;
-    let formattedDate;
+    //const timeDifference = currentDate - postCreateDate;
+    // let formattedDate;
+    const formattedDate = format(postCreateDate);
 
-    if (timeDifference < 60 * 1000) {
-      formattedDate = `${Math.floor(timeDifference / 1000)} seconds ago`;
-    } else if (timeDifference < 60 * 60 * 1000) {
-      formattedDate = `${Math.floor(timeDifference / (60 * 1000))} minutes ago`;
-    } else if (timeDifference < 24 * 60 * 60 * 1000) {
-      const hours = Math.floor(timeDifference / (60 * 60 * 1000));
-      const minutes = Math.floor(
-        (timeDifference % (60 * 60 * 1000)) / (60 * 1000)
-      );
-      formattedDate = `${hours} hours ago`;
-    } else {
-      const days = Math.floor(timeDifference / (24 * 60 * 60 * 1000));
-      formattedDate = `${days} days ago`;
-    }
+    // if (timeDifference < 60 * 1000) {
+    //   formattedDate = `${Math.floor(timeDifference / 1000)} seconds ago`;
+    // } else if (timeDifference < 60 * 60 * 1000) {
+    //   formattedDate = `${Math.floor(timeDifference / (60 * 1000))} minutes ago`;
+    // } else if (timeDifference < 24 * 60 * 60 * 1000) {
+    //   const hours = Math.floor(timeDifference / (60 * 60 * 1000));
+    //   const minutes = Math.floor(
+    //     (timeDifference % (60 * 60 * 1000)) / (60 * 1000)
+    //   );
+    //   formattedDate = `${hours} hours ago`;
+    // } else {
+    //   const days = Math.floor(timeDifference / (24 * 60 * 60 * 1000));
+    //   formattedDate = `${days} days ago`;
+    // }
 
     return formattedDate;
   };
+  const formattedDate = calculateTimeDifference(post.create_date);
   const closeModal = () => {
     setIsModalOpen(false);
   };
-  const formattedDate = calculateTimeDifference(post.create_date);
-  // console.log("fomasd",formattedDate);
 
-  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  const closeMessageDelete = () => {
+    setIsModalOpen(false);
+    setPosts(posts.filter((item) => item.id !== post.id));
+  };
+
+  // console.log("fomasd",formattedDate);
 
   const [menuAnchor, setMenuAnchor] = useState(null);
   const handleMenuClick = (event) => {
@@ -164,7 +244,7 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
 
   const handleMenuDelete = async () => {
     const response = await axios.delete(
-      "https://petsocial.azurewebsites.net/post/delete/" + post.id,
+      "http://localhost:8080/post/delete/" + post.id,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -172,8 +252,8 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
       }
     );
 
-    setPosts(posts.filter((item) => item.id !== post.id));
-    console.log(response.data);
+    // setPosts(posts.filter((item) => item.id !== post.id));
+    console.log("Delete", response.data);
     handleMenuClose();
     if (response.data === "Not Found") {
       setError("Failed to delete");
@@ -209,7 +289,7 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
                 <span className="name">{post.userPostDTO.name} </span>{" "}
                 {post.petToPostDTO && (
                   <>
-                    <span style={{ fontSize: 14 }}>with</span>
+                    <span style={{ fontSize: 14 }}>with </span>
                     <span style={{ fontStyle: "italic", fontWeight: "bold" }}>
                       {post.petToPostDTO.name}
                     </span>
@@ -258,9 +338,44 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
           <img src={post.image} alt="" onClick={openImage} />                   goc
         </div> */}
         <div className="infoo">
-          <div className="item" onClick={handleLikeClick}>
-            {liked ? <FavoriteOutlinedIcon /> : <FavoriteBorderOutlinedIcon />}
+          <div
+            className="item"
+            onClick={handleLikeClick}
+            onMouseEnter={handleViewer}
+            onMouseLeave={() => setShowLikedUsers(false)}
+          >
+            {isPostExist ? ( //sửa
+              <FavoriteOutlinedIcon style={{ color: "red" }} />
+            ) : (
+              <FavoriteBorderOutlinedIcon />
+            )}
             {tempTotalLikes} Likes
+            {showLikedUsers && (
+              <div
+                className="liked-users"
+                style={{
+                  border: "1px solid #333",
+                  borderRadius: "5px",
+                  position: "absolute",
+                  backgroundColor: "#fff",
+                  padding: "5px",
+                  zIndex: "10",
+                  marginLeft: "100px",
+                }}
+              >
+                {/* <p style={{ padding: "5px" }}>Liked by:</p> */}
+                <ul>
+                  {viewer.map((user) => (
+                    <li
+                      style={{ listStyleType: "none", padding: "5px" }}
+                      key={user.id}
+                    >
+                      {user.name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
           <div className="item" onClick={() => setCommentOpen(!commentOpen)}>
             <TextsmsOutlinedIcon />
@@ -272,7 +387,12 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
           </div> */}
         </div>
         {commentOpen && (
-          <Comments postId={post.id} onCommentAdd={updateTotalComments} />
+          <Comments
+            postId={post.id}
+            postUserId={post.userPostDTO.id}
+            postUserName={post.userPostDTO.name}
+            totalComment={setTotalComments}
+          />
         )}
       </div>
       {post.userPostDTO.id === currentUser.id ? (
@@ -296,7 +416,10 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
 
       <Modal
         isOpen={isModalOpen}
-        onRequestClose={closeModal}
+        // onRequestClose={closeModal}
+        onRequestClose={
+          error === "Delete success" ? closeMessageDelete : closeModal
+        }
         contentLabel="Exchange Modal"
         style={{
           overlay: {
@@ -308,7 +431,7 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
             textAlign: "center",
           },
           content: {
-            width: "150px",
+            width: "250px",
             height: "fit-content",
             maxHeight: "20vh",
             margin: "auto",
@@ -370,6 +493,7 @@ const Post = ({ post, setPosts, posts, onCommentAdded }) => {
           />
         </div>
       </Modal>
+      {/* <ToastContainer /> */}
     </div>
   );
 };

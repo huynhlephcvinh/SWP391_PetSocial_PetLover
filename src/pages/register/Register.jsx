@@ -22,6 +22,15 @@ function Register() {
     );
   }
 
+  function validate(name, email, phone, password) {
+    const isNameValid = name.length >= 5 && name.length <= 20;
+    const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const isPhoneValid = /^\d{10}$/.test(phone) && phone.startsWith("0");
+    const isPasswordValid = password.length >= 3 && password.length <= 20;
+
+    return { isNameValid, isEmailValid, isPhoneValid, isPasswordValid };
+  }
+
   async function register(event) {
     event.preventDefault();
 
@@ -29,17 +38,40 @@ function Register() {
       setError("Please fill in all fields");
       return;
     }
+    const validationStatus = validate(name, email, phone, password);
+    if (!validationStatus.isNameValid) {
+      setError(
+        "Invalid name. Please enter a name between 5 and 20 characters."
+      );
+      return;
+    }
+
+    if (!validationStatus.isEmailValid) {
+      setError("Invalid email. Please enter a valid email address.");
+      return;
+    }
+
+    if (!validationStatus.isPhoneValid) {
+      setError(
+        "Invalid phone number. Please enter a 10-digit number starting with '0'."
+      );
+      return;
+    }
+
+    if (!validationStatus.isPasswordValid) {
+      setError(
+        "Invalid password. Please enter a password between 3 and 20 characters."
+      );
+      return;
+    }
 
     try {
-      const response = await axios.post(
-        "https://petsocial.azurewebsites.net/createUser",
-        {
-          email: email,
-          name: name,
-          phone: phone,
-          password: password,
-        }
-      );
+      const response = await axios.post("http://localhost:8080/createUser", {
+        name: name,
+        email: email,
+        phone: phone,
+        password: password,
+      });
 
       console.log(response.data);
 

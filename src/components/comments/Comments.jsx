@@ -5,8 +5,10 @@ import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import SendIcon from "@mui/icons-material/Send";
+import { sendNotification } from "../../socket";
+import { format } from "timeago.js";
 
-const Comments = ({ postId, onCommentAdded }) => {
+const Comments = ({ postId, postUserId, postUserName, totalComment }) => {
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
@@ -19,37 +21,13 @@ const Comments = ({ postId, onCommentAdded }) => {
   const [commentIdMenu, setCommentIdMenu] = useState(null);
   const [isEdit, setIsEdit] = useState(false);
 
-  // const handleMenuClick = (event) => {
-  //   event.stopPropagation();
-  //   setMenuAnchor(event.currentTarget);
-  // };
   const handleMenuClick = (event, comment) => {
     event.stopPropagation();
     setMenuAnchor(event.currentTarget);
     setCommentIdMenu(comment.id);
     setEditComments([comment]);
-    console.log("cc", comment);
+    console.log("xx", comment);
   };
-
-  // const toggleEditMode = (commentId) => {
-  //   console.log("Toggling edit mode for comment ID:", commentId);
-  //   setEditModes((prevEditModes) => ({
-  //     ...prevEditModes,
-  //     [commentId]: !prevEditModes[commentId],
-  //   }));
-  // };
-
-  // const toggleEditMode = (commentId) => {
-  //   setEditModes((prevEditModes) => ({
-  //     ...prevEditModes,
-  //     [commentId]: !prevEditModes[commentId],
-  //   }));
-
-  //   // Set the initial content of the textarea to the current comment's content
-  //   setUpdatedContent(
-  //     comments.find((comment) => comment.id === commentId)?.content || ""
-  //   );
-  // };
 
   const toggleEditMode = (commentId) => {
     console.log("Toggling edit mode for comment ID:", commentId);
@@ -74,7 +52,7 @@ const Comments = ({ postId, onCommentAdded }) => {
     try {
       // Send a PUT request to update the comment content
       const response = await axios.put(
-        `https://petsocial.azurewebsites.net/comments/${commentId}`,
+        `http://localhost:8080/comments/${commentId}`,
         {
           content: updatedContent,
         },
@@ -102,9 +80,9 @@ const Comments = ({ postId, onCommentAdded }) => {
           [commentId]: false,
         }));
         handleMenuClose();
-        console.log("Comment with ID ${commentId} updated successfully.");
+        console.log(`Comment with ID ${commentId} updated successfully.`);
       } else {
-        console.error("Failed to update comment with ID ${commentId}.");
+        console.error(`Failed to update comment with ID ${commentId}.`);
       }
     } catch (error) {
       console.error("Error updating the comment:", error);
@@ -115,7 +93,7 @@ const Comments = ({ postId, onCommentAdded }) => {
     try {
       // Send a DELETE request to delete the comment
       const response = await axios.delete(
-        `https://petsocial.azurewebsites.net/comments/${commentId}`,
+        `http://localhost:8080/comments/${commentId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -129,10 +107,11 @@ const Comments = ({ postId, onCommentAdded }) => {
         setComments((prevComments) =>
           prevComments.filter((comment) => comment.id !== commentId)
         );
+        totalComment((prevTotalComments) => prevTotalComments - 1);
         handleMenuClose();
-        console.log("Comment with ID ${commentId} deleted successfully.");
+        console.log(`Comment with ID ${commentId} deleted successfully.`);
       } else {
-        console.error("Failed to delete comment with ID ${commentId}.");
+        console.error(`Failed to delete comment with ID ${commentId}.`);
       }
     } catch (error) {
       console.error("Error deleting the comment:", error);
@@ -168,8 +147,8 @@ const Comments = ({ postId, onCommentAdded }) => {
   const fetchComments = async () => {
     try {
       const response = await axios.get(
-        `https://petsocial.azurewebsites.net/comments/post/${postId}`,
-        // 'https://petsocial.azurewebsites.net/comments/post/${postId}',
+        `http://localhost:8080/comments/post/${postId}`,
+        // 'http://localhost:8080/comments/post/${postId}',
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -188,8 +167,7 @@ const Comments = ({ postId, onCommentAdded }) => {
   const createComment = async () => {
     try {
       const response = await axios.post(
-        `https://petsocial.azurewebsites.net/comments/user/${currentUser.id}/post/${postId}`,
-        // 'https://petsocial.azurewebsites.net/comments/user/${currentUser.id}/post/${postId}',
+        `http://localhost:8080/comments/user/${currentUser.id}/post/${postId}`,
         {
           content: newComment,
         },
@@ -203,7 +181,12 @@ const Comments = ({ postId, onCommentAdded }) => {
       if (response.data) {
         setComments([response.data, ...comments]);
         setNewComment("");
-        onCommentAdded();
+        totalComment((prevTotalComments) => prevTotalComments + 1);
+        sendNotification(
+          `${currentUser.name} commented your post`,
+          postUserId,
+          postUserName
+        );
       } else {
         console.error("Invalid comment data received:", response.data);
       }
@@ -241,6 +224,7 @@ const Comments = ({ postId, onCommentAdded }) => {
                     rows={4}
                     cols={50}
                     value={updatedContent}
+                    onChange={(e) => setUpdatedContent(e.target.value)}
                   />
                 ) : (
                   // Render comment content when not in edit mode
@@ -256,9 +240,7 @@ const Comments = ({ postId, onCommentAdded }) => {
                 ) : null}
               </div>
 
-              <div className="date">
-                {formatTimeDifference(comment.createdTime)}
-              </div>
+              <div className="date">{format(comment.createdTime)}</div>
             </div>
             {currentUser.id === comment.userDTO.id ? (
               <>
@@ -280,8 +262,8 @@ const Comments = ({ postId, onCommentAdded }) => {
                 >
                   {currentUser.id === comment.userDTO.id && (
                     <MenuItem onClick={() => toggleEditMode(commentIdMenu)}>
-                      {/* {editModes[comment.id] ? "Cancel" : "Edit"} */}
-                      {isEdit ? "Cancel" : "Edit"}
+                      {editModes[comment.id] ? "Cancel" : "Edit"}
+                      {/* {isEdit ? "Cancel" : "Edit"} */}
                     </MenuItem>
                   )}
 

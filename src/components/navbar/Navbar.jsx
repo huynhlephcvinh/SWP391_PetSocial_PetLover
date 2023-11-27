@@ -6,7 +6,7 @@ import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { Link } from "react-router-dom";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { DarkModeContext } from "../../context/darkModeContext";
 import { AuthContext } from "../../context/authContext";
 import { Avatar, Button, Fade, Menu, MenuItem } from "@mui/material";
@@ -16,6 +16,11 @@ import { useNavigate } from "react-router-dom";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import axios from "axios";
 import CD from "../../assets/CD.png";
+import AttachMoneyOutlinedIcon from "@mui/icons-material/AttachMoneyOutlined";
+import { createdOn, sendNotification, disconnectWebSocket } from "../../socket";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { format } from "timeago.js";
 
 const Navbar = () => {
   const { toggle, darkMode } = useContext(DarkModeContext);
@@ -23,6 +28,96 @@ const Navbar = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
+  const [notifications, setNotifications] = useState([]);
+  let stompClient = null;
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const token = localStorage.getItem("token");
+
+  const [messageOpen, setMessageOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [balance, setBalance] = useState(0);
+  // const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  // useEffect(() => {
+  //   getAllNotification(currentUser.id);
+  //   console.log("hihi");
+  //   // console.log("numberr ne",receivedItems.length);
+  // }, []);
+  useEffect(() => {
+    // Create a new WebSocket connection if not already created
+    if (!stompClient) {
+      // Create the WebSocket connection
+      createdOn(currentUser.name, (notification) => {
+        console.log("Notification received:", notification);
+        setNotifications((prev) => [...prev, notification]);
+        setNotificationCount((count) => count + 1);
+      });
+      getAllNotification(currentUser.id);
+      console.log("hihi");
+    }
+
+    return () => {
+      //stompClient = true;
+
+      // Check if the WebSocket connection is open before disconnecting
+      if (stompClient && stompClient.connected) {
+        stompClient.disconnect();
+      }
+      // stompClient = null;
+    };
+  }, []);
+  // stompClient, currentUser.name
+
+  const getNotification = async (recipientId) => {
+    try {
+      console.log("Fetching notifications for recipientId:", recipientId);
+      const response = await axios.get(
+        `http://localhost:8080/ws/notification/${recipientId}`
+      );
+      // console.log("Response from notifications endpoint:", response);
+
+      if (response.status === 200) {
+        const content = response.data;
+        // console.log("Notifications content:", content);
+        setNotifications(content);
+        setNotificationCount(0);
+      } else {
+        console.log("Not Found");
+      }
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      // Handle errors, such as displaying an error message to the user
+    }
+  };
+
+  const getAllNotification = async (recipientId) => {
+    try {
+      console.log("Fetching notifications for recipientId:", recipientId);
+      const response = await axios.get(
+        `http://localhost:8080/ws/notification/noti/${recipientId}`
+      );
+      // console.log("Response from notifications endpoint:", response);
+
+      if (response.status === 200) {
+        const content = response.data;
+        console.log("Notifications all ontent:", content);
+        // setNotificationsAll(content);
+        // console.log("All ne",notificationsAll);
+        // setNotificationCount(0);
+        const receivedItems = content.filter(
+          (item) => item.status === "RECEIVED"
+        );
+        // setCountRe(receivedItems.length);
+        setNotificationCount(receivedItems.length);
+      } else {
+        console.log("Not Found");
+      }
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      // Handle errors, such as displaying an error message to the user
+    }
+  };
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -34,21 +129,29 @@ const Navbar = () => {
 
   const handleLogout = () => {
     localStorage.clear();
+    disconnectWebSocket();
     navigate("/login");
   };
 
-  // const handleChatClick = () => {
-  //   // Navigate to the chat route
-  //   // navigate("/chat");
-  // };
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const token = localStorage.getItem("token");
-
-  const [messageOpen, setMessageOpen] = useState(false);
-  const [notificationOpen, setNotificationOpen] = useState(false);
-  const [notificationCount, setNotificationCount] = useState(0);
+  const handleBalance = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8080/user/getBalance",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setBalance(response.data.data); // Assuming the balance is in response.data.data
+      console.log("ccc", response.data.data);
+    } catch (error) {
+      console.error("Error fetching balance:", error);
+    }
+  };
+  useEffect(() => {
+    handleBalance();
+  }, [balance]); // The empty dependency array ensures that it only runs once when the component mounts
 
   const handleToggleMessage = () => {
     navigate("/chat"); // Close the notification dropdown
@@ -60,60 +163,31 @@ const Navbar = () => {
     setMessageOpen(false); // Close the message dropdown
   };
 
-  const MessageDropdown = () => {
-    // const [messages, setMessages] = useState([]);
-    return (
-      <div className={`message-dropdown ${messageOpen ? "open" : ""}`}>
-        <div className="dropdown-content">
-          <div className="message-item">
-            <Avatar className="message-img" src={currentUser.avatar} />
-            <div className="message-details">
-              <div className="message-name">{currentUser.name}</div>
-              <div className="message-text">{currentUser.name}</div>
-            </div>
-          </div>
-          <div className="message-item">
-            <Avatar className="message-img" src={currentUser.avatar} />
-            <div className="message-details">
-              <div className="message-name">{currentUser.name}</div>
-              <div className="message-text">{currentUser.name}</div>
-            </div>
-          </div>
-          <div className="message-item">
-            <Avatar className="message-img" src={currentUser.avatar} />
-            <div className="message-details">
-              <div className="message-name">{currentUser.name}</div>
-              <div className="message-text">{currentUser.name}</div>
-            </div>
-          </div>
-          <div className="message-item">
-            <Avatar className="message-img" src={currentUser.avatar} />
-            <div className="message-details">
-              <div className="message-name">{currentUser.name}</div>
-              <div className="message-text">{currentUser.name}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   const NotificationDropdown = () => {
+    const sortedNotifications = notifications.sort(
+      (a, b) => new Date(b.createdOn) - new Date(a.createdOn)
+    );
+
     return (
       <div className={`notify-dropdown ${notificationOpen ? "open" : ""}`}>
         <div className="dropdown-content">
           {/* Display notifications */}
-          {notificationCount > 0 ? (
-            <div className="notification-count">{notificationCount}</div>
-          ) : null}
+          {/* {notificationCount > 0 ? (
+              <div className="notification-count">{notificationCount}</div>
+            ) : null} */}
           {/* Your notification items go here */}
-          <div className="notify-item">
-            <Avatar className="notify-img" src={currentUser.avatar} />
-            <div className="notify-details">
-              <div className="notify-name">{currentUser.name}</div>
-              <div className="notify-text">{currentUser.name}</div>
+          {sortedNotifications.map((notification) => (
+            <div className="notify-item" key={notification.notiId}>
+              {/* <Avatar className="notify-img" src={currentUser.avatar} /> */}
+              <div className="notify-details">
+                {/* <div className="notify-name">{currentUser.name}</div> */}
+                <div className="notify-text">{notification.content}</div>
+                <div className="notify-text">
+                  {format(notification.createdOn)}
+                </div>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
     );
@@ -127,6 +201,16 @@ const Navbar = () => {
     if (searchTerm) {
       // Redirect to the search results page
       navigate(`/search?content=${searchTerm}`);
+    }
+  };
+  const handleNotificationClick = () => {
+    // Toggle the notification dropdown
+    setNotificationOpen((prevOpen) => !prevOpen);
+
+    // Fetch notifications when the notification icon is clicked
+
+    if (currentUser) {
+      getNotification(currentUser.id);
     }
   };
 
@@ -181,8 +265,17 @@ const Navbar = () => {
         <MessageIcon onClick={handleToggleMessage} />
         {/* {messageOpen && <MessageDropdown />} */}
 
-        <NotificationsOutlinedIcon onClick={handleToggleNotification} />
+        <div className="notification-icon-container">
+          <NotificationsOutlinedIcon onClick={handleNotificationClick} />
+          {notificationOpen && <NotificationDropdown />}
+          {notificationCount > 0 && (
+            <div className="notification-circle">{notificationCount}</div>
+          )}
+        </div>
 
+        <span>
+          {balance.toFixed(2)} <AttachMoneyOutlinedIcon />
+        </span>
         {/* <Button
           aria-controls="fade-menu"
           aria-haspopup="true"
@@ -234,6 +327,7 @@ const Navbar = () => {
           </MenuItem>
           <MenuItem onClick={handleLogout}>Logout</MenuItem>
         </Menu>
+        <ToastContainer />
       </div>
     </div>
   );

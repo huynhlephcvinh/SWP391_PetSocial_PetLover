@@ -7,6 +7,8 @@ import PetsIcon from "@mui/icons-material/Pets";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import StoreIcon from "@mui/icons-material/Store";
 import Header from "../../../components/admin/Header";
+import AttachMoneyOutlinedIcon from "@mui/icons-material/AttachMoneyOutlined";
+import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
 // import LineChart from "../../../components/admin/LineChart";
 // import GeographyChart from "../../components/GeographyChart";
 import BarChart from "../../../components/admin/BarChart";
@@ -33,7 +35,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     axios
-      .get("https://petsocial.azurewebsites.net/admin/statistics", {
+      .get("http://localhost:8080/admin/statistics", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -57,7 +59,7 @@ const Dashboard = () => {
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title="DASHBOARD" subtitle="Welcome back Admin" />
 
-        <Box>
+        {/* <Box>
           <Button
             sx={{
               backgroundColor: colors.blueAccent[700],
@@ -70,7 +72,7 @@ const Dashboard = () => {
             <DownloadOutlinedIcon sx={{ mr: "10px" }} />
             Download Reports
           </Button>
-        </Box>
+        </Box> */}
       </Box>
 
       {/* GRID & CHARTS */}
@@ -92,7 +94,7 @@ const Dashboard = () => {
             title={statistics.totalUser}
             subtitle="Total User"
             progress="0.75"
-            increase="+14%"
+            // increase="+14%"
             icon={
               <PersonAddIcon
                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
@@ -111,7 +113,7 @@ const Dashboard = () => {
             title={statistics.totalPostDisplay}
             subtitle="Total Post"
             progress="0.50"
-            increase="+21%"
+            // increase="+21%"
             icon={
               <PostAddIcon
                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
@@ -119,6 +121,25 @@ const Dashboard = () => {
             }
           />
         </Box>
+        {/* <Box
+          gridColumn="span 2"
+          backgroundColor={colors.primary[400]}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <StatBox
+            title={statistics.totalPostDelete}
+            subtitle="Total Post Delete"
+            progress="0.4"
+            // decrease="+10%"
+            icon={
+              <DeleteForeverOutlinedIcon
+                sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
+              />
+            }
+          />
+        </Box> */}
         <Box
           gridColumn="span 3"
           backgroundColor={colors.primary[400]}
@@ -130,7 +151,7 @@ const Dashboard = () => {
             title={statistics.totalPet}
             subtitle="Total Pet"
             progress="0.30"
-            increase="+5%"
+            // increase="+5%"
             icon={
               <PetsIcon
                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
@@ -138,8 +159,8 @@ const Dashboard = () => {
             }
           />
         </Box>
-        <Box
-          gridColumn="span 3"
+        {/* <Box
+          gridColumn="span 2"
           backgroundColor={colors.primary[400]}
           display="flex"
           alignItems="center"
@@ -149,9 +170,28 @@ const Dashboard = () => {
             title={statistics.totalExchange}
             subtitle="Total Exchange"
             progress="0.80"
-            increase="+43%"
+            // increase="+43%"
             icon={
               <StoreIcon
+                sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
+              />
+            }
+          />
+        </Box> */}
+        <Box
+          gridColumn="span 3"
+          backgroundColor={colors.primary[400]}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <StatBox
+            title={statistics.totalBalance}
+            subtitle="Total Balance"
+            progress="0.30"
+            // increase="+43%"
+            icon={
+              <AttachMoneyOutlinedIcon
                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
               />
             }

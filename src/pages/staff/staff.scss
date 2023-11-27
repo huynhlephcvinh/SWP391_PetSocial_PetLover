@@ -141,8 +141,8 @@
 
           .avatar-container {
             // text-align: center;
-
-            .avatar {
+            display: flex;
+            .avatar-img img {
               float: left;
               width: 60px; /* Đặt kích thước avatar dựa trên yêu cầu của bạn */
               height: 60px;
@@ -152,9 +152,9 @@
               margin-bottom: 10px;
             }
 
-            .avatar-container p {
+            .avatar-header {
               float: left; /* Xóa khoảng cách bên dưới phần tử <p> */
-              margin-left: 10px;
+              margin-left: 20px;
             }
           }
 

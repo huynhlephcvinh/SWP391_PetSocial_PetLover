@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 // import { GoogleLogin } from "react-google-login";
-import { signInWithGoogle } from "../../firebase";
+// import { signInWithGoogle } from "../../firebase";
 import { Helmet } from "react-helmet";
-import { GoogleLogin } from "@react-oauth/google";
+// import { GoogleLogin } from "@react-oauth/google";
 
 import "./login.scss";
 function Login() {
@@ -12,40 +12,32 @@ function Login() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const [error, setError] = useState("");
-  const clientId =
-    "863758027481-5dt37ota9odb7gmlkn9hu0to1hifvulv.apps.googleusercontent.com";
-
-  const onGoogleLoginFailure = (error) => {
-    console.error("Google login failed:", error);
-    // Xử lý lỗi sau khi đăng nhập thất bại
-  };
-
-  // const guest = () => {
-  //   navigate("/");
-  // };
 
   async function login(event) {
     event.preventDefault();
+    if (email.trim() == "" || password.trim() == "") {
+      setError("Please enter Email and Password!");
+      return;
+    }
     try {
-      const response = await axios.post(
-        "https://petsocial.azurewebsites.net/signin",
-        {
-          email: email,
-          password: password,
-        }
-      );
+      const response = await axios.post("http://localhost:8080/signin", {
+        email: email,
+        password: password,
+      });
 
       console.log(response.data);
 
       if (response.data === "Activated") {
         setError("Your account has not been activated!");
       } else if (response.data === "Incorrect") {
-        setError("Incorrect username or password");
+        setError("Incorrect email or password");
+      } else if (response.data === "Account block") {
+        setError("Account has been locked");
       } else {
         localStorage.setItem("token", response.data);
         const token = localStorage.getItem("token");
         const response1 = await axios.get(
-          "https://petsocial.azurewebsites.net/user/profile",
+          "http://localhost:8080/user/profile",
           {
             headers: {
               Authorization: `Bearer ${token}`,

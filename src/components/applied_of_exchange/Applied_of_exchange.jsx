@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./applied_of_exchange.scss";
 import Modal from "react-modal";
-
+import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
+import HighlightOffOutlinedIcon from "@mui/icons-material/HighlightOffOutlined";
+import { sendNotification } from "../../socket";
 const Applied_of_exchange = ({ exchange, onCountChange }) => {
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   const [applies, setApplies] = useState([]);
@@ -18,7 +20,7 @@ const Applied_of_exchange = ({ exchange, onCountChange }) => {
   const fetchApplies = async () => {
     try {
       const response = await axios.get(
-        `https://petsocial.azurewebsites.net/exchange/${exchange.id}/view-applies`,
+        `http://localhost:8080/exchange/${exchange.id}/view-applies`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -40,10 +42,10 @@ const Applied_of_exchange = ({ exchange, onCountChange }) => {
     }
   };
 
-  const handleAccept = async (applieId) => {
+  const handleAccept = async (exchangeId, applieId, id, name) => {
     try {
       const response = await axios.put(
-        `https://petsocial.azurewebsites.net/exchange/${applieId}/completed`,
+        `http://localhost:8080/exchange/${exchangeId}/completed`,
         {},
         {
           headers: {
@@ -54,17 +56,53 @@ const Applied_of_exchange = ({ exchange, onCountChange }) => {
 
       // Handle success, e.g., update state or show a success message
       console.log("Exchange completed:", response.data);
+
+      if (response.data.status === "COMPLETED") {
+        // Perform the pet deletion logic here
+        const petDeletionResponse = await axios.delete(
+          `http://localhost:8080/pet/delete/${exchange.petDTO.id}`, // Update the API endpoint accordingly
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (petDeletionResponse.status === 200) {
+          console.log("Pet deleted successfully");
+        } else {
+          console.error("Error deleting pet");
+        }
+      }
+
+      const applyResponse = await axios.put(
+        `http://localhost:8080/apply/${exchangeId}/${applieId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("Apply completed:", applyResponse.data);
       setIsModalOpen(true);
 
       // Optionally, you can refetch applies to update the UI
       fetchApplies();
+      sendNotification(
+        `${currentUser.name} accepted your pet ${exchange.petDTO.name} application`,
+        id,
+        name
+      );
     } catch (error) {
       console.error("Error completing exchange:", error);
     }
   };
+
   const closeModal = () => {
     setIsModalOpen(false);
   };
+
   return (
     <div className="comments-e">
       {applies.length > 0 ? (
@@ -73,13 +111,35 @@ const Applied_of_exchange = ({ exchange, onCountChange }) => {
           <div key={applie.id} className="comment-e">
             {/* <img src={applie.userId} alt="" /> */}
             <div className="info">
-              {/* {applie.userId} */}
-
               <img src={applie.userApplied.avatar} alt="" />
               <span>{applie.userApplied.name}</span>
-              <button onClick={() => handleAccept(applie.exchange.id)}>
-                Accept
-              </button>
+              {applie.status === "COMPLETED" && (
+                <>
+                  <span style={{ color: "green" }}>COMPLETED</span>{" "}
+                  <CheckCircleOutlinedIcon style={{ color: "green" }} />
+                </>
+              )}
+              {applie.exchange.status === "PENDING" && (
+                <button
+                  onClick={() =>
+                    handleAccept(
+                      exchange.id,
+                      applie.id,
+                      applie.userApplied.id,
+                      applie.userApplied.name
+                    )
+                  }
+                  disabled={applie.exchange.status === "COMPLETED"}
+                >
+                  Accept
+                </button>
+              )}
+              {applie.status !== "COMPLETED" && applie.status !== "PENDING" && (
+                <>
+                  <span style={{ color: "red" }}>UNCOMPLETED</span>
+                  <HighlightOffOutlinedIcon style={{ color: "red" }} />
+                </>
+              )}
             </div>
           </div>
         ))

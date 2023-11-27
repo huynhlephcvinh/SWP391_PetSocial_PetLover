@@ -20,6 +20,7 @@ const SlideSwitch = ({ isChecked, onCheckedChange }) => {
         fontWeight: "bold",
         fontSize: "16px",
         padding: "10px 15px",
+        marginBottom: "10px",
       }}
       onClick={handleClick}
     >

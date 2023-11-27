@@ -8,6 +8,9 @@ import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
 import Header from "../../../components/admin/Header";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { CSVLink } from "react-csv";
 
 const Team = () => {
   const theme = useTheme();
@@ -15,36 +18,120 @@ const Team = () => {
 
   const [rows, setRows] = useState([]);
   const token = localStorage.getItem("token");
+  const updateLocalStorage = (updatedRows) => {
+    localStorage.setItem("users", JSON.stringify(updatedRows));
+  };
+
+  const csvData = rows.map((row) => ({
+    ID: row.id,
+    Name: row.name,
+    "Phone Number": row.phone,
+    Email: row.email,
+    Balance: row.balance,
+    Enable: row.enable,
+    "Auth Provider": row.authProvider,
+    "Access Level": row.accessLevel,
+  }));
+
+  const csvHeaders = [
+    { label: "ID", key: "ID" },
+    { label: "Name", key: "Name" },
+    { label: "Phone Number", key: "Phone Number" },
+    { label: "Email", key: "Email" },
+    { label: "Balance", key: "Balance" },
+    { label: "Enable", key: "Enable" },
+    { label: "Auth Provider", key: "Auth Provider" },
+    { label: "Access Level", key: "Access Level" },
+  ];
+
+  const handleBlockUser = (userId, userName) => {
+    axios
+      .post(`http://localhost:8080/admin/${userId}/block`, null, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        // Handle success, update UI if needed
+        console.log("User blocked:", response.data.data);
+        const updatedRows = rows.map((user) =>
+          user.id === userId ? { ...user, authProvider: "BLOCK_USER" } : user
+        );
+        setRows(updatedRows);
+        updateLocalStorage(updatedRows);
+        // Show a toast notification
+        toast.success(`User ${userName} has been blocked`);
+      })
+      .catch((error) => {
+        // Handle error
+        console.error("Error blocking user:", error);
+      });
+  };
+
+  const handleUnblockUser = (userId, userName) => {
+    axios
+      .post(`http://localhost:8080/admin/${userId}/offblock`, null, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        // Handle success, update UI if needed
+        console.log("User unblocked:", response.data.data);
+        const updatedRows = rows.map((user) =>
+          user.id === userId
+            ? { ...user, authProvider: "NOT_BLOCK_USER" }
+            : user
+        );
+        setRows(updatedRows);
+        updateLocalStorage(updatedRows);
+        // Show a toast notification
+        toast.success(`User ${userName} has been unblocked`);
+      })
+      .catch((error) => {
+        // Handle error
+        console.error("Error unblocking user:", error);
+      });
+  };
 
   useEffect(() => {
     if (token) {
-      // Gọi API để lấy dữ liệu từ phía backend
-      axios
-        .get("https://petsocial.azurewebsites.net/admin/getAllUser", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((response) => {
-          //console.log(response.data.data);
-          // Lấy dữ liệu từ response và cập nhật vào `rows`
-          const userData = response.data.data;
-          const updatedRows = Array.isArray(userData)
-            ? userData.map((user, index) => ({
-                id: index + 1,
-                name: user.name,
-                email: user.email,
-                phone: user.phone,
-                enable: user.enable,
-                accessLevel: user.role,
-              }))
-            : [];
+      // Read user data from localStorage on component initialization
+      const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
 
-          setRows(updatedRows);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+      if (storedUsers.length > 0) {
+        setRows(storedUsers);
+      } else {
+        axios
+          .get("http://localhost:8080/admin/getAllUser", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          .then((response) => {
+            const userData = response.data.data;
+            const updatedRows = Array.isArray(userData)
+              ? userData.map((user) => ({
+                  id: user.id,
+                  name: user.name,
+                  email: user.email,
+                  phone: user.phone,
+                  enable: user.enable,
+                  authProvider: user.authProvider,
+                  balance: user.balance,
+                  accessLevel: user.role,
+                }))
+              : [];
+
+            setRows(updatedRows);
+
+            // Update localStorage to store initial user data
+            updateLocalStorage(updatedRows);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
     }
   }, [token]);
 
@@ -64,22 +151,30 @@ const Team = () => {
     {
       field: "phone",
       headerName: "Phone Number",
-      flex: 0.6,
+      flex: 0.4,
     },
     {
       field: "email",
       headerName: "Email",
-      flex: 1,
+      flex: 0.8,
+    },
+    {
+      field: "balance",
+      headerName: "Balance",
     },
     {
       field: "enable",
       headerName: "Enable",
     },
     {
+      field: "authProvider",
+      headerName: "Auth Provider",
+    },
+    {
       field: "accessLevel",
       headerName: "Access Level",
       flex: 0.7,
-      renderCell: ({ row: { accessLevel } }) => {
+      renderCell: ({ row: { id, name, authProvider, accessLevel } }) => {
         return (
           <Box
             width="60%"
@@ -96,9 +191,24 @@ const Team = () => {
             }
             borderRadius="4px"
           >
-            {/* {accessLevel === "ROLE_ADMIN" && <AdminPanelSettingsOutlinedIcon />} */}
+            {accessLevel === "ROLE_USER" && (
+              <>
+                {authProvider !== "BLOCK_USER" ? (
+                  <LockOpenOutlinedIcon
+                    onClick={() => handleBlockUser(id, name)}
+                    variant="contained"
+                    color="primary"
+                  />
+                ) : (
+                  <LockOutlinedIcon
+                    onClick={() => handleUnblockUser(id, name)}
+                    variant="contained"
+                    color="secondary"
+                  />
+                )}
+              </>
+            )}
             {accessLevel === "ROLE_STAFF" && <SecurityOutlinedIcon />}
-            {accessLevel === "ROLE_USER" && <LockOpenOutlinedIcon />}
             <Typography color={colors.grey[100]} sx={{ ml: "5px" }}>
               {accessLevel}
             </Typography>
@@ -109,8 +219,36 @@ const Team = () => {
   ];
 
   return (
-    <Box m="20px">
-      <Header title="USER" subtitle="Managing the Users" />
+    <div>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        m="20px"
+      >
+        <Header title="USER" subtitle="Managing the Users" />
+        <Button
+          variant="outlined"
+          color="primary"
+          style={{
+            border: "1px solid #333",
+            color: "white",
+            backgroundColor: "#007bff",
+            borderRadius: "4px",
+            padding: "8px 16px",
+            alignItems: "center",
+          }}
+        >
+          <CSVLink
+            data={csvData}
+            headers={csvHeaders}
+            filename="users.csv"
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
+            Export
+          </CSVLink>
+        </Button>
+      </Box>
       <Box
         m="40px 0 0 0"
         height="75vh"
@@ -142,7 +280,8 @@ const Team = () => {
       >
         <DataGrid checkboxSelection rows={rows} columns={columns} />
       </Box>
-    </Box>
+      <ToastContainer />
+    </div>
   );
 };
 

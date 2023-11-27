@@ -22,7 +22,7 @@ const Home = () => {
     async function fetchPosts() {
       try {
         const response = await axios.get(
-          `https://petsocial.azurewebsites.net/post/getAllPost`,
+          `http://localhost:8080/post/getAllPost`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -55,7 +55,7 @@ const Home = () => {
         <Posts
           posts={posts}
           setPosts={setPosts}
-          onCommentAdded={handleCommentAdded}
+          // onCommentAdded={handleCommentAdded}
         />
       )}
     </div>

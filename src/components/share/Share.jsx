@@ -42,14 +42,11 @@ const Share = ({ onPostCreated }) => {
   };
   const getPet = async () => {
     const token = localStorage.getItem("token");
-    const res = await axios.get(
-      "https://petsocial.azurewebsites.net/pet/getAllPet",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const res = await axios.get("http://localhost:8080/pet/getAllPet", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     setPets(res.data.data);
   };
 
@@ -58,9 +55,25 @@ const Share = ({ onPostCreated }) => {
       creatPostDTO.file = null;
     }
     const token = localStorage.getItem("token");
+    if (image) {
+      if (creatPostDTO.file.size > 5242880) {
+        console.log(creatPostDTO.file.size);
+        setError("Too big size image", creatPostDTO.file.size);
+        isMessageOpen();
+        return;
+      } else if (
+        creatPostDTO.file == null &&
+        creatPostDTO.content.trim() == "" &&
+        creatPostDTO.idPet.trim() == ""
+      ) {
+        setError("Please fill in all form");
+        isMessageOpen();
+        return;
+      }
+    }
 
     const response = await axios.post(
-      "https://petsocial.azurewebsites.net/post/createpost",
+      "http://localhost:8080/post/createpost",
       creatPostDTO,
       {
         headers: {
@@ -73,7 +86,14 @@ const Share = ({ onPostCreated }) => {
       setError("Error");
       setIsMessageOpen(true);
     } else {
-      setError("Post created successfully! Your post is waiting for approval");
+      const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+      if (currentUser && currentUser.role === "ROLE_STAFF") {
+        setError("Post created successfully!");
+      } else {
+        setError(
+          "Post created successfully! Your post is waiting for approval"
+        );
+      }
       setIsMessageOpen(true);
     }
   };

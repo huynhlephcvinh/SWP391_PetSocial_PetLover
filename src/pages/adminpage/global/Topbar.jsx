@@ -64,9 +64,9 @@ const Topbar = () => {
             <LightModeOutlinedIcon />
           )}
         </IconButton>
-        <IconButton>
+        {/* <IconButton>
           <NotificationsOutlinedIcon />
-        </IconButton>
+        </IconButton> */}
         {/* <div> */}
         <IconButton onClick={openDropdown}>
           <SettingsOutlinedIcon />

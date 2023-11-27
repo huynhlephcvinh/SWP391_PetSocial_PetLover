@@ -10,10 +10,11 @@ const RightBar = () => {
   const [selectedUser, setSelectedUser] = useState(null); // Thêm trạng thái người dùng đang được chọn
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
   const getAllUsers = () => {
     axios
-      .get("https://petsocial.azurewebsites.net/user/getAllUser", {
+      .get("http://localhost:8080/user/getAllUser", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -28,7 +29,7 @@ const RightBar = () => {
 
   const searchUsers = () => {
     axios
-      .get("https://petsocial.azurewebsites.net/user/searchUser", {
+      .get("http://localhost:8080/user/searchUser", {
         params: {
           name: searchText,
         },
@@ -54,7 +55,7 @@ const RightBar = () => {
     // Đặt trạng thái để hiển thị khung chat box
     // Lưu thông tin user đang chọn vào trạng thái
     // localStorage.setItem("selectedUser", JSON.stringify(user));
-
+    setSelectedUser(user);
     navigate(`/profile/${user.id}`);
   };
   useEffect(() => {
@@ -78,30 +79,32 @@ const RightBar = () => {
           <div className="user-list">
             <ul>
               {users &&
-                users.map((user) => (
-                  <li key={user.id}>
-                    <div
-                      className={`user ${
-                        selectedUser === user ? "active" : ""
-                      }`}
-                      onClick={() => handleUserClick(user)}
-                    >
-                      <div className="avatar-frame">
-                        {user.avatar ? (
-                          <img
-                            src={user.avatar}
-                            alt={`${user.name}'s avatar`}
-                          />
-                        ) : (
-                          "\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0"
-                        )}
+                users
+                  .filter((user) => user.id !== currentUser.id)
+                  .map((user) => (
+                    <li key={user.id}>
+                      <div
+                        className={`user ${
+                          selectedUser === user ? "active" : ""
+                        }`}
+                        onClick={() => handleUserClick(user)}
+                      >
+                        <div className="avatar-frame">
+                          {user.avatar ? (
+                            <img
+                              src={user.avatar}
+                              alt={`${user.name}'s avatar`}
+                            />
+                          ) : (
+                            "\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0"
+                          )}
 
-                        {user.isOnline && <div className="online-dot" />}
+                          {user.isOnline && <div className="online-dot" />}
+                        </div>
+                        <span className="user-name">{user.name}</span>
                       </div>
-                      <span className="user-name">{user.name}</span>
-                    </div>
-                  </li>
-                ))}
+                    </li>
+                  ))}
             </ul>
           </div>
           {/* <div className="chatOnline">

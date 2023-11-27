@@ -19,7 +19,7 @@ import MyProfile from "./pages/myprofile/MyProfile";
 import MyPets from "./pages/MyPets/MyPets";
 import MarketPlace from "./pages/MarketPlace/MarketPlace";
 import Admin from "./Admin";
-import User from "./User";
+// import User from "./User";
 
 import "./style.scss";
 import { useContext } from "react";
@@ -34,6 +34,8 @@ import Applied from "./pages/appliedpage/Applied";
 import SearchResults from "./components/search/Search";
 
 function App() {
+  // Empty dependency array ensures this effect runs only once when the component mounts
+
   const { currentUser } = useContext(AuthContext);
 
   const { darkMode } = useContext(DarkModeContext);
@@ -101,7 +103,7 @@ function App() {
           element: <MarketPlace />,
         },
         {
-          path: "/payment",
+          path: "/payment/*",
           element: <Payment />,
         },
         {

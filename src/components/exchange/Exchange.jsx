@@ -8,8 +8,10 @@ import axios from "axios";
 import Modal from "react-modal";
 import Applied_of_exchange from "../applied_of_exchange/Applied_of_exchange";
 import Pending from "../../assets/pending.png";
-import Complete from "../../assets/completed.png";
+import Complete from "../../assets/complete.png";
 import Gift from "../../assets/gift.png";
+import { sendNotification } from "../../socket";
+import { format } from "timeago.js";
 
 const Exchange = ({ exchange, setExchanges, exchanges, view }) => {
   const [isMessageOpen, setIsMessageOpen] = useState(false);
@@ -21,6 +23,15 @@ const Exchange = ({ exchange, setExchanges, exchanges, view }) => {
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [isOpenApply, setIsOpenApply] = useState(false);
   const [appliesCount, setAppliesCount] = useState(0);
+
+  //Edit Khoa
+  const [updatedPaymentAmount, setUpdatePaymentAmount] = useState(
+    exchange.paymentAmount
+  );
+  const [editedPaymentAmount, setEditedPaymentAmount] = useState(
+    exchange.paymentAmount
+  );
+
   const handleCountChange = (count) => {
     // Update the applies count in Exchange component
     setAppliesCount(count);
@@ -33,6 +44,22 @@ const Exchange = ({ exchange, setExchanges, exchanges, view }) => {
   };
   const handleMenuUpdate = () => {
     const updatedPaymentAmount = editedPaymentAmount;
+
+    if (updatedPaymentAmount === "" || isNaN(updatedPaymentAmount)) {
+      console.log("Payment amount must be a valid number");
+      setError("Payment amount must be a valid number");
+      setIsMessageOpen(true);
+      return;
+    }
+
+    if (updatedPaymentAmount < 0) {
+      console.error("Payment amount cannot be less than 0");
+      setError("Payment amount cannot be less than 0");
+      setIsMessageOpen(true);
+      // You can display an error message to the user or handle it as needed
+      return;
+    }
+
     setUpdatePaymentAmount(updatedPaymentAmount);
     setEditMode(false);
     const toggleEditMode = () => {
@@ -43,10 +70,10 @@ const Exchange = ({ exchange, setExchanges, exchanges, view }) => {
       paymentAmount: updatedPaymentAmount,
     };
 
-    console.log("saidghasiuhd", exchangeDTO);
+    console.log("update", exchangeDTO);
     axios
       .put(
-        `https://petsocial.azurewebsites.net/exchange/${exchange.id}/edit-cash?paymentAmount=${updatedPaymentAmount}`,
+        `http://localhost:8080/exchange/${exchange.id}/edit-cash?paymentAmount=${updatedPaymentAmount}`,
         exchangeDTO,
         {
           headers: {
@@ -58,10 +85,14 @@ const Exchange = ({ exchange, setExchanges, exchanges, view }) => {
       .then((response) => {
         if (response.status === 200) {
           setUpdatePaymentAmount(updatedPaymentAmount);
+          setError("Update Successfully");
+          setIsMessageOpen(true);
           toggleEditMode();
           console.log(response.data);
         } else {
           console.error("Update failed");
+          setError("Update failed");
+          setIsMessageOpen(true);
         }
       })
       .catch((error) => {
@@ -69,13 +100,6 @@ const Exchange = ({ exchange, setExchanges, exchanges, view }) => {
       });
   };
 
-  //Edit Khoa
-  const [updatedPaymentAmount, setUpdatePaymentAmount] = useState(
-    exchange.paymentAmount
-  );
-  const [editedPaymentAmount, setEditedPaymentAmount] = useState(
-    exchange.paymentAmount
-  );
   const handleMenuClick = (event) => {
     event.stopPropagation(); // Ngăn chặn sự kiện nổi bọt
     setMenuAnchor(event.currentTarget);
@@ -85,7 +109,7 @@ const Exchange = ({ exchange, setExchanges, exchanges, view }) => {
   const handleApply = async () => {
     try {
       const apply = await axios.post(
-        "https://petsocial.azurewebsites.net/apply/create",
+        "http://localhost:8080/apply/create",
         null,
         {
           headers: {
@@ -100,6 +124,11 @@ const Exchange = ({ exchange, setExchanges, exchanges, view }) => {
       setError("Apply Successfully");
       setIsMessageOpen(true);
       console.log(apply.data);
+      sendNotification(
+        `${currentUser.name} sent an apply to your exchange with pet ${exchange.petDTO.name}`,
+        exchange.userDTO.id,
+        exchange.userDTO.name
+      );
     } catch (error) {
       console.error(error);
     }
@@ -107,7 +136,9 @@ const Exchange = ({ exchange, setExchanges, exchanges, view }) => {
 
   const closeMessage = () => {
     setIsMessageOpen(false);
-    // setExchanges(exchanges.filter(item => item.id !== exchange.id))
+  };
+  const closeMessageDelete = () => {
+    setIsMessageOpen(false);
     setExchanges(exchanges.filter((item) => item.id !== exchange.id));
   };
 
@@ -115,9 +146,15 @@ const Exchange = ({ exchange, setExchanges, exchanges, view }) => {
     setMenuAnchor(null);
   };
 
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const handleMenuDelete = async () => {
+    // Open the delete confirmation modal
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
     const response = await axios.delete(
-      "https://petsocial.azurewebsites.net/exchange/" + exchange.id,
+      "http://localhost:8080/exchange/" + exchange.id,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -129,10 +166,12 @@ const Exchange = ({ exchange, setExchanges, exchanges, view }) => {
       setError("Delete Success");
       handleMenuClose();
       setIsMessageOpen(true);
+      setIsDeleteModalOpen(false);
     } else {
       setError("Not found");
       handleMenuClose();
       setIsMessageOpen(true);
+      setIsDeleteModalOpen(false);
     }
   };
 
@@ -172,7 +211,7 @@ const Exchange = ({ exchange, setExchanges, exchanges, view }) => {
               >
                 <span className="name">{exchange.userDTO.name} </span>
               </Link>
-              <span className="date">{formattedDate}</span>
+              <span className="date">{format(exchange.exchangeDate)}</span>
             </div>
           </div>
 
@@ -232,12 +271,18 @@ const Exchange = ({ exchange, setExchanges, exchanges, view }) => {
                     type="number"
                     value={editedPaymentAmount}
                     onChange={(e) => setEditedPaymentAmount(e.target.value)}
+                    style={{
+                      width: "25%",
+                      padding: "8px",
+                      border: "1px solid #ccc",
+                      borderRadius: "4px",
+                    }}
                   />
                 </div>
               ) : (
                 <p>
                   <strong>Price: </strong>
-                  {updatedPaymentAmount} VND
+                  {updatedPaymentAmount} $
                   {isGift && (
                     <span>
                       {" - "}
@@ -269,6 +314,7 @@ const Exchange = ({ exchange, setExchanges, exchanges, view }) => {
               Save
             </button>
           ) : exchange.userDTO.id === currentUser.id ? (
+            // !isClosed && (
             <button
               onClick={() => setIsOpenApply(!isOpenApply)}
               className="apply-button"
@@ -276,6 +322,7 @@ const Exchange = ({ exchange, setExchanges, exchanges, view }) => {
               View Apply ({appliesCount})
             </button>
           ) : (
+            // )
             <button onClick={handleApply} className="apply-button">
               Apply
             </button>
@@ -285,7 +332,8 @@ const Exchange = ({ exchange, setExchanges, exchanges, view }) => {
         {/* {commentOpen && <Comments />} */}
       </div>
 
-      {exchange.userDTO.id === currentUser.id ? (
+      {exchange.userDTO.id === currentUser.id &&
+      exchange.status !== "COMPLETED" ? (
         <Menu
           anchorEl={menuAnchor}
           open={Boolean(menuAnchor)}
@@ -320,7 +368,7 @@ const Exchange = ({ exchange, setExchanges, exchanges, view }) => {
             textAlign: "center",
           },
           content: {
-            width: "150px",
+            width: "200px",
             height: "fit-content",
             maxHeight: "20vh",
             margin: "auto",
@@ -363,6 +411,65 @@ const Exchange = ({ exchange, setExchanges, exchanges, view }) => {
           onCountChange={handleCountChange}
         />
       )}
+
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onRequestClose={closeMessageDelete}
+        contentLabel="Delete Exchange Modal"
+        style={{
+          overlay: {
+            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            zIndex: 1000,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          },
+          content: {
+            width: "350px",
+            height: "fit-content",
+            margin: "auto",
+            padding: "20px",
+            borderRadius: "10px",
+            background: "#fff",
+            fontFamily: "Arial, sans-serif",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          },
+        }}
+      >
+        <div>
+          <h2 className="modal-header">Delete Exchange</h2>
+          <p className="modal-body">
+            Are you sure you want to delete this exchange?
+          </p>
+        </div>
+        <div style={{ textAlign: "right" }}>
+          <button
+            className="modal-button cancel"
+            onClick={() => setIsDeleteModalOpen(false)}
+            style={{
+              padding: "10px",
+              borderRadius: "5px",
+              marginRight: "10px",
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            className="modal-button delete"
+            onClick={handleConfirmDelete}
+            style={{
+              padding: "10px",
+              backgroundColor: "#E65353",
+              borderRadius: "5px",
+              color: "#fff",
+            }}
+          >
+            Delete
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 };

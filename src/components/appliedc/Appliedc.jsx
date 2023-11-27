@@ -11,12 +11,17 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import axios from "axios";
 import Modal from "react-modal";
+import Pending from "../../assets/pending.png";
+import Complete from "../../assets/complete.png";
+import Reject from "../../assets/reject.png";
+import { format } from "timeago.js";
 
 const Applied = ({ applied, setApplieds, applieds }) => {
   const [commentOpen, setCommentOpen] = useState(false);
   const [error, setError] = useState("");
   const [isMessageOpen, setIsMessageOpen] = useState(false);
   const token = localStorage.getItem("token");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const calculateTimeDifference = (createDate) => {
@@ -65,11 +70,16 @@ const Applied = ({ applied, setApplieds, applieds }) => {
     setMenuAnchor(null);
   };
 
-  const handleMenuDelete = async () => {
+  const handleMenuDelete = () => {
+    // Mở modal xác nhận trước khi xóa
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
     // setPosts(posts.filter(item => item.id !== post.id))
 
     const response = await axios.delete(
-      "https://petsocial.azurewebsites.net/apply/" + applied.id,
+      "http://localhost:8080/apply/" + applied.id,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -81,10 +91,12 @@ const Applied = ({ applied, setApplieds, applieds }) => {
       setError("Delete Success");
       handleMenuClose();
       setIsMessageOpen(true);
+      setIsDeleteModalOpen(false);
     } else {
       setError("Not found");
       handleMenuClose();
       setIsMessageOpen(true);
+      setIsDeleteModalOpen(false);
     }
   };
 
@@ -106,12 +118,50 @@ const Applied = ({ applied, setApplieds, applieds }) => {
                 <span className="name">{applied.exchange.userDTO.name} </span>
               </Link>
 
-              <span className="date">{formattedDate}</span>
+              <span className="date">{format(applied.applyDate)}</span>
             </div>
           </div>
 
           <MoreHorizIcon onClick={handleMenuClick} />
         </div>
+        {/* {applied.status} */}
+        {applied.status === "PENDING" ? (
+          <img
+            style={{
+              width: "20%",
+              right: "0px",
+              transform: "rotate(56deg)",
+              top: "35px",
+              position: "absolute",
+            }}
+            src={Pending}
+            alt=""
+          />
+        ) : applied.status === "COMPLETED" ? (
+          <img
+            style={{
+              width: "20%",
+              right: "0px",
+              transform: "rotate(56deg)",
+              top: "35px",
+              position: "absolute",
+            }}
+            src={Complete}
+            alt=""
+          />
+        ) : (
+          <img
+            style={{
+              width: "20%",
+              right: "0px",
+              transform: "rotate(56deg)",
+              top: "35px",
+              position: "absolute",
+            }}
+            src={Reject}
+            alt=""
+          />
+        )}
         <div className="ccontent">
           <p>Pet Name: {applied.exchange.petDTO.name} </p>
           <p>Price: {applied.exchange.paymentAmount} </p>
@@ -121,23 +171,24 @@ const Applied = ({ applied, setApplieds, applieds }) => {
         <div className="info"></div>
         {commentOpen && <Comments />}
       </div>
-      {applied.userId === currentUser.id ? (
-        <Menu
-          anchorEl={menuAnchor}
-          open={Boolean(menuAnchor)}
-          onClose={handleMenuClose}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "right",
-          }}
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "right",
-          }}
-        >
+
+      <Menu
+        anchorEl={menuAnchor}
+        open={Boolean(menuAnchor)}
+        onClose={handleMenuClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      >
+        {applied.status === "PENDING" && (
           <MenuItem onClick={handleMenuDelete}>Delete</MenuItem>
-        </Menu>
-      ) : null}
+        )}
+      </Menu>
 
       <Modal
         isOpen={isMessageOpen}
@@ -187,6 +238,64 @@ const Applied = ({ applied, setApplieds, applieds }) => {
         <div>
           <h2 className="modal-header">Message</h2>
           <div className="modal-content">{error}</div>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onRequestClose={() => setIsDeleteModalOpen(false)}
+        contentLabel="Delete Applied Modal"
+        style={{
+          overlay: {
+            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            zIndex: 1000,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          },
+          content: {
+            width: "320px",
+            height: "fit-content",
+            margin: "auto",
+            padding: "20px",
+            borderRadius: "10px",
+            background: "#fff",
+            fontFamily: "Arial, sans-serif",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          },
+        }}
+      >
+        <div>
+          <h2 className="modal-header">Delete Applied</h2>
+          <p className="modal-body">
+            Are you sure you want to delete this applied request?
+          </p>
+        </div>
+        <div style={{ textAlign: "right" }}>
+          <button
+            className="modal-button cancel"
+            onClick={() => setIsDeleteModalOpen(false)}
+            style={{
+              padding: "10px",
+              borderRadius: "5px",
+              marginRight: "10px",
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            className="modal-button delete"
+            onClick={handleConfirmDelete}
+            style={{
+              padding: "10px",
+              backgroundColor: "#E65353",
+              borderRadius: "5px",
+            }}
+          >
+            Delete
+          </button>
         </div>
       </Modal>
     </div>

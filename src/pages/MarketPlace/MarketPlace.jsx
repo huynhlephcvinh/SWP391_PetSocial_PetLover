@@ -24,7 +24,7 @@ const MarketPlace = () => {
         let response;
         if (!view) {
           response = await axios.get(
-            "https://petsocial.azurewebsites.net/exchange/getAllExchange",
+            "http://localhost:8080/exchange/getAllExchange",
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -34,7 +34,7 @@ const MarketPlace = () => {
         } else {
           setExchanges([]);
           response = await axios.get(
-            "https://petsocial.azurewebsites.net/exchange/view-exchange",
+            "http://localhost:8080/exchange/view-exchange",
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -42,9 +42,11 @@ const MarketPlace = () => {
             }
           );
         }
-
+        const sortedExchanges = response.data.sort((a, b) => {
+          return new Date(b.exchangeDate) - new Date(a.exchangeDate);
+        });
         console.log(response.data);
-        setExchanges(response.data);
+        setExchanges(sortedExchanges);
       } catch (error) {
         console.log("Error: ", error);
       }

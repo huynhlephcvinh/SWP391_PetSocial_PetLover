@@ -13,7 +13,7 @@ export default function ChatOnline({ setSelectedUser }) {
       try {
         // Fetch a list of online users
         const onlineUsersResponse = await axios.get(
-          `https://petsocial.azurewebsites.net/ws/users/${currentUser.id}`,
+          `http://localhost:8080/ws/users/${currentUser.id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -61,7 +61,11 @@ export default function ChatOnline({ setSelectedUser }) {
   return (
     <div className="chatOnline">
       {OnlineUsers.map((o) => (
-        <div className="chatOnlineFriend" onClick={() => handleClick(o)}>
+        <div
+          key={o.id}
+          className="chatOnlineFriend"
+          onClick={() => handleClick(o)}
+        >
           <div className="chatOnlineImgContainer">
             <img className="chatOnlineImg" src={o.avatar} alt="" />
             <div

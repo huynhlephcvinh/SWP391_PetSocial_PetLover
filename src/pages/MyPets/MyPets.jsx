@@ -65,7 +65,7 @@ const MyPets = () => {
         return;
       }
       const response = await axios.post(
-        `https://petsocial.azurewebsites.net/pet/createpet`,
+        `http://localhost:8080/pet/createpet`,
         createPetDTO,
         {
           headers: {
@@ -114,7 +114,7 @@ const MyPets = () => {
     const fetchPet = async () => {
       try {
         const response1 = await axios.get(
-          "https://petsocial.azurewebsites.net/pet/getAllPet",
+          "http://localhost:8080/pet/getAllPet",
           {
             headers: {
               Authorization: `Bearer ${token}`,

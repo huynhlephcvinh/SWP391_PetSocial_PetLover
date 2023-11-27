@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Box, useTheme } from "@mui/material";
+import { Box, Button, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../../theme";
 import Header from "../../../components/admin/Header";
+import { CSVLink } from "react-csv";
 
 const Posts = () => {
   const theme = useTheme();
@@ -16,7 +17,7 @@ const Posts = () => {
     if (token) {
       // Gọi API để lấy danh sách bài đăng từ phía backend
       axios
-        .get("https://petsocial.azurewebsites.net/admin/getAllPost", {
+        .get("http://localhost:8080/admin/getAllPost", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -55,6 +56,28 @@ const Posts = () => {
 
     return formattedDate;
   };
+
+  const csvData = rows.map((row) => ({
+    ID: row.id,
+    User: row.name,
+    Content: row.content,
+    Date: row.date,
+    Image: row.image,
+    Enable: row.enable,
+    Like: row.like,
+    Comment: row.comment,
+  }));
+
+  const csvHeaders = [
+    { label: "ID", key: "ID" },
+    { label: "User", key: "User" },
+    { label: "Content", key: "Content" },
+    { label: "Date", key: "Date" },
+    { label: "Image", key: "Image" },
+    { label: "Enable", key: "Enable" },
+    { label: "Like", key: "Like" },
+    { label: "Comment", key: "Comment" },
+  ];
 
   const columns = [
     { field: "id", headerName: "ID" },
@@ -96,8 +119,37 @@ const Posts = () => {
   ];
 
   return (
-    <Box m="20px">
-      <Header title="POSTS" subtitle="List of User Posts" />
+    <div>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        m="20px"
+      >
+        <Header title="POSTS" subtitle="List of User Posts" />
+        <Button
+          variant="outlined"
+          color="primary"
+          style={{
+            border: "1px solid #333",
+            color: "white",
+            backgroundColor: "#007bff",
+            borderRadius: "4px",
+            padding: "8px 16px",
+            alignItems: "center",
+          }}
+        >
+          <CSVLink
+            data={csvData}
+            headers={csvHeaders}
+            filename="posts.csv"
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
+            Export
+          </CSVLink>
+        </Button>
+      </Box>
+
       <Box
         m="40px 0 0 0"
         height="75vh"
@@ -124,7 +176,7 @@ const Posts = () => {
       >
         <DataGrid rows={rows} columns={columns} />
       </Box>
-    </Box>
+    </div>
   );
 };
 

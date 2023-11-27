@@ -18,7 +18,7 @@ const SearchResults = () => {
     const fetchSearchResults = async () => {
       try {
         const response = await axios.get(
-          `https://petsocial.azurewebsites.net/post/search?content=${searchTerm}`,
+          `http://localhost:8080/post/search?content=${searchTerm}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -57,7 +57,7 @@ const SearchResults = () => {
   // const fetchSearchResults = async () => {
   //   try {
   //     const response = await axios.get(
-  //       `https://petsocial.azurewebsites.net/post/search?content=${searchTerm}`,
+  //       `http://localhost:8080/post/search?content=${searchTerm}`,
   //       {
   //         headers: {
   //           Authorization: `Bearer ${token}`,

@@ -23,7 +23,7 @@ const Profile = () => {
     async function fetchProfile() {
       try {
         const response = await axios.post(
-          "https://petsocial.azurewebsites.net/user/profile/" + userID,
+          "http://localhost:8080/user/profile/" + userID,
           null, // body là null nếu là POST request
           {
             headers: {

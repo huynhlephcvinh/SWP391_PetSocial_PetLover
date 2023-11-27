@@ -14,7 +14,7 @@ const PieChart = () => {
   useEffect(() => {
     if (token) {
       axios
-        .get("https://petsocial.azurewebsites.net/admin/statistics", {
+        .get("http://localhost:8080/admin/statistics", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -40,9 +40,15 @@ const PieChart = () => {
               value: apiData.totalPet,
               label: "Pets",
             },
+            {
+              id: "postDelete",
+              value: apiData.totalPostDelete,
+              label: "Post deleted",
+            },
           ];
 
           setChartData(updatedChartData);
+          console.log(updatedChartData);
         })
         .catch((error) => {
           console.error("Error fetching data:", error);

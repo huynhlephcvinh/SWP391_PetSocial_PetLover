@@ -14,7 +14,7 @@ const BarChart = ({ isDashboard = false }) => {
   useEffect(() => {
     if (token) {
       axios
-        .get("https://petsocial.azurewebsites.net/admin/statistics", {
+        .get("http://localhost:8080/admin/statistics", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -24,7 +24,6 @@ const BarChart = ({ isDashboard = false }) => {
           console.log(response.data);
           const apiData = response.data.data;
           const monthlyExchangeData = apiData.monthlyExchangeStatistics;
-
           const monthlyData = apiData.monthlyStatistics;
           const updatedChartData = Object.keys(monthlyData)
             .sort(
@@ -88,6 +87,11 @@ const BarChart = ({ isDashboard = false }) => {
       valueScale={{ type: "linear" }}
       indexScale={{ type: "band", round: true }}
       colors={{ scheme: "nivo" }}
+      tooltip={({ id, value }) => (
+        <strong style={{ color: colors.grey[100] }}>
+          {id}: {value}
+        </strong>
+      )}
       defs={[
         {
           id: "dots",
@@ -161,10 +165,11 @@ const BarChart = ({ isDashboard = false }) => {
           ],
         },
       ]}
+      label={(e) => `${e.value}`}
       role="application"
-      barAriaLabel={function (e) {
-        return e.id + ": " + e.formattedValue + " in month: " + e.indexValue;
-      }}
+      barAriaLabel={(e) =>
+        `${e.id}: ${e.formattedValue} in month: ${e.indexValue}`
+      }
     />
   );
 };

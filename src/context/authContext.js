@@ -10,13 +10,10 @@ export const AuthContextProvider = ({ children }) => {
 
   const LoginAuth = async (email, password) => {
     try {
-      const response = await axios.post(
-        "https://petsocial.azurewebsites.net/signin",
-        {
-          email: email,
-          password: password,
-        }
-      );
+      const response = await axios.post("http://localhost:8080/signin", {
+        email: email,
+        password: password,
+      });
       const { token, user } = response.data;
       localStorage.setItem("token", token);
       localStorage.setItem("currentUser", JSON.stringify(user));
@@ -34,7 +31,7 @@ export const AuthContextProvider = ({ children }) => {
       if (token) {
         try {
           const response1 = await axios.get(
-            "https://petsocial.azurewebsites.net/user/profile",
+            "http://localhost:8080/user/profile",
             {
               headers: {
                 Authorization: `Bearer ${token}`,

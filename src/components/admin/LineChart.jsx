@@ -12,7 +12,7 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
   useEffect(() => {
     // Gọi API để lấy dữ liệu totalStatistic và truyền token trong tiêu đề Authorization
     axios
-      .get("https://petsocial.azurewebsites.net/admin/statistics", {
+      .get("http://localhost:8080/admin/statistics", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
