@@ -1,7 +1,0 @@
-package com.petlover.petsocial.exception;
-
-public class PostException extends Exception {
-    public PostException(String message) {
-        super(message);
-    }
-}
